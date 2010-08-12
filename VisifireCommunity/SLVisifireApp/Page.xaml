@@ -6,21 +6,22 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 mc:Ignorable="d"
 >
     <Grid x:Name="LayoutRoot">
-        <vc:Chart x:Name="MyChart" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-                  Width="500" Height="300" Theme="Theme1">
-
+        <vc:Chart x:Name="MyChart" Theme="Theme1" BorderBrush="Gray" Height="400" Width="500" View3D="false" Padding="4">
+            
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire Chart"/>
+                <vc:Title Text="Calls made by sales team on 12 August 2010" FontSize="16" />
+                <vc:Title Text="Total Number Of Calls: 199" FontSize="16" />
             </vc:Chart.Titles>
-         
+            
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column" SelectionEnabled="true">
+                <vc:DataSeries RenderAs="Pyramid" BorderThickness="2" BorderColor="Black"  LabelLineColor="Black" LabelBackground="Gray" LabelStyle="OutSide" ShadowEnabled="true" Bevel="false" LabelText="#AxisXLabel, NOC: #YValue, #Percentage%" >
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="18"/>
-                        <vc:DataPoint YValue="28"/>
-                        <vc:DataPoint YValue="38"/>
-                        <vc:DataPoint YValue="48"/>
-                        <vc:DataPoint YValue="58"/>
+                        <vc:DataPoint AxisXLabel="John" YValue="42" />
+                        <vc:DataPoint AxisXLabel="Neil" YValue="31"/>
+                        <vc:DataPoint AxisXLabel="Steve" YValue="30" Exploded="true"/>
+                        <vc:DataPoint AxisXLabel="David" YValue="52"/>
+                        <vc:DataPoint AxisXLabel="Maria" YValue="18"/>
+                        <vc:DataPoint AxisXLabel="Mike" YValue="16"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

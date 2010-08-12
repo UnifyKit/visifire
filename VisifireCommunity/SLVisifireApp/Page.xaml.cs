@@ -14,6 +14,7 @@ using Visifire.Commons;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Threading;
+using System.Windows.Data;
 
 namespace SLVisifireApp
 {
@@ -22,17 +23,6 @@ namespace SLVisifireApp
         public Page()
         {
             InitializeComponent();
-
-            MyChart.Titles[0].MouseLeftButtonUp += new MouseButtonEventHandler(Page_MouseLeftButtonUp);
-        }
-
-        void Page_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            Random rand = new Random();
-            for (Int32 i = 0; i < MyChart.Series[0].DataPoints.Count;i++ )
-            {
-                MyChart.Series[0].DataPoints[i].YValue = rand.Next(10, 100);
-            }
         }
     }
 }

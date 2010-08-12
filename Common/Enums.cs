@@ -171,7 +171,7 @@ namespace Visifire.Charts
     /// This property is used to select the chart type
     /// </summary>
     public enum RenderAs
-    {
+    {   
         Column = 0,
         Line = 1,
         Pie = 2,
@@ -193,7 +193,8 @@ namespace Visifire.Charts
         StepLine = 18,
         Spline = 19,
         Radar = 20,
-        Polar = 21
+        Polar = 21,
+        Pyramid = 22
     }
     
     /// <summary>

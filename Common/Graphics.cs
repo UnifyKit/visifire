@@ -187,7 +187,44 @@ namespace Visifire.Charts
         /// DataContext
         /// </summary>
         public Object DataContext;
-        
+
+        internal void ClearInstanceRefs()
+        {
+            if (VisualComponents != null)
+                foreach (FrameworkElement fe in VisualComponents)
+                    fe.Tag = null;
+
+            if (BorderElements != null)
+                foreach (FrameworkElement fe in BorderElements)
+                    fe.Tag = null;
+
+            if (Parts != null)
+                Parts = null;
+
+            if (Visual != null)
+                Visual.Tag = null;
+
+            ClearFrontArea3DFaces();
+
+            BorderElements = null;
+            BevelElements = null;
+            LightingElements = null;
+            ShadowElements = null;
+            VisualComponents = null;
+            Parts = null;
+            Visual = null;
+            LabelCanvas = null;
+            DataContext = null;
+        }
+
+        public void ClearFrontArea3DFaces()
+        {
+            Area3DLeftFace = null;
+            Area3DLeftTopFace = null;
+            Area3DRightTopFace = null;
+            Area3DRightFace = null;
+        }
+
         internal void ClearList(ref List<DependencyObject> listReference)
         {
             foreach (FrameworkElement fe in listReference)
@@ -1902,6 +1939,32 @@ namespace Visifire.Commons
 #else
             return (Brush)XamlReader.Load(String.Format(System.Globalization.CultureInfo.InvariantCulture, @"<SolidColorBrush xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" Color=""{0}""></SolidColorBrush>", colorCode));
 #endif
+        }
+
+        /// <summary>
+        /// Return lighter brush
+        /// </summary>
+        public static Brush GetLighterBrush(Brush brush, Double intensity)
+        {   
+            SolidColorBrush solidColorBrush = brush as SolidColorBrush;
+
+            if (solidColorBrush != null)
+                return new SolidColorBrush(GetLighterColor(solidColorBrush.Color, intensity));
+            else
+                return brush;
+        }
+        
+        /// <summary>
+        /// Return darker brush
+        /// </summary>
+        public static Brush GetDarkerBrush(Brush brush, Double intensity)
+        {   
+            SolidColorBrush solidColorBrush = brush as SolidColorBrush;
+
+            if (solidColorBrush != null)
+                return new SolidColorBrush(GetDarkerColor(solidColorBrush.Color, intensity));
+            else
+                return brush;
         }
 
         /// <summary>

@@ -1617,6 +1617,7 @@ namespace Visifire.Charts
                 case RenderAs.Doughnut:
                 case RenderAs.SectionFunnel:
                 case RenderAs.StreamLineFunnel:
+                case RenderAs.Pyramid:
                     chartOrientation = ChartOrientationType.NoAxis;
                     break;
 
@@ -2591,7 +2592,7 @@ namespace Visifire.Charts
         /// <returns>Double</returns>
         internal Double GetAbsoluteSumOfDataPoints(List<DataPoint> dataPoints)
         {
-            if (dataPoints.Count > 0 && (dataPoints[0].Parent.RenderAs == RenderAs.SectionFunnel || dataPoints[0].Parent.RenderAs == RenderAs.StreamLineFunnel))
+            if (dataPoints.Count > 0 && (dataPoints[0].Parent.RenderAs == RenderAs.SectionFunnel || dataPoints[0].Parent.RenderAs == RenderAs.StreamLineFunnel || dataPoints[0].Parent.RenderAs == RenderAs.Pyramid))
                 return (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.YValue) && dataPoint.YValue >=0 select Math.Abs(dataPoint.YValue)).Sum();
             else if (dataPoints.Count > 0 && (dataPoints[0].Parent.RenderAs == RenderAs.CandleStick || dataPoints[0].Parent.RenderAs == RenderAs.Stock))
             {
@@ -2691,6 +2692,41 @@ namespace Visifire.Charts
             }
 
             return dataPointsInStackOrder;
+        }
+
+        internal void ClearInstanceRefs()
+        {
+            _axisXPrimary = null;
+            ListOfAllDataPoints.Clear();
+            _listOfAllDataPoints.Clear();
+            _listOfAllDataPoints = null;
+
+            if (AxisXPrimaryLabels != null)
+                AxisXPrimaryLabels.Clear();
+
+            AxisXPrimaryLabels = null;
+
+            if (AxisXSecondaryLabels != null)
+                AxisXSecondaryLabels.Clear();
+
+            AxisXSecondaryLabels = null;
+
+            if (ListOfAllDataPointsPrimary != null)
+                ListOfAllDataPointsPrimary.Clear();
+
+            ListOfAllDataPointsPrimary = null;
+
+            if (ListOfAllDataPointsSecondary != null)
+                ListOfAllDataPointsSecondary.Clear();
+
+            ListOfAllDataPointsSecondary = null;
+
+            foreach (PlotGroup plotGroup in PlotGroups)
+            {
+                plotGroup.ClearInstanceRefs();
+            }
+
+            PlotGroups = null;
         }
 
         #endregion

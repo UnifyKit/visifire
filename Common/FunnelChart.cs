@@ -97,6 +97,8 @@ namespace Visifire.Charts
 
                 #endregion
 
+                funnelSeries.Storyboard = null;
+
                 if ((funnelSeries.Chart as Chart).AnimationEnabled)
                     funnelSeries.Storyboard = new Storyboard();
 
@@ -254,10 +256,10 @@ namespace Visifire.Charts
             Boolean isAnimationEnabled = (dataSeries.Chart as Chart).AnimationEnabled;
             Double plotHeight = funnelCanvas.Height;
             Double plotWidth = funnelCanvas.Width;
-
+            
             // Canvas funnelCanvas = new Canvas() { Height = plotHeight, Width = plotWidth }; //, Background = new SolidColorBrush(Colors.LightGray) };
 
-            FunnelSliceParms[] funnelSlices = CalculateFunnelSliceParmsInfo(isStreamLine, dataSeries, dataPoints, plotHeight, plotWidth - Chart.BEVEL_DEPTH, minPointHeight, is3D, yScale, gapRatio, isSameSlantAngle, bottomRadius);
+            TriangularChartSliceParms[] funnelSlices = CalculateFunnelSliceParmsInfo(isStreamLine, dataSeries, dataPoints, plotHeight, plotWidth - Chart.BEVEL_DEPTH, minPointHeight, is3D, yScale, gapRatio, isSameSlantAngle, bottomRadius);
             dataSeries.VisualParams = funnelSlices;
             
             Double topRadius = plotWidth / 2;
@@ -337,12 +339,12 @@ namespace Visifire.Charts
         /// <summary>
         /// Arrange labels to overcome overlaps
         /// </summary>
-        private static void ArrangeLabels(FunnelSliceParms[] funnelSlices, Double width, Double height)
+        private static void ArrangeLabels(TriangularChartSliceParms[] funnelSlices, Double width, Double height)
         {
             if (funnelSlices == null || funnelSlices.Length < 0)
                 return;
 
-            FunnelSliceParms[] selectedfunnelSlices = (from fs in funnelSlices where fs.DataPoint.LabelStyle == LabelStyles.OutSide select fs).ToArray();
+            TriangularChartSliceParms[] selectedfunnelSlices = (from fs in funnelSlices where fs.DataPoint.LabelStyle == LabelStyles.OutSide select fs).ToArray();
 
             Rect baseArea = new Rect(0, 0, width, height);
             Rect[] labelInfo = new Rect[selectedfunnelSlices.Length];
@@ -373,7 +375,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static void UpdateLabelLineEndPoint(FunnelSliceParms funnelSlice)
+        private static void UpdateLabelLineEndPoint(TriangularChartSliceParms funnelSlice)
         {
             Path labelLine = funnelSlice.DataPoint.LabelLine;
 
@@ -399,6 +401,8 @@ namespace Visifire.Charts
         /// <returns>Storyboard</returns>
         internal static Storyboard CreateExplodingAnimation(DataSeries dataSeries, DataPoint dataPoint, Storyboard storyboard, Panel visual, Double targetValue, Double beginTime)
         {
+            if (storyboard == null)
+                storyboard = new Storyboard();
 
 #if WPF
             if (storyboard != null && storyboard.GetValue(System.Windows.Media.Animation.Storyboard.TargetProperty) != null)
@@ -442,7 +446,7 @@ namespace Visifire.Charts
         /// Calculates Exploded DataPoint Positions
         /// </summary>
         /// <param name="funnelSlices"></param>
-        private static void CalcutateExplodedPosition(ref FunnelSliceParms[] funnelSlices, Boolean isStreamLine, Double yScale, DataSeries dataSeries)
+        private static void CalcutateExplodedPosition(ref TriangularChartSliceParms[] funnelSlices, Boolean isStreamLine, Double yScale, DataSeries dataSeries)
         {
             Int32 sliceCount = funnelSlices.Count();
             Int32 index = 0;
@@ -472,13 +476,16 @@ namespace Visifire.Charts
                         dataSeries.Storyboard = CreateExplodingAnimation(dataSeries, funnelSlices[index].DataPoint, dataSeries.Storyboard, funnelSlices[index].DataPoint.Faces.Visual as Panel, yPosition, beginTime);
                     }
 
-                    if (dataSeries.Chart != null && !(dataSeries.Chart as Chart).ChartArea._isFirstTimeRender)
+                    if (dataSeries.Storyboard != null)
+                    {
+                        if (dataSeries.Chart != null && !(dataSeries.Chart as Chart).ChartArea._isFirstTimeRender)
 #if WPF
                         dataSeries.Storyboard.Begin(dataSeries.Chart._rootElement, true);
 #else
+                            dataSeries.Storyboard.Stop();
                         dataSeries.Storyboard.Begin();
 #endif
-
+                    }
                 }
             }
             else
@@ -557,11 +564,11 @@ namespace Visifire.Charts
         /// <param name="gapRatio">Gap between two data points while a particular datapoint is Exploded</param>
         /// <param name="isSameSlantAngle">Whether the same slant angle to be used while drawing each slice</param>
         /// <param name="bottomRadius">Bottom most raduis of a funnel</param>
-        /// <returns>FunnelSliceParms[]</returns>
-        private static FunnelSliceParms[] CalculateFunnelSliceParmsInfo(Boolean isStreamLine, DataSeries dataSeries, List<DataPoint> dataPoints, Double plotHeight, Double plotWidth, Double minPointHeight, Boolean is3D, Double yScale, Double gapRatio, Boolean isSameSlantAngle, Double bottomRadius)
+        /// <returns>TriangularChartSliceParms[]</returns>
+        private static TriangularChartSliceParms[] CalculateFunnelSliceParmsInfo(Boolean isStreamLine, DataSeries dataSeries, List<DataPoint> dataPoints, Double plotHeight, Double plotWidth, Double minPointHeight, Boolean is3D, Double yScale, Double gapRatio, Boolean isSameSlantAngle, Double bottomRadius)
         {
             // Initialize funnel Slices parameters
-            FunnelSliceParms[] funnelSlicesParms;
+            TriangularChartSliceParms[] funnelSlicesParms;
 
             // Actual funnel height
             // For 3d funnel height will be reduced to maintain yScale
@@ -593,7 +600,7 @@ namespace Visifire.Charts
                 #region Sectional Funnel
 
                 // Initialization of funnelSliceParms
-                funnelSlicesParms = new FunnelSliceParms[dataPoints.Count];
+                funnelSlicesParms = new TriangularChartSliceParms[dataPoints.Count];
 
                 // Calculate sum of values
                 Double sum = (from dp in dataPoints select dp.YValue).Sum();
@@ -610,7 +617,7 @@ namespace Visifire.Charts
                 // Creating prams for each funnel slice
                 for (Int32 index = 0; index < dataPoints.Count; index++)
                 {
-                    funnelSlicesParms[index] = new FunnelSliceParms() { DataPoint = dataPoints[index], TopAngle = Math.PI / 2 - theta, BottomAngle = Math.PI / 2 + theta };
+                    funnelSlicesParms[index] = new TriangularChartSliceParms() { DataPoint = dataPoints[index], TopAngle = Math.PI / 2 - theta, BottomAngle = Math.PI / 2 + theta };
 
                     funnelSlicesParms[index].Height = funnelHeight * (dataPoints[index].YValue / sum);
                     funnelSlicesParms[index].TopRadius = index == 0 ? plotWidth / 2 : funnelSlicesParms[index - 1].BottomRadius;
@@ -645,9 +652,9 @@ namespace Visifire.Charts
                     minPointHeight = (minPointHeight / 100) * funnelHeight;
 
                     // Funnel slices where height is less than the minPointHeight
-                    List<FunnelSliceParms> fixedHeightFunnelSlices = (from funnelSlice in funnelSlicesParms where funnelSlice.Height < minPointHeight select funnelSlice).ToList();
+                    List<TriangularChartSliceParms> fixedHeightFunnelSlices = (from funnelSlice in funnelSlicesParms where funnelSlice.Height < minPointHeight select funnelSlice).ToList();
 
-                    List<FunnelSliceParms> variableHeightFunnelSlices = (from funnelSlice in funnelSlicesParms
+                    List<TriangularChartSliceParms> variableHeightFunnelSlices = (from funnelSlice in funnelSlicesParms
                                                                          where !(from slice in fixedHeightFunnelSlices select slice).Contains(funnelSlice)
                                                                          select funnelSlice).ToList();
 
@@ -708,7 +715,7 @@ namespace Visifire.Charts
                 }
 
                 // Initialization of funnelSliceParms
-                funnelSlicesParms = new FunnelSliceParms[dataPoints.Count - 1];
+                funnelSlicesParms = new TriangularChartSliceParms[dataPoints.Count - 1];
 
                 // Creating prams for each funnel slice
                 Int32 slicesIndex;
@@ -717,7 +724,7 @@ namespace Visifire.Charts
                 {
                     slicesIndex = index - 1;
 
-                    funnelSlicesParms[slicesIndex] = new FunnelSliceParms() { DataPoint = dataPoints[index] };
+                    funnelSlicesParms[slicesIndex] = new TriangularChartSliceParms() { DataPoint = dataPoints[index] };
 
                     funnelSlicesParms[slicesIndex].Height = (((iOValuePairs[index].InputValue - iOValuePairs[index].OutPutValue) / iOValuePairs[0].OutPutValue) * funnelHeight);
                     funnelSlicesParms[slicesIndex].TopRadius = slicesIndex == 0 ? plotWidth / 2 : funnelSlicesParms[slicesIndex - 1].BottomRadius;
@@ -753,7 +760,7 @@ namespace Visifire.Charts
                     {
                         slicesIndex = index - 1;
 
-                        //funnelSlicesParms[slicesIndex] = new FunnelSliceParms() { DataPoint = dataPoints[index] };
+                        //funnelSlicesParms[slicesIndex] = new TriangularChartSliceParms() { DataPoint = dataPoints[index] };
 
                         funnelSlicesParms[slicesIndex].Height += (funnelHeight - totalSumOfHeight) * (funnelSlicesParms[slicesIndex].Height / totalSumOfHeight);
 
@@ -861,7 +868,7 @@ namespace Visifire.Charts
             return funnelSlicesParms;
         }
 
-        public static void FixTopAndBottomRadiusForStreamLineFunnel(ref FunnelSliceParms funnelSlice)
+        public static void FixTopAndBottomRadiusForStreamLineFunnel(ref TriangularChartSliceParms funnelSlice)
         {
             if (Double.IsNaN(funnelSlice.TopRadius))
             {
@@ -888,7 +895,7 @@ namespace Visifire.Charts
         /// <param name="fillColor">Fill Color of the funnel slice</param>
         /// <param name="animationEnabled">Whether the animation is enabled</param>
         /// <returns>Funnel slice canvas</returns>
-        private static Canvas GetFunnelSliceVisual(Int32 funnelSliceIndex, Double topRadius, Boolean is3D, FunnelSliceParms funnelSlice, Double yScaleTop, Double yScaleBottom, Brush fillColor, Boolean animationEnabled)
+        private static Canvas GetFunnelSliceVisual(Int32 funnelSliceIndex, Double topRadius, Boolean is3D, TriangularChartSliceParms funnelSlice, Double yScaleTop, Double yScaleBottom, Brush fillColor, Boolean animationEnabled)
         {
             funnelSlice.Index = funnelSliceIndex;
             Canvas sliceCanvas = CreateFunnelSlice(false, topRadius, is3D, funnelSlice, yScaleTop, yScaleBottom, fillColor, fillColor, fillColor, animationEnabled);
@@ -931,7 +938,7 @@ namespace Visifire.Charts
         /// <param name="fullBrush"></param>
         /// <returns></returns>
         /// 
-        internal static void ReCalculateAndApplyTheNewBrush(Shape shape, Brush newBrush, Boolean isLightingEnabled, Boolean is3D, FunnelSliceParms funnelSliceParms)
+        internal static void ReCalculateAndApplyTheNewBrush(Shape shape, Brush newBrush, Boolean isLightingEnabled, Boolean is3D, TriangularChartSliceParms funnelSliceParms)
         {
             switch ((shape.Tag as ElementData).VisualElementName)
             {
@@ -956,7 +963,7 @@ namespace Visifire.Charts
         /// <param name="funnelSlice">funnelSlice</param>
         /// <param name="sideFillColor">Side fill color</param>
         /// <param name="points">Funnel Points</param>
-        private static void ApplyFunnelBevel(Canvas parentVisual, FunnelSliceParms funnelSlice, Brush sideFillColor, Point[] points)
+        private static void ApplyFunnelBevel(Canvas parentVisual, TriangularChartSliceParms funnelSlice, Brush sideFillColor, Point[] points)
         {
             if (funnelSlice.DataPoint.Parent.Bevel && funnelSlice.Height > Chart.BEVEL_DEPTH)
             {
@@ -1017,7 +1024,7 @@ namespace Visifire.Charts
         /// <param name="topSurfaceStroke">Top surface stroke color</param>
         /// <param name="animationEnabled">Whether animation is enabled</param>
         /// <returns>Return funnel slice canvas</returns>
-        private static Canvas CreateFunnelSlice(Boolean isLightingGradientLayer, Double topRadius, Boolean is3D, FunnelSliceParms funnelSlice, Double yScaleTop, Double yScaleBottom, Brush sideFillColor, Brush topFillColor, Brush topSurfaceStroke, Boolean animationEnabled)
+        private static Canvas CreateFunnelSlice(Boolean isLightingGradientLayer, Double topRadius, Boolean is3D, TriangularChartSliceParms funnelSlice, Double yScaleTop, Double yScaleBottom, Brush sideFillColor, Brush topFillColor, Brush topSurfaceStroke, Boolean animationEnabled)
         {
             Double SOLID_FUNNEL_EDGE_THICKNESS = 3;
 
@@ -1203,7 +1210,7 @@ namespace Visifire.Charts
                 #endregion
             }
             else
-            {
+            {   
                 // Points of a 2D funnel slice
                 Point[] funnelCornerPoints = new Point[8];
 
@@ -1317,11 +1324,11 @@ namespace Visifire.Charts
         /// <summary>
         /// Creates a LabelLine for Funnel Chart
         /// </summary>
-        /// <param name="funnelSlice">FunnelSliceParms</param>
+        /// <param name="funnelSlice">TriangularChartSliceParms</param>
         /// <param name="topRadius">Top most radius of the funnel</param>
         /// <param name="animationEnabled">Whether animation is enabled</param>
         /// <returns>Canvas for labelline </returns>
-        private static Canvas CreateLabelLine(FunnelSliceParms funnelSlice, Double topRadius, Boolean animationEnabled)
+        private static Canvas CreateLabelLine(TriangularChartSliceParms funnelSlice, Double topRadius, Boolean animationEnabled)
         {
             Canvas labelLineCanvas = null;
             Point topRightPoint = new Point(topRadius + funnelSlice.TopRadius, 0);
@@ -1424,7 +1431,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="funnelSlice">funnelSlice</param>
         /// <param name="points">Array of points</param>
-        private static void CalculateBevelInnerPoints(FunnelSliceParms funnelSlice, Point[] points)
+        private static void CalculateBevelInnerPoints(TriangularChartSliceParms funnelSlice, Point[] points)
         {
             Double a, b, h = Chart.BEVEL_DEPTH;
 
@@ -1445,7 +1452,7 @@ namespace Visifire.Charts
         /// Get side lighting brush for the funnel slice
         /// </summary>
         /// <returns></returns>
-        private static Brush GetSideLightingBrush(FunnelSliceParms funnelSlice)
+        private static Brush GetSideLightingBrush(TriangularChartSliceParms funnelSlice)
         {
 
              //LinearGradientBrush gb = new LinearGradientBrush() { EndPoint = new Point(1.016, 0.558), StartPoint = new Point(0.075, 0.708) };
@@ -1471,7 +1478,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="fillBrush">Current brush</param>
         /// <returns>Return new Brush</returns>
-        private static Brush GetTopBrush(Brush fillBrush, FunnelSliceParms funnelSlice)
+        private static Brush GetTopBrush(Brush fillBrush, TriangularChartSliceParms funnelSlice)
         {
             if ((fillBrush as SolidColorBrush) != null)
             {
@@ -1551,9 +1558,9 @@ namespace Visifire.Charts
     }
 
     /// <summary>
-    /// Visifire.Charts.FunnelSliceParms
+    /// Visifire.Charts.TriangularChartSliceParms
     /// </summary>
-    internal class FunnelSliceParms
+    internal class TriangularChartSliceParms
     {
         public Int32 Index;
 

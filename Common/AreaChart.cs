@@ -1821,7 +1821,6 @@ namespace Visifire.Charts
                 Double nextAbsoluteSum = plotGroup.XWiseStackedDataList[xValues[i + 1]].AbsoluteYValueSum;
 
                 List<DataPoint> curDataPoints = dataPointInStackedOrder[xValues[i]];
-
                 List<DataPoint> nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
 
                 if (Double.IsNaN(curAbsoluteSum))
@@ -1849,10 +1848,16 @@ namespace Visifire.Charts
                     Double percentOfCurrSucessiveDpValues = 0;
                     Double percentOfNextSucessiveDpValues = 0;
 
+                    if (index == 0 && Double.IsNaN(curYValues[index]))
+                        continue;
+
                     if (plotGroup.AxisY.Logarithmic)
                     {
                         curPercentageY = curYValues[index] / curAbsoluteSum * 100;
                         nextPercentageY = nextYValues[index] / nextAbsoluteSum * 100;
+
+                        curPercentageY = Double.IsNaN(curPercentageY) ? 0 : curPercentageY;
+                        nextPercentageY = Double.IsNaN(nextPercentageY) ? 0 : nextPercentageY;
 
                         percentOfCurrSucessiveDpValues = Math.Log(curPercentageY + curBase, plotGroup.AxisY.LogarithmBase);
 
@@ -1869,6 +1874,9 @@ namespace Visifire.Charts
                         curPercentageY = curYValues[index] / curAbsoluteSum * 100;
                         nextPercentageY = nextYValues[index] / nextAbsoluteSum * 100;
 
+                        curPercentageY = Double.IsNaN(curPercentageY) ? 0 : curPercentageY;
+                        nextPercentageY = Double.IsNaN(nextPercentageY) ? 0 : nextPercentageY;
+
                         percentOfCurrSucessiveDpValues = curBase + curPercentageY;
                         percentOfNextSucessiveDpValues = nextBase + nextPercentageY;
 
@@ -1882,7 +1890,7 @@ namespace Visifire.Charts
                     Double nextYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentOfNextSucessiveDpValues);
                     Double curYBase = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, totalOfCurrBase);
                     Double nextYBase = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, totalOfNextBase);
-
+                    
                     Point intersect = GetIntersection(new Point(curXPosition, curYBase), new Point(nextXPosition, nextYBase),
                                                 new Point(curXPosition, curYPosition), new Point(nextXPosition, nextYPosition));
 
