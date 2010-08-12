@@ -6,31 +6,24 @@ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 mc:Ignorable="d">
     <Grid x:Name="LayoutRoot" Background="White">
-        <vc:Chart Theme="Theme1" x:Name="chart" BorderBrush="Gray" Padding="6">
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" 
+                  Width="490" Height="290" Theme="Theme1">
 
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire Line Chart"/>
-            </vc:Chart.Titles>
-
-            <vc:Chart.PlotArea>
-                <vc:PlotArea ShadowEnabled="false"></vc:PlotArea>
-            </vc:Chart.PlotArea>
+                <vc:Title Text="Athens 2004 Olympics" />
+            </vc:Chart.Titles>           
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Spline">
+                <vc:DataSeries RenderAs="Pyramid">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="Jan" YValue="20"/>
-                        <vc:DataPoint AxisXLabel="Feb" YValue="30"/>
-                        <vc:DataPoint AxisXLabel="Mar" YValue="10"/>
-                        <vc:DataPoint AxisXLabel="Apr" YValue="50"/>
-                        <vc:DataPoint AxisXLabel="May" YValue="80"/>
-                        <vc:DataPoint AxisXLabel="June" YValue="15"/>
-                        <vc:DataPoint AxisXLabel="June" YValue="12"/>
-                        <vc:DataPoint AxisXLabel="June" YValue="60"/>
+                        <vc:DataPoint AxisXLabel="USA" YValue="50"/>
+                        <vc:DataPoint AxisXLabel="China" YValue="35"/>
+                        <vc:DataPoint AxisXLabel="Russia" YValue="27"/>
+                        <vc:DataPoint AxisXLabel="Australia" YValue="17"/>
+                        <vc:DataPoint AxisXLabel="Japan" YValue="16"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-
     </Grid>
 </UserControl>

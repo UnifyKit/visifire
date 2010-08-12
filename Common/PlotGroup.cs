@@ -700,6 +700,7 @@ namespace Visifire.Charts
                     case RenderAs.CandleStick:
                     case RenderAs.SectionFunnel:
                     case RenderAs.StreamLineFunnel:
+                    case RenderAs.Pyramid:
                     case RenderAs.Radar:
                     case RenderAs.Polar:
 
@@ -829,6 +830,20 @@ namespace Visifire.Charts
 
         }
 
+        internal void ClearInstanceRefs()
+        {
+            _dataPointsInCurrentPlotGroup.Clear();
+            _dataPointsInCurrentPlotGroup = null;
+
+            DataSeriesList.Clear();
+            DataSeriesList = null;
+
+            XWiseStackedDataList.Clear();
+            XWiseStackedDataList = null;
+
+            AxisX = null;
+            AxisY = null;
+        }
 
         #endregion
 

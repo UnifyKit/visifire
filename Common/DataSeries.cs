@@ -1126,7 +1126,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the MinPointHeight property. 
         /// Minimum height of a DataPoint having the minimum YValue in a DataSeries.
-        /// Currently MinPointHeight property is applicable for funnel chart only.
+        /// Currently MinPointHeight property is applicable for Funnel and Pyramid charts only.
         /// (Value is in percentage(%) of Height of PlotArea)
         /// </summary>
         public Double MinPointHeight
@@ -1158,7 +1158,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the Exploded property. This is used in Pie/Doughnut/Funnel charts.
+        /// Get or set the Exploded property. This is used in Pie/Doughnut, Funnel and Pyramid charts.
         /// </summary>
         public Boolean Exploded
         {
@@ -1596,6 +1596,7 @@ namespace Visifire.Charts
                         case RenderAs.Doughnut:
                         case RenderAs.SectionFunnel:
                         case RenderAs.StreamLineFunnel:
+                        case RenderAs.Pyramid:
                             return true;
 
                         default:
@@ -1620,7 +1621,7 @@ namespace Visifire.Charts
             {
                 if (String.IsNullOrEmpty((String)GetValue(LabelTextProperty)))
                 {
-                    if (RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.Pie || RenderAs == RenderAs.StreamLineFunnel)
+                    if (RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.Pie || RenderAs == RenderAs.StreamLineFunnel || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.Pyramid)
                     {
                         return "#AxisXLabel, #YValue";
                     }
@@ -3159,8 +3160,15 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             //dataSeries.UpdateVisual(VcProperties.Exploded, e.NewValue);
-            dataSeries.FirePropertyChanged(VcProperties.Exploded);
-
+            
+            if(dataSeries.Chart != null && (dataSeries.RenderAs == RenderAs.Pie || dataSeries.RenderAs == RenderAs.Doughnut) )
+                foreach (DataPoint dp in dataSeries.InternalDataPoints)
+                {
+                     if (dp.GetValue(DataPoint.ExplodedProperty) == null)
+                        dp.ExplodeOrUnexplodeAnimation();    
+                }
+            else
+                dataSeries.FirePropertyChanged(VcProperties.Exploded);
         }
 
         /// <summary>
@@ -4115,7 +4123,7 @@ namespace Visifire.Charts
             {
                 if (dp.Faces != null)
                 {
-                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.StreamLineFunnel))
+                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.StreamLineFunnel || RenderAs == RenderAs.Pyramid))
                     {
                         foreach (FrameworkElement fe in dp.Faces.VisualComponents)
                         {
@@ -4137,7 +4145,7 @@ namespace Visifire.Charts
             {
                 if (dp.Faces != null)
                 {
-                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.StreamLineFunnel))
+                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.StreamLineFunnel || RenderAs == RenderAs.Pyramid))
                     {
                         foreach (FrameworkElement fe in dp.Faces.VisualComponents)
                         {
@@ -4155,8 +4163,9 @@ namespace Visifire.Charts
                             InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(dp.Faces.Visual, (Double)Opacity * (Double)dp.Opacity);
                     }
 
-                    if ((Chart as Chart).ChartArea != null && !(Chart as Chart).ChartArea._isFirstTimeRender && !IsInDesignMode && (Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
-                        dp.ExplodeOrUnexplodeAnimation();
+                    //---Som
+                    //if ((Chart as Chart).ChartArea != null && !(Chart as Chart).ChartArea._isFirstTimeRender && !IsInDesignMode && (Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+                    //    dp.ExplodeOrUnexplodeAnimation();
                 }
 
                 if (dp.Marker != null && dp.Marker.Visual != null)
@@ -4166,6 +4175,40 @@ namespace Visifire.Charts
                     else if (!(Chart as Chart).ChartArea._isFirstTimeRender)
                         InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(dp.Marker.Visual, (Double)Opacity * (Double)dp.Opacity);
                 }
+            }
+        }
+
+        internal override void ClearInstanceRefs()
+        {
+            base.ClearInstanceRefs();
+
+            _internalColor = null;
+            _nearestDataPoint = null;
+            InternalDataPoints = null;
+            DataMappings = null;
+            ListOfSelectedDataPoints = null;
+            VisualParams = null;
+            LegendMarker = null;
+
+            if (Storyboard != null)
+            {
+                Storyboard.Stop();
+                Storyboard.Children.Clear();
+                Storyboard = null;
+            }
+
+            if (Faces != null)
+                Faces.ClearInstanceRefs();
+
+            Faces = null;
+            PlotGroup = null;
+
+            Visual = null;
+
+            if (null != _weakEventListener)
+            {
+                _weakEventListener.Detach();
+                _weakEventListener = null;
             }
         }
 
