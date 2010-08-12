@@ -235,6 +235,9 @@
     <Compile Include="..\..\Common\PolarChart.cs">
       <Link>PolarChart.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\PyramidChart.cs">
+      <Link>PyramidChart.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\RadarChart.cs">
       <Link>RadarChart.cs</Link>
     </Compile>

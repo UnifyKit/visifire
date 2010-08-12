@@ -116,6 +116,10 @@ namespace Visifire.Charts
                     renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled, true);
                     break;
 
+                case RenderAs.Pyramid:
+                    renderedCanvas = PyramidChart.GetVisualObjectForPyramidChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled);
+                    break;
+
                 case RenderAs.Stock:
                     renderedCanvas = StockChart.GetVisualObjectForStockChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
@@ -360,10 +364,8 @@ namespace Visifire.Charts
                         break;
 
                     case RenderAs.SectionFunnel:
-                        // renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled, false);
-                        break;
-
                     case RenderAs.StreamLineFunnel:
+                    case RenderAs.Pyramid:
                         //renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled, true);
                         break;
 
@@ -464,12 +466,10 @@ namespace Visifire.Charts
                     chart.ChartArea.AttachEventsToolTipHref2DataSeries();
                     break;
 
-                case RenderAs.SectionFunnel:
-                    //renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled, false);
-                    break;
-
+                case RenderAs.SectionFunnel: 
                 case RenderAs.StreamLineFunnel:
-                    //renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled, true);
+                case RenderAs.Pyramid:
+                   //renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled, true);
                     break;
 
                 case RenderAs.Stock:
@@ -881,7 +881,8 @@ namespace Visifire.Charts
             return (dataSeries.RenderAs == RenderAs.Pie 
                 || dataSeries.RenderAs == RenderAs.Doughnut
                 || dataSeries.RenderAs == RenderAs.SectionFunnel 
-                || dataSeries.RenderAs == RenderAs.StreamLineFunnel);
+                || dataSeries.RenderAs == RenderAs.StreamLineFunnel
+                || dataSeries.RenderAs == RenderAs.Pyramid);
         }
    }
 }

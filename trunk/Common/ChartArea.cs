@@ -353,7 +353,7 @@ namespace Visifire.Charts
                 foreach (DataSeries ds in Chart.InternalSeries)
                 {
                     if (Chart.IndicatorEnabled && (ds.RenderAs != RenderAs.Pie || ds.RenderAs != RenderAs.Doughnut
-                        || ds.RenderAs != RenderAs.SectionFunnel || ds.RenderAs != RenderAs.StreamLineFunnel))
+                        || ds.RenderAs != RenderAs.SectionFunnel || ds.RenderAs != RenderAs.StreamLineFunnel || ds.RenderAs != RenderAs.Pyramid))
                     {
                         if (ds.ToolTipElement == null)
                         {
@@ -1437,11 +1437,11 @@ namespace Visifire.Charts
                         _zoomRegionSelected = true;
                     }
                 }
+
+                PositionIndicator(Chart, e, Double.NaN, Double.NaN);
             }
 
-            #endregion
-
-            PositionIndicator(Chart, e, Double.NaN, Double.NaN);
+            #endregion               
         }
         
         public void HideIndicator()
@@ -4285,7 +4285,7 @@ namespace Visifire.Charts
                                 foreach (DataPoint dataPoint in series.InternalDataPoints)
                                 {
                                     if ((Boolean)dataPoint.Exploded && dataPoint.InternalYValue != 0)
-                                        dataPoint.InteractiveAnimation(true);
+                                        dataPoint.InteractiveAnimation(true, false);
                                 }
                             };
                         }
@@ -4301,7 +4301,7 @@ namespace Visifire.Charts
                                     foreach (DataPoint dataPoint in series.InternalDataPoints)
                                     {
                                         if ((Boolean)dataPoint.Exploded && dataPoint.InternalYValue != 0)
-                                            dataPoint.InteractiveAnimation(true);
+                                            dataPoint.InteractiveAnimation(true, false);
                                     }
                                 };
                             }
@@ -4310,7 +4310,6 @@ namespace Visifire.Charts
                             series.Storyboard.Begin();
 #endif
                         }
-
 
                     }
 
@@ -4328,22 +4327,53 @@ namespace Visifire.Charts
             }
             else
             {
+                
                 if (!Chart._internalAnimationEnabled && (Boolean)Chart.AnimatedUpdate)
-                {
+                {   
                     if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
                     {
                         foreach (DataPoint dataPoint in Chart.InternalSeries[0].InternalDataPoints)
                         {
-                            if (dataPoint.Parent.RenderAs != RenderAs.SectionFunnel && dataPoint.Parent.RenderAs != RenderAs.StreamLineFunnel)
+                            if (dataPoint.Parent.RenderAs != RenderAs.SectionFunnel && dataPoint.Parent.RenderAs != RenderAs.StreamLineFunnel && dataPoint.Parent.RenderAs != RenderAs.Pyramid)
                             {
                                 if ((Boolean)dataPoint.Exploded && dataPoint.InternalYValue != 0)
-                                    dataPoint.ExplodeOrUnExplodeWithoutAnimation();
+                                    dataPoint.PieExplodeOrUnExplodeWithoutAnimation();
                             }
                         }
                     }
                 }
-            }
 
+                ExpoladFunnelChartWithOutAnimation();
+            }
+        }
+
+
+        private void ExpoladFunnelChartWithOutAnimation()
+        {
+            if (!Chart._internalAnimationEnabled && (Chart.InternalSeries[0].RenderAs == RenderAs.SectionFunnel || Chart.InternalSeries[0].RenderAs == RenderAs.StreamLineFunnel || Chart.InternalSeries[0].RenderAs == RenderAs.Pyramid))
+            {   
+                // Expload Funnel at 
+                if (Chart.InternalSeries[0].Exploded)
+                {
+                    if (Chart.InternalSeries[0].Storyboard != null)
+                    {
+#if WPF             
+                        Chart.InternalSeries[0].Storyboard.Begin(Chart._rootElement, true);
+                        Chart.InternalSeries[0].Storyboard.SkipToFill();
+#else
+                        // Expload Funnel without animation
+                        Chart.InternalSeries[0].Storyboard.Stop();
+                        Chart.InternalSeries[0].Storyboard.Begin();
+                        Chart.InternalSeries[0].Storyboard.SkipToFill();
+#endif
+                    }
+                }
+                else
+                {
+                    foreach (DataPoint dataPoint in Chart.InternalSeries[0].InternalDataPoints)
+                        dataPoint.ExplodeOrUnexplodeAnimation();
+                }
+            }
         }
 
         /// <summary>
@@ -4781,7 +4811,7 @@ namespace Visifire.Charts
                 if (!(Boolean)dataPoint.Enabled || !(Boolean)dataPoint.ShowInLegend)
                     continue;
 
-                if ((dataSeries.RenderAs == RenderAs.SectionFunnel || dataSeries.RenderAs == RenderAs.StreamLineFunnel) 
+                if ((dataSeries.RenderAs == RenderAs.SectionFunnel || dataSeries.RenderAs == RenderAs.StreamLineFunnel || dataSeries.RenderAs == RenderAs.Pyramid) 
                     && dataPoint.InternalYValue < 0)
                     continue;
 
@@ -4927,7 +4957,7 @@ namespace Visifire.Charts
             if (dockTest.Count <= 0)
                 return;
 
-            if ((chart.Series.Count == 1 || (chart.Series[0].RenderAs == RenderAs.Pie || chart.Series[0].RenderAs == RenderAs.Doughnut || chart.Series[0].RenderAs == RenderAs.SectionFunnel || chart.Series[0].RenderAs == RenderAs.StreamLineFunnel)) && (Boolean)chart.Series[0].Enabled)
+            if ((chart.Series.Count == 1 || (chart.Series[0].RenderAs == RenderAs.Pie || chart.Series[0].RenderAs == RenderAs.Doughnut || chart.Series[0].RenderAs == RenderAs.SectionFunnel || chart.Series[0].RenderAs == RenderAs.StreamLineFunnel || chart.Series[0].RenderAs == RenderAs.Pyramid)) && (Boolean)chart.Series[0].Enabled)
             {   
                 Legend legend = null;
                 foreach (Legend entry in chart.Legends)
@@ -5863,6 +5893,7 @@ namespace Visifire.Charts
                     case RenderAs.Doughnut:
                     case RenderAs.SectionFunnel:
                     case RenderAs.StreamLineFunnel:
+                    case RenderAs.Pyramid:
 
                         if (ds.Faces != null)
                         {
@@ -5909,8 +5940,8 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="ds">DataSeries</param>
         private void Check4DefaultInteractivity(DataSeries ds)
-        {   
-            if (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.StreamLineFunnel)
+        {
+            if (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.StreamLineFunnel || ds.RenderAs == RenderAs.Pyramid)
             {
                 Object onMouseLeftButtonDown4DataSeries = null;
                 Object onMouseLeftButtonUp4DataSeries = null;
@@ -5951,6 +5982,7 @@ namespace Visifire.Charts
                     case RenderAs.Doughnut:
                     case RenderAs.SectionFunnel:
                     case RenderAs.StreamLineFunnel:
+                    case RenderAs.Pyramid:
 
                         #region Check for default interactivity
 
@@ -5968,7 +6000,7 @@ namespace Visifire.Charts
 
                             if (dp.Faces != null)
                             {
-                                if ((Chart as Chart).View3D && (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.StreamLineFunnel))
+                                if ((Chart as Chart).View3D && (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.StreamLineFunnel || ds.RenderAs == RenderAs.Pyramid))
                                 {
                                     dp.AttachToolTip(Chart, dp, dp.Faces.VisualComponents);
                                 }
@@ -6314,6 +6346,21 @@ namespace Visifire.Charts
             }
         }
 
+        internal void ClearInstanceRefs()
+        {
+            GridLineCanvas4VerticalPlank = null;
+
+            if (Storyboard4PlankGridLines != null)
+            {
+                Storyboard4PlankGridLines.Stop();
+                Storyboard4PlankGridLines.Children.Clear();
+                Storyboard4PlankGridLines = null;
+            }
+
+            InterlacedPathsOverVerticalPlank = null;
+            InterlacedLinesOverVerticalPlank = null;
+        }
+
         #endregion
 
         #region Internal Events
@@ -6407,11 +6454,6 @@ namespace Visifire.Charts
         /// First position of Zoom rectangle
         /// </summary>
         private Point _firstZoomRectPosOverPlotArea;
-
-        /// <summary>
-        /// PlotArea size before zooming starts
-        /// </summary>
-        private Size plotAreaSizeBeforeZoom = new Size();
 
         /// <summary>
         /// Whether zooming has started using Zoom rectangle

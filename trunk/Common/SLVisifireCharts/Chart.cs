@@ -118,6 +118,54 @@ namespace Visifire.Charts
             // Attach event handler for loaded event
             this.Loaded += new RoutedEventHandler(Chart_Loaded);
 
+            //this.Unloaded += new RoutedEventHandler(Chart_Unloaded);
+        }
+
+        void Chart_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _isTemplateApplied = false;
+
+            if (InternalSeries != null)
+            {
+                foreach (DataSeries dataSeries in InternalSeries)
+                {
+                    foreach (DataPoint dp in dataSeries.InternalDataPoints)
+                    {
+                        dp.ClearInstanceRefs();
+                    }
+
+                    if (dataSeries.DataSource != null)
+                        dataSeries.DataSource = null;
+
+                    dataSeries.ClearInstanceRefs();
+
+                    _rootElement.Children.Remove(dataSeries);
+                }
+
+                InternalSeries.Clear();
+            }
+
+            InternalSeries = null;
+
+            if (ChartArea != null)
+                ChartArea.ClearInstanceRefs();
+
+            foreach (Legend legend in Legends)
+                legend.ClearInstanceRefs();
+
+            if (PlotArea != null)
+                PlotArea.ClearInstanceRefs();
+
+            if (PlotDetails != null)
+                PlotDetails.ClearInstanceRefs();
+
+            foreach (Axis axis in AxesX)
+                axis.ClearInstanceRefs();
+
+            foreach (Axis axis in AxesY)
+                axis.ClearInstanceRefs();
+
+            GC.Collect();
         }
 
         #endregion

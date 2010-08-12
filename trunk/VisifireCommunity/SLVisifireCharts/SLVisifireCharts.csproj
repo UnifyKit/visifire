@@ -232,6 +232,9 @@
     <Compile Include="..\..\Common\PolarChart.cs">
       <Link>PolarChart.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\PyramidChart.cs">
+      <Link>PyramidChart.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\RadarChart.cs">
       <Link>RadarChart.cs</Link>
     </Compile>
@@ -321,10 +324,10 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Page Include="Themes\generic.xaml">
+    <Resource Include="Themes\generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Common\SLVisifireCharts\CodingStandard.txt">
