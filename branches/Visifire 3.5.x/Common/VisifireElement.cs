@@ -975,6 +975,19 @@ namespace Visifire.Commons
         }
 #endif
 
+        internal virtual void ClearInstanceRefs()
+        {
+            _onMouseLeftButtonDown = null;
+            _onMouseLeftButtonUp = null;
+            _onMouseMove = null;
+            _onMouseEnter = null;
+            _onMouseLeave = null;
+
+            _control = null;
+            _element = null;
+            _visualObject = null;
+        }
+
         #endregion
 
         #region Internal Events

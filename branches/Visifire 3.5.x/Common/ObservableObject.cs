@@ -410,6 +410,7 @@ namespace Visifire.Commons
                     case RenderAs.Doughnut:
                     case RenderAs.SectionFunnel:
                     case RenderAs.StreamLineFunnel:
+                 case RenderAs.Pyramid:
                     case RenderAs.Radar:
                     case RenderAs.Polar:
                         return true;

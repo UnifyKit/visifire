@@ -5999,6 +5999,34 @@ namespace Visifire.Charts
             }
         }
 
+        internal override void ClearInstanceRefs()
+        {
+            base.ClearInstanceRefs();
+
+            if (AxisLabels != null)
+                AxisLabels.ClearInstanceRefs();
+
+            if (Visual != null)
+            {
+                Panel axisParent = Visual.Parent as Panel;
+                axisParent.Children.Remove(Visual);
+            }
+
+            foreach (ChartGrid grid in Grids)
+            {
+                if (grid.Storyboard != null)
+                {
+                    grid.Storyboard.Stop();
+                    grid.Storyboard.Children.Clear();
+                    grid.Storyboard = null;
+                }
+            }
+
+            Storyboard = null;
+            Visual = null;
+            PlotDetails = null;
+        }
+
         #endregion
 
         #region Internal Events And Delegates

@@ -646,6 +646,7 @@ namespace Visifire.Charts
                 return (intervalValue * 1 / 2);
             else if (mantissa == 1)
                 return (intervalValue * 5 / 10);
+               
             else
                 return 0;
 
@@ -657,11 +658,13 @@ namespace Visifire.Charts
         /// </summary>
         private void CalculateSingle()
         {
-            Int32 loop = 0;        // No of iteration.
-            Int64 magnitude;       // Magnitude of max/min value.
-            Decimal nextInterval;  // Next Calculated interval from the old interval.
+            Int32 loop = 0; // No of iteration.
+            Int64 magnitude; // Magnitude of max/min value.
+            Decimal nextInterval = 1; // Next Calculated interval from the old interval.
+            Decimal tempAxisMaximumValue;
+            Decimal tempAxisMinimumValue;
 
-            // If the max and min both are same and equals to zero then the best range is 0 to 1. 
+            // If the max and min both are same and equals to zero then the best range is 0 to 1.
             if (_max == 0)
             {
                 this._axisMaximumValue = 1;
@@ -674,27 +677,32 @@ namespace Visifire.Charts
             // Max is rounded to the nearest power of 10.
             magnitude = OrderOfMagnitude(this._max);
 
-            // Interval needs to be sinking towards the power of 10. 
+            // Interval needs to be sinking towards the power of 10.
             // Initially maximum interval is chosen.
             if (this._overrideInterval)
                 nextInterval = this._interval;
             else
                 nextInterval = (Decimal)Math.Pow(10, magnitude);
 
-            // Rounding down the axisMaximumValue if necessary.
-            if (!this._overrideAxisMaximumValue)
-                this._axisMaximumValue = RoundAxisMaximumValue(this._max, nextInterval);
+            if (this._overrideAxisMaximumValue)
+                tempAxisMaximumValue = this._axisMaximumValue;
+            else
+                tempAxisMaximumValue = RoundAxisMaximumValue(this._max, nextInterval);
 
-            // Rounding down the axisMaximumValue if necessary.
-            if (!this._overrideAxisMinimumValue)
-                this._axisMinimumValue = RoundAxisMinimumValue(this._max, nextInterval);
+            // Rounding up the axisMinimumValue if necessary.
+            if (this._overrideAxisMinimumValue)
+                tempAxisMinimumValue = this._axisMinimumValue;
+            else
+                tempAxisMinimumValue = RoundAxisMinimumValue(this._min, nextInterval);
 
             this._interval = nextInterval;
+            this._axisMaximumValue = tempAxisMaximumValue;
+            this._axisMinimumValue = tempAxisMinimumValue;
 
-            // Next intervals will be calculated inside loop in iterative way. 
+            // Next intervals will be calculated inside loop in iterative way.
             while (loop++ < 100)
             {
-                Int32 nextNoOfInterval;                        // Number of interval.
+                Int32 nextNoOfInterval;
 
                 // Try to minimize the Interval Value if possible.
                 if (!this._overrideInterval)
@@ -704,17 +712,27 @@ namespace Visifire.Charts
                 if (nextInterval == 0)
                     break;
 
+                // Rounding down the axisMaximumValue if necessary.
+                if (!this._overrideAxisMaximumValue)
+                    tempAxisMaximumValue = RoundAxisMaximumValue(this._max, nextInterval);
+
+                if (this._max < 0 && this._min < 0)
+                {
+                    if (!this._overrideAxisMinimumValue)
+                        tempAxisMinimumValue = RoundAxisMinimumValue(this._min, nextInterval);
+                }
+
                 // Calculate number of interval.
-                nextNoOfInterval = (Int32)((this._axisMaximumValue - this._axisMinimumValue) / nextInterval);
+                nextNoOfInterval = (Int32)((tempAxisMaximumValue - tempAxisMinimumValue) / nextInterval);
 
                 // Number of interval cannot exceed the user expected no of interval.
                 if (nextNoOfInterval > _maxNoOfInterval)
                     break;
 
+                this._axisMaximumValue = tempAxisMaximumValue;
+                this._axisMinimumValue = tempAxisMinimumValue;
                 this._interval = nextInterval;
-
             }
-
         }
 
         #endregion
