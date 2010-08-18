@@ -197,10 +197,6 @@ namespace Visifire.Charts
             }
         }
 
-
-        internal const string RootElementName = "RootElement";
-        internal Canvas _rootElement;
-
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -268,8 +264,9 @@ namespace Visifire.Charts
 
                 newValueINotifyCollectionChanged.CollectionChanged += _weakEventListener.OnEvent;
             }
-            
-            BindData();
+
+            if (IsNotificationEnable)
+                BindData();
         }
         
         private void DataSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -4180,13 +4177,15 @@ namespace Visifire.Charts
 
         internal override void ClearInstanceRefs()
         {
-            base.ClearInstanceRefs();
+            //base.ClearInstanceRefs();
 
             _internalColor = null;
             _nearestDataPoint = null;
-            InternalDataPoints = null;
-            DataMappings = null;
-            ListOfSelectedDataPoints = null;
+            InternalDataPoints.Clear();
+
+            if(ListOfSelectedDataPoints != null)
+                ListOfSelectedDataPoints.Clear();
+
             VisualParams = null;
             LegendMarker = null;
 
@@ -4201,9 +4200,6 @@ namespace Visifire.Charts
                 Faces.ClearInstanceRefs();
 
             Faces = null;
-            PlotGroup = null;
-
-            Visual = null;
 
             if (null != _weakEventListener)
             {
@@ -4219,6 +4215,9 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        internal const string RootElementName = "RootElement";
+        internal Canvas _rootElement;
 
         /// <summary>
         /// WeakEventListener used to handle INotifyCollectionChanged events.

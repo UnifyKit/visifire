@@ -2017,19 +2017,19 @@ namespace Visifire.Charts
 
                                 if (!(Parent.Chart as Chart).View3D)
                                 {
-                                    if (Faces.Parts[0] != null)
+                                    if (Faces.Parts.Count > 0 && Faces.Parts[0] != null)
                                         (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Radial", null) : (Brush)value;
 
-                                    if (Faces.Parts[1] != null)
+                                    if (Faces.Parts.Count > 1 && Faces.Parts[1] != null)
                                         (Faces.Parts[1] as Shape).Fill = (pieParams.StartAngle > Math.PI * 0.5 && pieParams.StartAngle <= Math.PI * 1.5) ? PieChart.GetDarkerBevelBrush(pieParams.Background, pieParams.StartAngle * 180 / Math.PI + 135) : PieChart.GetLighterBevelBrush(pieParams.Background, -pieParams.StartAngle * 180 / Math.PI);
 
-                                    if (Faces.Parts[2] != null)
+                                    if (Faces.Parts.Count > 2 && Faces.Parts[2] != null)
                                         (Faces.Parts[2] as Shape).Fill = (pieParams.StopAngle > Math.PI * 0.5 && pieParams.StopAngle <= Math.PI * 1.5) ? PieChart.GetLighterBevelBrush(pieParams.Background, pieParams.StopAngle * 180 / Math.PI + 135) : PieChart.GetDarkerBevelBrush(pieParams.Background, -pieParams.StopAngle * 180 / Math.PI);
 
-                                    if (Faces.Parts[3] != null)
+                                    if (Faces.Parts.Count > 3 && Faces.Parts[3] != null)
                                         (Faces.Parts[3] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(-0.745, -0.85), Graphics.GenerateDoubleCollection(0, 1)) : (Faces.Parts[3] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(0.745, -0.99), Graphics.GenerateDoubleCollection(0, 1));
 
-                                    if (Parent.RenderAs == RenderAs.Doughnut && Faces.Parts[4] != null)
+                                    if (Parent.RenderAs == RenderAs.Doughnut && Faces.Parts.Count > 4 && Faces.Parts[4] != null)
                                         (Faces.Parts[4] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(-0.745, -0.85), Graphics.GenerateDoubleCollection(0, 1)) : (Faces.Parts[4] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(0.745, -0.99), Graphics.GenerateDoubleCollection(0, 1));
                                 }
                                 else
@@ -2617,6 +2617,9 @@ namespace Visifire.Charts
                 return;
 
             Boolean selected = selectedValue & dataPoint.Parent.SelectionEnabled;
+
+            if (dataPoint.Parent.ListOfSelectedDataPoints != null)
+                dataPoint.Parent.ListOfSelectedDataPoints.Add(dataPoint);
 
             if (selected)
             {
@@ -3982,7 +3985,7 @@ namespace Visifire.Charts
 
         internal override void ClearInstanceRefs()
         {
-            base.ClearInstanceRefs();
+            //base.ClearInstanceRefs();
 
             if (Storyboard != null)
             {
