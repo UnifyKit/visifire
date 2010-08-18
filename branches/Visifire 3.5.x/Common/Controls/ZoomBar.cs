@@ -466,6 +466,7 @@ namespace Visifire.Commons.Controls
                     _oldTrackLength = trackLength;
 
                     return _currentThumbSize;
+
                 }
                 else if (_oldTrackLength != trackLength)
                 {
@@ -493,6 +494,7 @@ namespace Visifire.Commons.Controls
 
                 return ((trackLength * this.ViewportSize) / (this.ViewportSize + num));
             }
+
         }
 
         private void LargeDecrement()

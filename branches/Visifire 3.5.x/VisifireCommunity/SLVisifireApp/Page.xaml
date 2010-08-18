@@ -14,7 +14,7 @@ mc:Ignorable="d">
             </vc:Chart.Titles>           
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Pyramid">
+                <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
                         <vc:DataPoint AxisXLabel="USA" YValue="50"/>
                         <vc:DataPoint AxisXLabel="China" YValue="35"/>

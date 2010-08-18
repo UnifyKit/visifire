@@ -1517,10 +1517,10 @@ namespace Visifire.Charts
 
         internal override void ClearInstanceRefs()
         {
-            base.ClearInstanceRefs();
-            _onMouseLeftButtonDown = null;
-            _onMouseLeftButtonUp = null;
-            _onMouseMove = null;
+            //base.ClearInstanceRefs();
+            //_onMouseLeftButtonDown = null;
+            //_onMouseLeftButtonUp = null;
+            //_onMouseMove = null;
             _bevelCanvas = null;
         }
 

@@ -2696,37 +2696,36 @@ namespace Visifire.Charts
 
         internal void ClearInstanceRefs()
         {
-            _axisXPrimary = null;
             ListOfAllDataPoints.Clear();
             _listOfAllDataPoints.Clear();
-            _listOfAllDataPoints = null;
+            _listOfAllDataPoints.Clear();
 
             if (AxisXPrimaryLabels != null)
                 AxisXPrimaryLabels.Clear();
 
-            AxisXPrimaryLabels = null;
+            AxisXPrimaryLabels.Clear();
 
             if (AxisXSecondaryLabels != null)
                 AxisXSecondaryLabels.Clear();
 
-            AxisXSecondaryLabels = null;
+            AxisXSecondaryLabels.Clear();
 
             if (ListOfAllDataPointsPrimary != null)
                 ListOfAllDataPointsPrimary.Clear();
 
-            ListOfAllDataPointsPrimary = null;
+            ListOfAllDataPointsPrimary.Clear();
 
             if (ListOfAllDataPointsSecondary != null)
                 ListOfAllDataPointsSecondary.Clear();
 
-            ListOfAllDataPointsSecondary = null;
+            ListOfAllDataPointsSecondary.Clear();
 
             foreach (PlotGroup plotGroup in PlotGroups)
             {
                 plotGroup.ClearInstanceRefs();
             }
 
-            PlotGroups = null;
+            PlotGroups.Clear();
         }
 
         #endregion
