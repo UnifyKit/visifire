@@ -455,8 +455,7 @@ namespace Visifire.Charts
             //    finalHeight = maxPosValue - top;
             //}
 
-            return (finalHeight < 2) ? 2 : finalHeight;
-            //return finalHeight;
+            return finalHeight;
         }
 
         /// <summary>

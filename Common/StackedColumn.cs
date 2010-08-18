@@ -531,8 +531,8 @@ namespace Visifire.Charts
                 }
             }
 
-            if (maxColumnWidth < 2)
-                maxColumnWidth = 2;
+            //if (maxColumnWidth < 2)
+            //    maxColumnWidth = 2;
 
             return widthPerColumn;
         }

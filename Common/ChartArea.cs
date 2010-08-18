@@ -199,6 +199,9 @@ namespace Visifire.Charts
             SettingsForVirtualRendering();
 
             // System.Diagnostics.Debug.WriteLine("xxxxxxx--- Render End");
+
+
+
         }
 
         private void SettingsForVirtualRendering()
@@ -1161,6 +1164,9 @@ namespace Visifire.Charts
             {
                 Chart.PlotArea = new PlotArea() { IsDefault = true };
             }
+
+            if (!chart._rootElement.Children.Contains(Chart.PlotArea))
+                chart._rootElement.Children.Add(Chart.PlotArea);
 
             Chart.PlotArea.Chart = Chart;
 

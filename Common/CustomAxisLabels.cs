@@ -80,6 +80,20 @@ namespace Visifire.Charts
             Labels.CollectionChanged += new NotifyCollectionChangedEventHandler(Labels_CollectionChanged);
         }
 
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            _rootElement = GetTemplateChild(RootElementName) as Canvas;
+
+            foreach (CustomAxisLabel label in Labels)
+            {
+                if (!_rootElement.Children.Contains(label))
+                    _rootElement.Children.Add(label);
+            }
+        }
+
         public override void Bind()
         {
 #if SL
@@ -2140,6 +2154,9 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        internal const string RootElementName = "RootElement";
+        internal Canvas _rootElement;
 
         /// <summary>
         /// Constant gap between CustomAxisLabels

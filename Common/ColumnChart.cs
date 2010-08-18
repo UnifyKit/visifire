@@ -800,7 +800,7 @@ namespace Visifire.Charts
 
             Double finalWidth = heightOrwidthPerColumn;
 
-            return (finalWidth < 2) ? 2 : finalWidth;
+            return finalWidth;
         }
 
         /// <summary>
