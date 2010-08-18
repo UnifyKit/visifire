@@ -224,10 +224,45 @@ namespace Visifire.Charts
             NameScope.SetNameScope(this._rootElement, new NameScope());
 #endif
 
+            AddChartElementsToRootElement();
+        }
+
+        private void AddChartElementsToRootElement()
+        {
             foreach (DataSeries ds in Series)
             {
                 if (!_rootElement.Children.Contains(ds))
                     _rootElement.Children.Insert(0, ds);
+            }
+
+            foreach (Title title in Titles)
+            {
+                if (!_rootElement.Children.Contains(title))
+                    _rootElement.Children.Add(title);
+            }
+
+            foreach (Axis axis in AxesX)
+            {
+                if (!_rootElement.Children.Contains(axis))
+                    _rootElement.Children.Add(axis);
+            }
+
+            foreach (Axis axis in AxesY)
+            {
+                if (!_rootElement.Children.Contains(axis))
+                    _rootElement.Children.Add(axis);
+            }
+
+            foreach (TrendLine trendLine in TrendLines)
+            {
+                if (!_rootElement.Children.Contains(trendLine))
+                    _rootElement.Children.Add(trendLine);
+            }
+
+            foreach (Legend legend in Legends)
+            {
+                if (!_rootElement.Children.Contains(legend))
+                    _rootElement.Children.Add(legend);
             }
         }
 
@@ -1457,6 +1492,18 @@ namespace Visifire.Charts
         private void Element_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             InvokeRender();
+        }
+
+        private void ResetInternalFlags()
+        {
+            if (ChartArea != null)
+            {
+                ChartArea._isFirstTimeRender = true;
+                ChartArea._isAnimationFired = false;
+            }
+
+            _forcedRedraw = true;
+            _internalAnimationEnabled = true;
         }
 
         /// <summary>

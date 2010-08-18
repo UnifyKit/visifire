@@ -117,13 +117,12 @@ namespace Visifire.Charts
 
             // Attach event handler for loaded event
             this.Loaded += new RoutedEventHandler(Chart_Loaded);
-
-            //this.Unloaded += new RoutedEventHandler(Chart_Unloaded);
         }
 
         void Chart_Unloaded(object sender, RoutedEventArgs e)
         {
-            _isTemplateApplied = false;
+            if (Parent != null)
+                return;
 
             if (InternalSeries != null)
             {
@@ -134,12 +133,7 @@ namespace Visifire.Charts
                         dp.ClearInstanceRefs();
                     }
 
-                    if (dataSeries.DataSource != null)
-                        dataSeries.DataSource = null;
-
                     dataSeries.ClearInstanceRefs();
-
-                    _rootElement.Children.Remove(dataSeries);
                 }
 
                 InternalSeries.Clear();
@@ -164,6 +158,9 @@ namespace Visifire.Charts
 
             foreach (Axis axis in AxesY)
                 axis.ClearInstanceRefs();
+
+            if(_rootElement != null)
+                _rootElement.IsHitTestVisible = true;
 
             GC.Collect();
         }

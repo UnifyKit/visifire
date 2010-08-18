@@ -1,4 +1,4 @@
-﻿<UserControl  xmlns:basics="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls" x:Class="SLVisifireApp.Page"
+﻿<UserControl xmlns:basics="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls" x:Class="SLVisifireApp.Page"
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
@@ -6,22 +6,24 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 mc:Ignorable="d"
 >
     <Grid x:Name="LayoutRoot">
-        <vc:Chart x:Name="MyChart" Theme="Theme1" BorderBrush="Gray" Height="400" Width="500" View3D="false" Padding="4">
-            
+       <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" Theme="Theme1">
+
             <vc:Chart.Titles>
-                <vc:Title Text="Calls made by sales team on 12 August 2010" FontSize="16" />
-                <vc:Title Text="Total Number Of Calls: 199" FontSize="16" />
+                <vc:Title Text="Visifire Line Chart"/>
             </vc:Chart.Titles>
-            
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Pyramid" BorderThickness="2" BorderColor="Black"  LabelLineColor="Black" LabelBackground="Gray" LabelStyle="OutSide" ShadowEnabled="true" Bevel="false" LabelText="#AxisXLabel, NOC: #YValue, #Percentage%" >
+                <vc:DataSeries RenderAs="Line">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="John" YValue="42" />
-                        <vc:DataPoint AxisXLabel="Neil" YValue="31"/>
-                        <vc:DataPoint AxisXLabel="Steve" YValue="30" Exploded="true"/>
-                        <vc:DataPoint AxisXLabel="David" YValue="52"/>
-                        <vc:DataPoint AxisXLabel="Maria" YValue="18"/>
-                        <vc:DataPoint AxisXLabel="Mike" YValue="16"/>
+                        <vc:DataPoint AxisXLabel="Jan" YValue="3009"/>
+                        <vc:DataPoint AxisXLabel="Feb" YValue="4547"/>
+                        <vc:DataPoint AxisXLabel="Mar" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Apr" YValue="6208"/>
+                        <vc:DataPoint AxisXLabel="May" YValue="5222"/>
+                        <vc:DataPoint AxisXLabel="June" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="July" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Aug" YValue="7547"/>
+                        <vc:DataPoint AxisXLabel="Sept" YValue="6508"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

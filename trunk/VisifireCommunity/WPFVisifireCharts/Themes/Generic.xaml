@@ -278,6 +278,13 @@
         <!--<Setter Property="LineThickness" Value="0.5"/>-->
         <Setter Property="LineColor" Value="Gray"/>
         <Setter Property="TitleFontFamily" Value="Verdana"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Canvas x:Name="RootElement"></Canvas>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="{x:Type vc:DataPoint}">
@@ -309,6 +316,13 @@
         <Setter Property="FontFamily" Value="Verdana"/>
         <Setter Property="FontStyle" Value="Normal"/>
         <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Canvas x:Name="RootElement"></Canvas>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="{x:Type vc:Ticks}">
