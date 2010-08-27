@@ -1391,7 +1391,7 @@ namespace Visifire.Charts
                 {
                     if (RenderHelper.IsLineCType(this))
                     {
-                        if (Chart != null && !(Chart as Chart).ZoomingEnabled)
+                        if (Chart != null && !(Chart as Chart).ZoomingEnabled && !(Chart as Chart).IsScrollingActivated)
                             return true;
                         else
                             return false;
@@ -3201,6 +3201,25 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             dataSeries._internalColor = null;
+
+            if (dataSeries.Chart != null)
+            {
+                if (e.OldValue != null && ((RenderAs)e.OldValue == RenderAs.Bar ||
+                    (RenderAs)e.OldValue == RenderAs.StackedBar || (RenderAs)e.OldValue == RenderAs.StackedBar100))
+                {
+                    if(e.NewValue != null && ((RenderAs)e.NewValue != RenderAs.Bar &&
+                    (RenderAs)e.NewValue != RenderAs.StackedBar && (RenderAs)e.NewValue != RenderAs.StackedBar100))
+                        (dataSeries.Chart as Chart)._clearAndResetZoomState = true;
+                }
+                else if (e.NewValue != null && ((RenderAs)e.NewValue == RenderAs.Bar ||
+                    (RenderAs)e.NewValue == RenderAs.StackedBar || (RenderAs)e.NewValue == RenderAs.StackedBar100))
+                {
+                    if (e.OldValue != null && ((RenderAs)e.OldValue != RenderAs.Bar &&
+                    (RenderAs)e.OldValue != RenderAs.StackedBar && (RenderAs)e.OldValue != RenderAs.StackedBar100))
+                        (dataSeries.Chart as Chart)._clearAndResetZoomState = true;
+                }
+            }
+
             dataSeries.FirePropertyChanged(VcProperties.RenderAs);
         }
 
@@ -3830,9 +3849,11 @@ namespace Visifire.Charts
                         if (Chart != null)
                             dataPoint.Chart = Chart;
 
-                        if (Double.IsNaN(dataPoint.InternalXValue))
-                            dataPoint.InternalXValue = this.DataPoints.Count;
-
+                        //if (Double.IsNaN(dataPoint.InternalXValue))
+                        //{
+                        //    dataPoint.InternalXValue = this.DataPoints.Count;
+                        //}
+                        
                         if (String.IsNullOrEmpty((String)dataPoint.GetValue(NameProperty)))
                         {
                             dataPoint.Name = "DataPoint" + (this.DataPoints.Count - 1).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_');
@@ -4140,38 +4161,43 @@ namespace Visifire.Charts
         {
             foreach (DataPoint dp in InternalDataPoints)
             {
-                if (dp.Faces != null)
+                AttachOrDetachInteractivity4DataPoint(dp);
+            }
+        }
+
+        internal void AttachOrDetachInteractivity4DataPoint(DataPoint dp)
+        {
+            if (dp.Faces != null)
+            {
+                if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.StreamLineFunnel || RenderAs == RenderAs.Pyramid))
                 {
-                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.StreamLineFunnel || RenderAs == RenderAs.Pyramid))
-                    {
-                        foreach (FrameworkElement fe in dp.Faces.VisualComponents)
-                        {
-                            if (SelectionEnabled)
-                                InteractivityHelper.ApplyOnMouseOverOpacityInteractivity2Visuals(fe);
-                            else
-                                InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(fe, (Double)Opacity * (Double)dp.Opacity);
-                        }
-                    }
-                    else
+                    foreach (FrameworkElement fe in dp.Faces.VisualComponents)
                     {
                         if (SelectionEnabled)
-                            InteractivityHelper.ApplyOnMouseOverOpacityInteractivity(dp.Faces.Visual);
+                            InteractivityHelper.ApplyOnMouseOverOpacityInteractivity2Visuals(fe);
                         else
-                            InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(dp.Faces.Visual, (Double)Opacity * (Double)dp.Opacity);
+                            InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(fe, (Double)Opacity * (Double)dp.Opacity);
                     }
-
-                    //---Som
-                    //if ((Chart as Chart).ChartArea != null && !(Chart as Chart).ChartArea._isFirstTimeRender && !IsInDesignMode && (Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
-                    //    dp.ExplodeOrUnexplodeAnimation();
                 }
-
-                if (dp.Marker != null && dp.Marker.Visual != null)
+                else
                 {
                     if (SelectionEnabled)
-                        InteractivityHelper.ApplyOnMouseOverOpacityInteractivity(dp.Marker.Visual);
-                    else if (!(Chart as Chart).ChartArea._isFirstTimeRender)
-                        InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(dp.Marker.Visual, (Double)Opacity * (Double)dp.Opacity);
+                        InteractivityHelper.ApplyOnMouseOverOpacityInteractivity(dp.Faces.Visual);
+                    else
+                        InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(dp.Faces.Visual, (Double)Opacity * (Double)dp.Opacity);
                 }
+
+                //---Som
+                //if ((Chart as Chart).ChartArea != null && !(Chart as Chart).ChartArea._isFirstTimeRender && !IsInDesignMode && (Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+                //    dp.ExplodeOrUnexplodeAnimation();
+            }
+
+            if (dp.Marker != null && dp.Marker.Visual != null)
+            {
+                if (SelectionEnabled)
+                    InteractivityHelper.ApplyOnMouseOverOpacityInteractivity(dp.Marker.Visual);
+                else if (!(Chart as Chart).ChartArea._isFirstTimeRender)
+                    InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(dp.Marker.Visual, (Double)Opacity * (Double)dp.Opacity);
             }
         }
 
@@ -4190,11 +4216,7 @@ namespace Visifire.Charts
             LegendMarker = null;
 
             if (Storyboard != null)
-            {
-                Storyboard.Stop();
-                Storyboard.Children.Clear();
                 Storyboard = null;
-            }
 
             if (Faces != null)
                 Faces.ClearInstanceRefs();
@@ -4206,6 +4228,23 @@ namespace Visifire.Charts
                 _weakEventListener.Detach();
                 _weakEventListener = null;
             }
+        }
+
+        // All x value not set
+        internal Boolean IsXValueNull4AllDataPoints()
+        {   
+            if (InternalDataPoints != null)
+            {   
+                foreach (DataPoint dp in InternalDataPoints)
+                {   
+                    if (dp.XValue != null)
+                        return false;
+                }
+            }
+            else
+                return false;
+
+            return true;
         }
 
         #endregion

@@ -1169,7 +1169,7 @@ namespace Visifire.Charts
                     marker.AddToParent(labelCanvas, left + markerPosition.X, top + markerPosition.Y, new Point(0.5, 0.5));
                 }
 
-                if (marker != null && marker.Visual != null)
+                if (marker != null && marker.Visual != null && !chart.IndicatorEnabled)
                     dataPoint.AttachToolTip(chart, dataPoint, marker.Visual);
 
                 dataPoint.Marker = marker;
@@ -1455,12 +1455,16 @@ namespace Visifire.Charts
              Faces faces = dataPoint.Faces;
              foreach (Shape fe in faces.BorderElements)
              {
-                 Rectangle rectangle = fe as Rectangle;
+                 Shape rectangle = fe as Shape;
                  if (rectangle == null)
                      continue;
 
-                 ExtendedGraphics.UpdateBorderOf2DRectangle(ref rectangle, dataPoint.BorderThickness.Left, ExtendedGraphics.GetDashArray((BorderStyles)dataPoint.BorderStyle)
-                     , dataPoint.BorderColor, view3d ? new CornerRadius(0) : (CornerRadius)dataPoint.RadiusX, view3d ? new CornerRadius(0) : (CornerRadius)dataPoint.RadiusY);
+                 if (view3d)
+                     ExtendedGraphics.UpdateBorderOf3DRectangle(rectangle, dataPoint.BorderThickness.Left, ExtendedGraphics.GetDashArray((BorderStyles)dataPoint.BorderStyle)
+                     , dataPoint.BorderColor);
+                 else
+                 ExtendedGraphics.UpdateBorderOf2DRectangle(rectangle, dataPoint.BorderThickness.Left, ExtendedGraphics.GetDashArray((BorderStyles)dataPoint.BorderStyle)
+                     , dataPoint.BorderColor, dataPoint.RadiusX.Value, dataPoint.RadiusY.Value, dataPoint.IsTopOfStack);
              }
         }
 
@@ -1480,16 +1484,16 @@ namespace Visifire.Charts
                 
                 switch((fe.Tag as ElementData).VisualElementName)
                 {
-                    case "ColumnBase": (fe as Rectangle).Fill = ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(colorNewValue, "Linear", null) : colorNewValue);
+                    case "ColumnBase": (fe as Shape).Fill = ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(colorNewValue, "Linear", null) : colorNewValue);
                     break;
 
-                    case "FrontFace": (fe as Rectangle).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue; 
+                    case "FrontFace": (fe as Shape).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue; 
                     break;
 
-                    case "TopFace": (fe as Rectangle).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
+                    case "TopFace": (fe as Shape).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
                     break;
 
-                    case "RightFace": (fe as Rectangle).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
+                    case "RightFace": (fe as Shape).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
                     break;
                 }
             }
@@ -2502,7 +2506,7 @@ namespace Visifire.Charts
                 if (fe.Tag != null && (fe.Tag as ElementData).VisualElementName == "ColumnBase")
                 {
                     Brush background = ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(dataPoint.Color, "Linear", null) : dataPoint.Color);
-                    (fe as Rectangle).Fill = background;
+                    (fe as Path).Fill = background;
                 }
             }
         }
@@ -2569,9 +2573,9 @@ namespace Visifire.Charts
 
             Brush background = ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(dataPoint.Color, "Linear", null) : dataPoint.Color);
 
-            Rectangle columnBase = ExtendedGraphics.Get2DRectangle(dataPoint, width, height,
+            Path columnBase = ExtendedGraphics.Get2DRectangle(dataPoint, width, height,
                 dataPoint.BorderThickness.Left, ExtendedGraphics.GetDashArray((BorderStyles)dataPoint.BorderStyle), dataPoint.BorderColor,
-                background, dataPoint.RadiusX.Value, dataPoint.RadiusX.Value);
+                background, dataPoint.RadiusX.Value, dataPoint.RadiusY.Value, isStacked ? isTopOfStack : true);
 
             (columnBase.Tag as ElementData).VisualElementName = "ColumnBase";
 
@@ -2586,7 +2590,9 @@ namespace Visifire.Charts
             ApplyRemoveLighting(dataPoint);
 
             if (!VisifireControl.IsMediaEffectsEnabled)
+            {
                 ApplyOrRemoveShadow4XBAP(dataPoint, isStacked, isTopOfStack);
+            }
 
             return faces;
         }
@@ -2611,42 +2617,42 @@ namespace Visifire.Charts
                 CornerRadius xRadius = (CornerRadius)dataPoint.RadiusX;
                 CornerRadius yRadius = (CornerRadius)dataPoint.RadiusY;
 
-                if (isStacked)
-                {
-                    if (dataPoint.InternalXValue >= 0)
-                    {
-                        if (isTopOfStack)
-                        {
-                            shadowHeight = columnVisual.Height - shadowVerticalOffset + shadowVerticalOffsetGap;
-                            shadowVerticalOffset = Chart.SHADOW_DEPTH - shadowVerticalOffsetGap - shadowVerticalOffsetGap;
-                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                            yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
-                        }
-                        else
-                        {
-                            shadowHeight = columnVisual.Height + 6;
-                            shadowVerticalOffset = -2;
-                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                            yRadius = new CornerRadius(0, 0, 0, 0);
-                        }
-                    }
-                    else
-                    {
-                        if (isTopOfStack)
-                        {
-                            shadowHeight = columnVisual.Height - shadowVerticalOffset + shadowVerticalOffsetGap;
-                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                            yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
-                        }
-                        else
-                        {
-                            shadowHeight = columnVisual.Height + Chart.SHADOW_DEPTH + 2;
-                            shadowVerticalOffset = -2;
-                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                            yRadius = new CornerRadius(0, 0, 0, 0);
-                        }
-                    }
-                }
+                //if (isStacked)
+                //{
+                //    if (dataPoint.InternalXValue >= 0)
+                //    {
+                //        if (isTopOfStack)
+                //        {
+                //            shadowHeight = columnVisual.Height - shadowVerticalOffset + shadowVerticalOffsetGap;
+                //            shadowVerticalOffset = Chart.SHADOW_DEPTH - shadowVerticalOffsetGap - shadowVerticalOffsetGap;
+                //            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
+                //            yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
+                //        }
+                //        else
+                //        {
+                //            shadowHeight = columnVisual.Height + 6;
+                //            shadowVerticalOffset = -1;
+                //            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
+                //            yRadius = new CornerRadius(0, 0, 0, 0);
+                //        }
+                //    }
+                //    else
+                //    {
+                //        if (isTopOfStack)
+                //        {
+                //            shadowHeight = columnVisual.Height - shadowVerticalOffset + shadowVerticalOffsetGap;
+                //            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
+                //            yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
+                //        }
+                //        else
+                //        {
+                //            shadowHeight = columnVisual.Height + Chart.SHADOW_DEPTH + 2;
+                //            shadowVerticalOffset = -2;
+                //            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
+                //            yRadius = new CornerRadius(0, 0, 0, 0);
+                //        }
+                //    }
+                //}
 
                 Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(null, columnVisual.Width, shadowHeight, xRadius, yRadius, isStacked ? 3 : 5);
                 shadowGrid.SetValue(Canvas.TopProperty, shadowVerticalOffset);
@@ -2718,9 +2724,9 @@ namespace Visifire.Charts
                 rightBrush = lightingEnabled ? Graphics.GetRightFaceBrush(backgroundBrush) : backgroundBrush;
 
 
-            Rectangle front = ExtendedGraphics.Get2DRectangle(tagRef, width, height,
+            Shape front = ExtendedGraphics.Get3DRectangle(tagRef, width, height,
                 borderThickness, strokeDashArray, borderBrush,
-                frontBrush, new CornerRadius(0), new CornerRadius(0));
+                frontBrush);
 
             front.Tag = new ElementData() { VisualElementName = "FrontFace", Element = tagRef };
 
@@ -2728,9 +2734,9 @@ namespace Visifire.Charts
             faces.Parts.Add(front);
             faces.BorderElements.Add(front);
 
-            Rectangle top = ExtendedGraphics.Get2DRectangle(tagRef, width, Depth,
+            Shape top = ExtendedGraphics.Get3DRectangle(tagRef, width, Depth,
                 borderThickness,strokeDashArray, borderBrush,
-                topBrush, new CornerRadius(0), new CornerRadius(0));
+                topBrush);
 
             top.Tag = new ElementData() { VisualElementName = "TopFace", Element = tagRef };
 
@@ -2743,9 +2749,9 @@ namespace Visifire.Charts
             skewTransTop.AngleX = -45;
             top.RenderTransform = skewTransTop;
 
-            Rectangle right = ExtendedGraphics.Get2DRectangle(tagRef, Depth, height,
+            Shape right = ExtendedGraphics.Get3DRectangle(tagRef, Depth, height,
                 borderThickness, strokeDashArray,  borderBrush,
-                rightBrush, new CornerRadius(0), new CornerRadius(0));
+                rightBrush);
 
             right.Tag = new ElementData() { VisualElementName = "RightFace", Element = tagRef };
 
@@ -2814,17 +2820,17 @@ namespace Visifire.Charts
             columnVisual.Width = width;
             columnVisual.Height = height;
          
-            Rectangle front = ExtendedGraphics.Get2DRectangle(null, width, height,
+            Shape front = ExtendedGraphics.Get3DRectangle(null, width, height,
                 0.25, null, null,
-                frontBrush, new CornerRadius(0), new CornerRadius(0));
+                frontBrush);
 
-            Rectangle top = ExtendedGraphics.Get2DRectangle(null, width, depth3D,
+            Shape top = ExtendedGraphics.Get3DRectangle(null, width, depth3D,
                 0.25, null, null,
-                topBrush, new CornerRadius(0), new CornerRadius(0));
+                topBrush);
 
-            Rectangle right = ExtendedGraphics.Get2DRectangle(null, depth3D, height,
+            Shape right = ExtendedGraphics.Get3DRectangle(null, depth3D, height,
                0.25, null, null,
-               rightBrush, new CornerRadius(0), new CornerRadius(0));
+               rightBrush);
 
             // Apply transformation
             top.RenderTransformOrigin = new Point(0, 1);

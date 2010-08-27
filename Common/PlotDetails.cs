@@ -83,6 +83,8 @@ namespace Visifire.Charts
             // Create a plot groups list
             // this.PlotGroups = new List<PlotGroup>();
 
+            CalculateInternalXValue4NumericAxis(Chart);
+
             // Set default chart orientation
             if((elementType == ElementTypes.Chart && property == VcProperties.Series)
                 ||(elementType == ElementTypes.DataSeries && property == VcProperties.RenderAs)
@@ -424,6 +426,41 @@ namespace Visifire.Charts
             }
         }
 
+        private void CalculateInternalXValue4NumericAxis(Chart chart)
+        {
+            foreach (DataSeries ds in chart.InternalSeries)
+            {
+                Int32 index = 1;
+                 
+                if (ds.IsXValueNull4AllDataPoints())
+                {
+                    foreach (DataPoint dp in ds.InternalDataPoints)
+                    {
+                        dp.InternalXValue = index++;
+                    }
+                }
+                else
+                {   
+                    Double lastInternalIndex = 0;
+
+                    foreach (DataPoint dp in ds.InternalDataPoints)
+                    {   
+                        if (dp.XValue == null && Double.IsNaN(dp.InternalXValue))
+                            dp.InternalXValue = ++lastInternalIndex;
+                        else if (!Double.IsNaN(dp.InternalXValue))
+                            lastInternalIndex = dp.InternalXValue;
+                        else
+                        {
+                            dp.InternalXValue = index;
+                            lastInternalIndex = index;
+                        }
+
+                        index++;
+                    }
+                }
+            }
+        }
+
         private void Calculate()
         {
             // Create Axis incase if it doesnt exist
@@ -436,14 +473,20 @@ namespace Visifire.Charts
 
             _axisXPrimary = GetAxisXFromChart(Chart, AxisTypes.Primary);
 
-            DataSeries ds = null;
-            if (Chart.InternalSeries.Count > 0)
-            {
-                ds = Chart.InternalSeries[0];
-            }
+            //DataSeries ds = null;
+            //if (Chart.InternalSeries.Count > 0)
+            //{
+            //    ds = Chart.InternalSeries[0];
+            //}
+
+            //// Generate XValues for DataTime axis
+            //if (ds != null && ds.RenderAs != RenderAs.Polar)
+            //    GenerateXValueForDataTimeAxis(_axisXPrimary);
+
+            CalculateInternalXValue4NumericAxis(Chart);
 
             // Generate XValues for DataTime axis
-            if (ds != null && ds.RenderAs != RenderAs.Polar)
+            if (GetChartOrientation() != ChartOrientationType.Circular)
                 GenerateXValueForDataTimeAxis(_axisXPrimary);
 
             // Create list of datapoints from all series
@@ -522,16 +565,17 @@ namespace Visifire.Charts
 
                         if (ds.InternalXValueType == ChartValueTypes.Auto || ds.InternalXValueType == ChartValueTypes.Date)
                         {
-                            dp.InternalXValueAsDateTime = new DateTime(dp.InternalXValueAsDateTime.Date.Year, dp.InternalXValueAsDateTime.Date.Month, dp.InternalXValueAsDateTime.Date.Day);
+                            dp.InternalXValueAsDateTime = new DateTime(dp.ActualXValueAsDateTime.Date.Year, dp.ActualXValueAsDateTime.Date.Month, dp.ActualXValueAsDateTime.Date.Day);
                             xValuesAsDateTimeList.Add(dp.InternalXValueAsDateTime);
                         }
                         else if (ds.InternalXValueType == ChartValueTypes.DateTime)
                         {
-                            xValuesAsDateTimeList.Add((DateTime)dp.InternalXValueAsDateTime);
+                            dp.InternalXValueAsDateTime = (DateTime)dp.ActualXValueAsDateTime;
+                            xValuesAsDateTimeList.Add((DateTime)dp.ActualXValueAsDateTime);
                         }
                         else if (ds.InternalXValueType == ChartValueTypes.Time)
                         {
-                            dp.InternalXValueAsDateTime = DateTime.Parse("12/30/1899 " + dp.InternalXValueAsDateTime.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                            dp.InternalXValueAsDateTime = DateTime.Parse("12/30/1899 " + dp.ActualXValueAsDateTime.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
                             xValuesAsDateTimeList.Add(dp.InternalXValueAsDateTime);
                         }
                     }
@@ -1403,7 +1447,7 @@ namespace Visifire.Charts
                 {
                     foreach (DataSeries series in SeriesWithReferingLegend)
                     {
-                        var legends = (from entry in Chart.Legends where entry.Name == series.Legend select entry);
+                        var legends = (from entry in Chart.Legends where entry.GetLegendName() == entry.GetLegendName4Series(series.Legend) select entry);
 
                         if (legends.Count() == 0)
                         {
@@ -1445,6 +1489,7 @@ namespace Visifire.Charts
             PlotGroups.Clear();
 
             // Creates any required legends
+            
             CreateLegends();
 
             // From the series generate groups based on RenderAs, AxisXType,AxisYType

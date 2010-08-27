@@ -599,7 +599,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -626,7 +626,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -652,7 +652,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -678,7 +678,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -704,7 +704,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -730,7 +730,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -756,7 +756,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -783,7 +783,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -809,7 +809,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.BorderThickness = new Thickness(1);
             chart.Legends.Add(legend);
 
@@ -836,7 +836,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -864,7 +864,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -891,7 +891,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -918,7 +918,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -945,7 +945,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -972,7 +972,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -999,7 +999,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -1026,7 +1026,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -1053,7 +1053,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Background = new SolidColorBrush(Colors.Red);
             chart.Legends.Add(legend);
 
@@ -1081,7 +1081,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -1108,7 +1108,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -1135,7 +1135,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.BorderThickness = new Thickness(1);
             chart.Legends.Add(legend);
 
@@ -1163,7 +1163,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             chart.Legends.Add(legend);
 
             CreateAndAddDefaultDataSeries(chart, legend);
@@ -1190,7 +1190,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 
@@ -1218,7 +1218,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 
@@ -1246,7 +1246,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 
@@ -1274,7 +1274,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 
@@ -1302,7 +1302,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 
@@ -1330,7 +1330,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 
@@ -1358,7 +1358,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 
@@ -1386,7 +1386,7 @@ namespace SLVisifireChartsTest
             
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 
@@ -1418,7 +1418,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 
@@ -1509,7 +1509,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 

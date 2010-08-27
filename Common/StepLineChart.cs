@@ -1148,6 +1148,8 @@ namespace Visifire.Charts
                         {
                             Point newMarkerPosition = pointCollection[0].Marker.CalculateActualPosition(pointCollection[0]._visualPosition.X, pointCollection[0]._visualPosition.Y, new Point(0.5, 0.5));
 
+                            pointCollection[0]._parsedToolTipText = pointCollection[0].TextParser(pointCollection[0].ToolTipText);
+            
                             pointCollection[0].Marker.Visual.Visibility = Visibility.Visible;
                             pointCollection[0].Marker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
                             pointCollection[0].Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
@@ -1253,6 +1255,8 @@ namespace Visifire.Charts
                             {
                                 Point newMarkerPosition = pointCollection[i].Marker.CalculateActualPosition(pointCollection[i]._visualPosition.X, pointCollection[i]._visualPosition.Y, new Point(0.5, 0.5));
 
+                                pointCollection[i]._parsedToolTipText = pointCollection[i].TextParser(pointCollection[i].ToolTipText);
+            
                                 pointCollection[i].Marker.Visual.Visibility = Visibility.Visible;
                                 pointCollection[i].Marker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
                                 pointCollection[i].Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
