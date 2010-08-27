@@ -167,6 +167,27 @@ namespace Visifire.Charts
 
                 Chart._elementCanvas.Children.Clear();
                 CreateTrendLinesLabel();
+
+                if (PlotDetails.ChartOrientation != ChartOrientationType.Circular)
+                {
+                    /* Zoom icons should be enabled if chart type is changed from Pie/Doughnut/Funnel/Radar/Polar to 
+                       any other chart type which supports zooming */
+                    if (chart.ZoomingEnabled && AxisX.ScrollBarElement != null
+                        && (!Double.IsNaN(AxisX.ScrollBarElement.Scale) && AxisX.ScrollBarElement.Scale != 1))
+                        EnableZoomIcons(chart);
+                }
+                else
+                {
+                    /* Zoom icons should be disabled if chart type is changed to Radar/Polar from 
+                       any other chart type which supports zooming */
+                    DisableZoomIcons(chart);
+                }
+            }
+            else if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+            {
+                /* Zoom icons should be disabled if chart type is changed to Pie/Doughnut/Funnel from 
+                   any other chart type which supports zooming */
+                DisableZoomIcons(chart);
             }
 
             Size remainingSize = DrawChart(_plotAreaSize);
@@ -190,7 +211,7 @@ namespace Visifire.Charts
             }
 
             chart._forcedRedraw = false;
-            chart._resetZoomState = false;
+            chart._clearAndResetZoomState = false;
 
             AddOrRemovePanels(chart);
 
@@ -199,9 +220,20 @@ namespace Visifire.Charts
             SettingsForVirtualRendering();
 
             // System.Diagnostics.Debug.WriteLine("xxxxxxx--- Render End");
+        }
 
+        private void DisableZoomIcons(Chart chart)
+        {
+            chart._showAllTextBlock.Visibility = Visibility.Collapsed;
+            chart._zoomIconSeparater.Visibility = Visibility.Collapsed;
+            chart._zoomOutTextBlock.Visibility = Visibility.Collapsed;
+        }
 
-
+        private void EnableZoomIcons(Chart chart)
+        {
+            chart._showAllTextBlock.Visibility = Visibility.Visible;
+            chart._zoomIconSeparater.Visibility = Visibility.Visible;
+            chart._zoomOutTextBlock.Visibility = Visibility.Visible;
         }
 
         private void SettingsForVirtualRendering()
@@ -325,8 +357,8 @@ namespace Visifire.Charts
                 {
                     if (!_isZoomOutEventAttached)
                     {
-                        chart._zoomOutTextBlock.MouseLeftButtonUp -= new MouseButtonEventHandler(AxisX._zoomOutIconImage_MouseLeftButtonUp);
-                        chart._zoomOutTextBlock.MouseLeftButtonUp += new MouseButtonEventHandler(AxisX._zoomOutIconImage_MouseLeftButtonUp);
+                        chart._zoomOutTextBlock.MouseLeftButtonUp -= new MouseButtonEventHandler(AxisX.ZoomOutIconImage_MouseLeftButtonUp);
+                        chart._zoomOutTextBlock.MouseLeftButtonUp += new MouseButtonEventHandler(AxisX.ZoomOutIconImage_MouseLeftButtonUp);
                         _isZoomOutEventAttached = true;
                     }
                 }
@@ -335,8 +367,8 @@ namespace Visifire.Charts
                 {
                     if (!_isShowAllEventAttached)
                     {
-                        chart._showAllTextBlock.MouseLeftButtonUp -= new MouseButtonEventHandler(AxisX._showAllIconImage_MouseLeftButtonUp);
-                        chart._showAllTextBlock.MouseLeftButtonUp += new MouseButtonEventHandler(AxisX._showAllIconImage_MouseLeftButtonUp);
+                        chart._showAllTextBlock.MouseLeftButtonUp -= new MouseButtonEventHandler(AxisX.ShowAllIconImage_MouseLeftButtonUp);
+                        chart._showAllTextBlock.MouseLeftButtonUp += new MouseButtonEventHandler(AxisX.ShowAllIconImage_MouseLeftButtonUp);
                         _isShowAllEventAttached = true;
                     }
                 }
@@ -628,8 +660,8 @@ namespace Visifire.Charts
                     String valueFormatString = AxisX.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : AxisX.XValueType == ChartValueTypes.Time ? "h:mm:ss tt" : "M/d/yyyy h:mm:ss tt";
                     valueFormatString = (String.IsNullOrEmpty((String)AxisX.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : AxisX.ValueFormatString;
 
-                    DateTime dt = Convert.ToDateTime(dp.XValue);
-                    axisIndicatorText = dt.ToString(valueFormatString);
+                    DateTime dt = Convert.ToDateTime(dp.XValue, System.Globalization.CultureInfo.InvariantCulture);
+                    axisIndicatorText = dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture);
                 }
 
                 #endregion
@@ -1165,9 +1197,6 @@ namespace Visifire.Charts
                 Chart.PlotArea = new PlotArea() { IsDefault = true };
             }
 
-            if (!chart._rootElement.Children.Contains(Chart.PlotArea))
-                chart._rootElement.Children.Add(Chart.PlotArea);
-
             Chart.PlotArea.Chart = Chart;
 
             if (chart._zoomOutTextBlock != null)
@@ -1258,45 +1287,44 @@ namespace Visifire.Charts
                         Chart._zoomRectangle.SetValue(Canvas.LeftProperty, _firstZoomRectPosOverPlotArea.X);
                         Chart._zoomRectangle.SetValue(Canvas.TopProperty, _firstZoomRectPosOverPlotArea.Y);
 
-                        Double minXValue;
-                        Double maxXValue;
+                        Double minXValueNumeric;
+                        Double maxXValueNumeric;
 
                         if (AxisX.AxisOrientation == AxisOrientation.Horizontal)
-                        {
+                        {   
                             if (_actualZoomMinPos.X < 0)
                                 _actualZoomMinPos.X = 0;
 
                             if (_actualZoomMaxPos.X > ChartVisualCanvas.Width)
                                 _actualZoomMaxPos.X = ChartVisualCanvas.Width;
 
-                            minXValue = Graphics.PixelPositionToValue(0, ScrollableLength, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMinPos.X);
-                            maxXValue = Graphics.PixelPositionToValue(0, ScrollableLength, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMaxPos.X);
+                            minXValueNumeric = Graphics.PixelPositionToValue(0, ScrollableLength, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMinPos.X);
+                            maxXValueNumeric = Graphics.PixelPositionToValue(0, ScrollableLength, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMaxPos.X);
 
                         }
                         else
-                        {
+                        {   
                             if (_actualZoomMinPos.Y < 0)
                                 _actualZoomMinPos.Y = 0;
 
                             if (_actualZoomMaxPos.Y > ChartVisualCanvas.Height)
                                 _actualZoomMaxPos.Y = ChartVisualCanvas.Height;
 
-                            minXValue = Graphics.PixelPositionToValue(ScrollableLength, 0, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMinPos.Y);
-                            maxXValue = Graphics.PixelPositionToValue(ScrollableLength, 0, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMaxPos.Y);
-
+                            minXValueNumeric = Graphics.PixelPositionToValue(ScrollableLength, 0, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMinPos.Y);
+                            maxXValueNumeric = Graphics.PixelPositionToValue(ScrollableLength, 0, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMaxPos.Y);
                         }
 
                         Object minValue, maxValue;
 
                         if (AxisX.IsDateTimeAxis)
                         {
-                            minValue = DateTimeHelper.XValueToDateTime(AxisX.MinDate, minXValue, AxisX.InternalIntervalType);
-                            maxValue = DateTimeHelper.XValueToDateTime(AxisX.MinDate, maxXValue, AxisX.InternalIntervalType);
+                            minValue = DateTimeHelper.XValueToDateTime(AxisX.MinDate, minXValueNumeric, AxisX.InternalIntervalType);
+                            maxValue = DateTimeHelper.XValueToDateTime(AxisX.MinDate, maxXValueNumeric, AxisX.InternalIntervalType);
                         }
                         else
                         {
-                            minValue = minXValue;
-                            maxValue = maxXValue;
+                            minValue = minXValueNumeric;
+                            maxValue = maxXValueNumeric;
                         }
 
                         //Size currentPlotAreaSize = new Size(PlotAreaCanvas.Width, PlotAreaCanvas.Height);
@@ -1309,7 +1337,7 @@ namespace Visifire.Charts
                         AxisX._zoomState.MinXValue = minValue;
                         AxisX._zoomState.MaxXValue = maxValue;
 
-                        //if (currentPlotAreaSize == plotAreaSizeBeforeZoom)
+                        // if (currentPlotAreaSize == plotAreaSizeBeforeZoom)
                         if (!AxisX._zoomState.MinXValue.Equals(AxisX._zoomState.MaxXValue) && _zoomRegionSelected)
                             AxisX.FireZoomEvent(AxisX._zoomState, e);
 
@@ -2233,7 +2261,7 @@ namespace Visifire.Charts
                 }
 
                 if (!_isFirstTimeRender)
-                    AxisX.ScrollBarElement.UpdateTrackLayout(AxisX.ScrollBarElement.GetTrackLength());
+                    AxisX.ScrollBarElement.UpdateTrackLayout();
 
                 Chart._bottomAxisPanel.Children.Add(AxisX.Visual);
 
@@ -2381,7 +2409,7 @@ namespace Visifire.Charts
             Axis axis = sender as Axis;
             Chart chart = Chart as Chart;
 
-            axis._internalZoomingScale = axis._internalMinimumZoomingScale + (1 - axis._internalMinimumZoomingScale) * (1 - axis.ScrollBarElement.Scale);
+            axis._internalZoomingScale = axis.ScrollBarElement.Scale;
             
             OnScrollBarScaleChanged(chart);
 
@@ -2492,7 +2520,7 @@ namespace Visifire.Charts
                 }
 
                 if (!_isFirstTimeRender)
-                    AxisX.ScrollBarElement.UpdateTrackLayout(AxisX.ScrollBarElement.GetTrackLength());
+                    AxisX.ScrollBarElement.UpdateTrackLayout();
 
                 Chart._leftAxisPanel.Children.Add(AxisX.Visual);
 
@@ -2726,7 +2754,7 @@ namespace Visifire.Charts
                 plotAreaSize.Height -= totalHeightReduced;
                 UpdateLayoutSettings(plotAreaSize);
 
-               Double totalWidthReduced = DrawAxesY(plotAreaSize, true);
+                Double totalWidthReduced = DrawAxesY(plotAreaSize, true);
 
                 plotAreaSize.Width -= totalWidthReduced;
 
@@ -2919,35 +2947,64 @@ namespace Visifire.Charts
         }
 
         internal Double CalculateChartSizeForZooming(Chart chart, Double currentSize)
-        {
+        {   
             Double chartSize = currentSize;
-            MAX_CHART_SIZE = 15000;
 
-            if (_isFirstTimeRender || chart._resetZoomState)
-            {
-                Chart.AxesX[0]._internalMinimumZoomingScale = currentSize / MAX_CHART_SIZE + 0.0000001;
-                _oldZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
-                Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
-                chartSize = MAX_CHART_SIZE * Chart.AxesX[0]._internalZoomingScale;
+            if (_isFirstTimeRender || chart._clearAndResetZoomState)
+            {   
+                Chart.AxesX[0]._internalZoomingScale = Axis.INTERNAL_MINIMUM_ZOOMING_SCALE;
+                chartSize = chartSize + chartSize * Chart.AxesX[0]._internalZoomingScale;
 
                 if (AxisX.ScrollBarElement != null)
-                    AxisX.ScrollBarElement._currentThumbSize = Double.NaN;
+                    AxisX.ScrollBarElement.ResetThumSize();
+
+                AxisX.ResetZoomState(chart, false);
+
+                AxisX._internalOldZoomBarValue = AxisX.ScrollBarElement.Value;
+                AxisX._internalOldZoomingScale = AxisX.ScrollBarElement.Scale;
             }
             else
             {   
-                Double internalMinimumZoomingScale = currentSize / MAX_CHART_SIZE + 0.0000001;
-
-                if (internalMinimumZoomingScale != _oldZoomingScale && !_isDragging)
+                if (Axis.INTERNAL_MINIMUM_ZOOMING_SCALE != AxisX._internalOldZoomingScale && !_isDragging)
                 {   
-                    Chart.AxesX[0]._internalMinimumZoomingScale = internalMinimumZoomingScale;
-                    if (!Double.IsNaN(Chart.AxesX[0].ScrollBarElement.Scale) && !Double.IsNaN(Chart.AxesX[0].ScrollBarElement._currentThumbSize) && zoomCount != 0)
-                        Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale + (1 - Chart.AxesX[0]._internalMinimumZoomingScale) * (1 - Chart.AxesX[0].ScrollBarElement.Scale);
+                    /* Control should come here due to some property changes. 
+                     * Control should come here if chart is removed and added back once again to its parent. 
+                     * Control wont come here due to first time render or zoombar draging.*/
+
+                    // If ScrollBarElement.Scale is not NaN means you should consider ScrollBarElement.Scale
+                    if (!Double.IsNaN(Chart.AxesX[0].ScrollBarElement.Scale) && !Double.IsNaN(Chart.AxesX[0].ScrollBarElement.ThumbSize) && zoomCount != 0)
+                        Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0].ScrollBarElement.Scale;
                     else
-                        chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
-                    _oldZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
+                    {
+                        if (!Double.IsNaN(AxisX._internalOldZoomBarValue))
+                            AxisX.ScrollBarElement.Value = AxisX._internalOldZoomBarValue;
+
+                        // If ScrollBarElement.Scale is NaN means you should reset the ZoomBar to its old Value and Scale
+                        if (!Double.IsNaN(AxisX._internalOldZoomingScale))
+                        {
+                            AxisX.ScrollBarElement.Scale = AxisX._internalOldZoomingScale;
+                            AxisX._internalZoomingScale = AxisX._internalOldZoomingScale;
+                        }
+                        else
+                        {
+                            chartSize = chartSize + chartSize * Chart.AxesX[0]._internalZoomingScale;
+                            return chartSize;
+                        }
+
+                    }
                 }
-                
-                chartSize = MAX_CHART_SIZE * Chart.AxesX[0]._internalZoomingScale;
+                //else
+                //    AxisX._internalZoomingScale = AxisX.ScrollBarElement.Scale;
+                    
+                if (AxisX._internalZoomingScale == 0)
+                {
+                    // Here BoomBar is getting reset to its initial position
+                    chart.AxesX[0]._internalZoomingScale = Axis.INTERNAL_MINIMUM_ZOOMING_SCALE;
+                    chartSize = chartSize + chartSize * Chart.AxesX[0]._internalZoomingScale;
+                }
+                else
+                    chartSize = chartSize / chart.AxesX[0]._internalZoomingScale;
+
             }
 
             return chartSize;
@@ -2964,7 +3021,7 @@ namespace Visifire.Charts
             Chart chart = (Chart as Chart);
 
             if (chart.ZoomingEnabled)
-            {
+            {   
                 chartSize = CalculateChartSizeForZooming(chart, currentSize);
             }
             else
@@ -4972,10 +5029,9 @@ namespace Visifire.Charts
                 // if (chart.Legends.Count > 0 && (!String.IsNullOrEmpty(chart.Series[0].Legend) || !String.IsNullOrEmpty(chart.Series[0].InternalLegendName)))
                 if (chart.Legends.Count > 0)
                 {
-
                     var legends = (from entry in chart.Legends
                                    where
-                                   (entry.Name == chart.Series[0].Legend && entry.DockInsidePlotArea == dockInsidePlotArea)
+                                   (entry.GetLegendName() == entry.GetLegendName4Series(chart.Series[0].Legend) && entry.DockInsidePlotArea == dockInsidePlotArea)
                                    select entry);
 
                     if (legends.Count() > 0)
@@ -5010,7 +5066,7 @@ namespace Visifire.Charts
                             legend = null;
                             var legends = from entry in chart.Legends
                                           where (
-                                          entry.Name == dataSeries.Legend
+                                          entry.GetLegendName() == entry.GetLegendName4Series(dataSeries.Legend)
                                               // entry.Name == dataSeries.Legend
                                               // || entry.Name == dataSeries.InternalLegendName
                                           )
@@ -6357,11 +6413,7 @@ namespace Visifire.Charts
             GridLineCanvas4VerticalPlank = null;
 
             if (Storyboard4PlankGridLines != null)
-            {
-                Storyboard4PlankGridLines.Stop();
-                Storyboard4PlankGridLines.Children.Clear();
                 Storyboard4PlankGridLines = null;
-            }
 
             InterlacedPathsOverVerticalPlank = null;
             InterlacedLinesOverVerticalPlank = null;
@@ -6380,11 +6432,7 @@ namespace Visifire.Charts
         #region Data
 
         internal Boolean _isDefaultSeriesSet = false;
-
-        /// <summary>
-        /// Old Zooming Scale
-        /// </summary>
-        private Double _oldZoomingScale = Double.NaN;
+        
 
         /// <summary>
         /// Size of the PlotArea is calculated in calculated in Draw() 
@@ -6399,7 +6447,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Maximum size of the chart drawn inside the ScrollViewer.
         /// </summary>
-        internal static Double MAX_CHART_SIZE = 15000;
+        internal readonly static Double MAX_PLOTAREA_SIZE = 22000;
 
         /// <summary>
         /// Chart scroll-viewer Offset for horizontal chart. 

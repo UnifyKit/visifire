@@ -177,21 +177,21 @@ namespace Visifire.Charts
         /// <param name="axis">Axis</param>
         /// <param name="xValue">XValue</param>
         /// <returns></returns>
-        public Double XValueToScrollBarOffset(Double minXValue, Double maxXValue)
-        {
+        public Double XValueToScrollBarOffset(Double xValue)
+        {   
             if (AxisRepresentation == AxisRepresentations.AxisX)
-            {
+            {   
                 Double minPixelValue;
                 Double maxPixelValue;
                 Double scrollBarOffset;
                 if (AxisOrientation == AxisOrientation.Horizontal)
                 {
-                    minPixelValue = Graphics.ValueToPixelPosition(0, ScrollableSize, InternalAxisMinimum, InternalAxisMaximum, minXValue);
+                    minPixelValue = Graphics.ValueToPixelPosition(0, ScrollableSize, InternalAxisMinimum, InternalAxisMaximum, xValue);
                     scrollBarOffset = minPixelValue / (ScrollableSize - Width);
                 }
                 else
                 {
-                    maxPixelValue = Graphics.ValueToPixelPosition(ScrollableSize, 0, InternalAxisMinimum, InternalAxisMaximum, maxXValue);
+                    maxPixelValue = Graphics.ValueToPixelPosition(ScrollableSize, 0, InternalAxisMinimum, InternalAxisMaximum, xValue);
                     scrollBarOffset = maxPixelValue / (ScrollableSize - Height);
                     scrollBarOffset = 1 - scrollBarOffset;
                 }
@@ -203,119 +203,120 @@ namespace Visifire.Charts
                 return Double.NaN;
         }
 
-        internal void ZoomIn(Object minXValue, Object maxXValue)
+        /// <summary>
+        /// Convert XValue to InternalXValue
+        /// </summary>
+        /// <param name="xValue">XValue as Object</param>
+        /// <returns>InternalXValue as Double</returns>
+        private Double XValueToInternalXValue(Object xValue)
         {
+            if (IsDateTimeAxis)
+                return DateTimeHelper.DateDiff(Convert.ToDateTime(xValue), MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
+            else
+                return Convert.ToDouble(xValue);
+        }
+
+        /// <summary>
+        /// Calculate ZoomingScale from XValue range
+        /// </summary>
+        /// <param name="minXValueNumeric">Minimum XValue</param>
+        /// <param name="maxXValueNumeric">Maximum XValue</param>
+        /// <returns>ZoomingScale as Double</returns>
+        private Double CalculateZoomingScaleFromXValueRange(Object minXValue, Object maxXValue)
+        {   
             Chart chart = Chart as Chart;
 
-            Double newMinXValue;
-            Double newMaxXValue;
-
-            if (IsDateTimeAxis)
-            {
-                newMinXValue = DateTimeHelper.DateDiff(Convert.ToDateTime(minXValue), MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
-                newMaxXValue = DateTimeHelper.DateDiff(Convert.ToDateTime(maxXValue), MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
-            }
-            else
-            {   
-                newMinXValue = Convert.ToDouble(minXValue);
-                newMaxXValue = Convert.ToDouble(maxXValue);
-            }
-
+            Double newMinXValue = XValueToInternalXValue(minXValue);
+            Double newMaxXValue = XValueToInternalXValue(maxXValue);
+            
             chart.ChartArea.AxisX._numericViewMinimum = Math.Min(newMaxXValue, newMinXValue);
             chart.ChartArea.AxisX._numericViewMaximum = Math.Max(newMaxXValue, newMinXValue);
-       
+            
             Double minPixelValue;
             Double maxPixelValue;
 
             if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
-            {
+            {   
                 minPixelValue = Graphics.ValueToPixelPosition(0, ScrollableSize, InternalAxisMinimum, InternalAxisMaximum, newMinXValue);
                 maxPixelValue = Graphics.ValueToPixelPosition(0, ScrollableSize, InternalAxisMinimum, InternalAxisMaximum, newMaxXValue);
             }
             else
-            {
+            {   
                 minPixelValue = Graphics.ValueToPixelPosition(ScrollableSize, 0, InternalAxisMinimum, InternalAxisMaximum, newMinXValue);
                 maxPixelValue = Graphics.ValueToPixelPosition(ScrollableSize, 0, InternalAxisMinimum, InternalAxisMaximum, newMaxXValue);
             }
             
-            Double viewPortPixDiff = ScrollableSize;   // Pixel diff between ViewMin and ViewMax
-            Double xValuePixDiff;             // maxPixelValue - minPixelValue;
-
-            xValuePixDiff = Math.Abs(maxPixelValue - minPixelValue);
+            Double viewPortPixDiff = ScrollableSize;    // Pixel diff between ViewMin and ViewMax
+            Double xValuePixDiff = Math.Abs(maxPixelValue - minPixelValue);
 
             if (viewPortPixDiff < xValuePixDiff)
                 viewPortPixDiff = xValuePixDiff;
 
-            _internalZoomingScale = ((viewPortPixDiff - xValuePixDiff) / xValuePixDiff);
-
-            Double newChartSize = 0;
-
+            Double viewportSize;
             if (AxisOrientation == AxisOrientation.Horizontal)
-                newChartSize = Width + Width * _internalZoomingScale;
+                viewportSize = Width;
             else
-                newChartSize = Height + Height * _internalZoomingScale;
+                viewportSize = Height;
 
-            if (newChartSize > ChartArea.MAX_CHART_SIZE)
-                newChartSize = ChartArea.MAX_CHART_SIZE;
+            Double zoomingScale = (xValuePixDiff / viewPortPixDiff);
+            zoomingScale = ValidateAndUpdateMaxZoomingScale(zoomingScale, viewportSize);
 
-            _internalZoomingScale = newChartSize / ChartArea.MAX_CHART_SIZE + 0.0000001;
+            return zoomingScale;
+        }
+
+        /// <summary>
+        /// Zooming Scale should not contain such value so that PlotArea size exceeds the Max_PLOTAREA_SIZE
+        /// </summary>
+        /// <returns></returns>
+        private Double ValidateAndUpdateMaxZoomingScale(Double zoomingScale, Double viewPortSize)
+        {
+            if (viewPortSize / zoomingScale > ChartArea.MAX_PLOTAREA_SIZE)
+            {
+                zoomingScale = viewPortSize / ChartArea.MAX_PLOTAREA_SIZE;
+            }
+
+            return zoomingScale;
+        }
+
+        internal void ZoomIn(Object minXValue, Object maxXValue)
+        {
+            Chart chart = Chart as Chart;
+
+            ScrollBarElement.Scale = _internalZoomingScale = CalculateZoomingScaleFromXValueRange(minXValue, maxXValue);
 
             chart.ChartArea.AxisX.ScrollBarElement._isZoomedUsingZoomRect = true;
 
             chart.ChartArea.OnScrollBarScaleChanged(chart);
 
             chart.Dispatcher.BeginInvoke(new Action(delegate()
-            {   
-                // Double zoomBarScale = xValuePixDiff / viewPortPixDiff;
-
-                Double minValue;
-                Double maxValue;
-                if (IsDateTimeAxis)
-                {
-                    minValue = DateTimeHelper.DateDiff(Convert.ToDateTime(minXValue), MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
-                    maxValue = DateTimeHelper.DateDiff(Convert.ToDateTime(maxXValue), MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
-                }
-                else
-                {
-                    minValue = Convert.ToDouble(minXValue);
-                    maxValue = Convert.ToDouble(maxXValue);
-                }
-
+            {
+                Double minValue = XValueToInternalXValue(minXValue);
+                Double maxValue = XValueToInternalXValue(maxXValue);
+                
                 // Swap min and max values if min value is greater than max value
                 if (minValue > maxValue)
-                {
+                {   
                     Double temp = minValue;
                     minValue = maxValue;
                     maxValue = temp;
                 }
 
-                //if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
-                //    minValue = maxValue - minValue;
+                chart.ChartArea.AxisX.ScrollBarElement.UpdateScale(_internalZoomingScale);
 
-                Double zoomBarScale = 1 - ((_internalZoomingScale - _internalMinimumZoomingScale) / (1 - _internalMinimumZoomingScale));
-                chart.ChartArea.AxisX.ScrollBarElement.UpdateScale(zoomBarScale);
-                Double scrollBarOffset = XValueToScrollBarOffset(minValue, maxValue);
+                Double xValue = (AxisOrientation == AxisOrientation.Horizontal) ? minValue : maxValue;
+                Double scrollBarOffset = XValueToScrollBarOffset(xValue);
                 chart.ChartArea.AxisX.ScrollBarOffset = scrollBarOffset;
 
                 if (Math.Round(ScrollBarElement.Scale, 4) >= 1)
-                    ResetZoomState(Chart as Chart);
+                    ResetZoomState(Chart as Chart, true);
             }));
         }
-
-        //private void ResetZoomState()
-        //{   
-        //    ScrollBarElement.UpdateTrackLayout(ScrollBarElement.GetTrackLength());
-        //    if (ScrollBarElement._currentThumbSize == ScrollBarElement.GetTrackLength())
-        //    {
-        //        ResetZoomState(Chart as Chart);
-        //    }
-        //}
 
         /// <summary>
         /// Zoom the chart by supplying minimum XValue and maximum XValue
         /// </summary>
-        /// <param name="minXValue">Min XValue</param>
-        /// <param name="maxXValue">Max XValue</param>
+        /// <param name="minXValueNumeric">Min XValue</param>
+        /// <param name="maxXValueNumeric">Max XValue</param>
         public void Zoom(Object minXValue, Object maxXValue)
         {
             if (Chart != null && (Chart as Chart).PlotDetails != null && (Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Circular)
@@ -341,8 +342,8 @@ namespace Visifire.Charts
             }
         }
 
-        internal void _zoomOutIconImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
+        internal void ZoomOutIconImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {   
             if (_zoomStateStack.Count > 0)
             {
                 _zoomState = _zoomStateStack.Pop();
@@ -361,7 +362,7 @@ namespace Visifire.Charts
             }
         }
 
-        internal void _showAllIconImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        internal void ShowAllIconImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             ZoomIn(_initialState.MinXValue, _initialState.MaxXValue);
 
@@ -2565,6 +2566,10 @@ namespace Visifire.Charts
         private static void OnIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
+
+            if (e.NewValue == null)
+                axis.ResetAxisInterval();
+
             axis.FirePropertyChanged(VcProperties.Interval);
         }
 
@@ -2735,19 +2740,27 @@ namespace Visifire.Charts
         {
             Axis axis = d as Axis;
 
-            Double numericVal = axis.AxisMaximumNumeric;
-            DateTime dateTimeValue = axis.AxisMaximumDateTime;
-            Axis.ConvertValueToDateTimeOrNumeric("AxisMaximum", e.NewValue, ref numericVal, ref dateTimeValue, out axis._axisMaximumValueType);
-            axis.AxisMaximumNumeric = numericVal;
-            axis.AxisMaximumDateTime = dateTimeValue;
-
-            if (axis.AxisRepresentation == AxisRepresentations.AxisY)
-            {
-                if ((axis.Chart as Chart).Series.Count > 0)
-                    (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMaximum, null });
+            if (e.NewValue == null)
+            {   
+                axis.ResetAxisMaximum();
+                axis.FirePropertyChanged(VcProperties.AxisMaximum);
             }
             else
-                axis.FirePropertyChanged(VcProperties.AxisMaximum);
+            {   
+                Double numericVal = axis.AxisMaximumNumeric;
+                DateTime dateTimeValue = axis.AxisMaximumDateTime;
+                Axis.ConvertValueToDateTimeOrNumeric("AxisMaximum", e.NewValue, ref numericVal, ref dateTimeValue, out axis._axisMaximumValueType);
+                axis.AxisMaximumNumeric = numericVal;
+                axis.AxisMaximumDateTime = dateTimeValue;
+
+                if (axis.AxisRepresentation == AxisRepresentations.AxisY)
+                {
+                    if ((axis.Chart as Chart).Series.Count > 0)
+                        (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMaximum, null });
+                }
+                else
+                    axis.FirePropertyChanged(VcProperties.AxisMaximum);
+            }
         }
 
         /// <summary>
@@ -2756,22 +2769,53 @@ namespace Visifire.Charts
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnAxisMinimumPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        {   
             Axis axis = d as Axis;
-
-            Double numericVal = axis.AxisMinimumNumeric;
-            DateTime dateTimeValue = axis.AxisMinimumDateTime;
-            Axis.ConvertValueToDateTimeOrNumeric("AxisMinimum", e.NewValue, ref numericVal, ref dateTimeValue, out axis._axisMinimumValueType);
-            axis.AxisMinimumNumeric = numericVal;
-            axis.AxisMinimumDateTime = dateTimeValue;
-
-            if (axis.AxisRepresentation == AxisRepresentations.AxisY)
-            {
-                if ((axis.Chart as Chart).Series.Count > 0)
-                    (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMinimum, null });
+            
+            if (e.NewValue == null)
+            {      
+                axis.ResetAxisMinimum();
+                axis.FirePropertyChanged(VcProperties.AxisMinimum);
             }
             else
-                axis.FirePropertyChanged(VcProperties.AxisMinimum);
+            {   
+                Double numericVal = axis.AxisMinimumNumeric;
+                DateTime dateTimeValue = axis.AxisMinimumDateTime;
+                Axis.ConvertValueToDateTimeOrNumeric("AxisMinimum", e.NewValue, ref numericVal, ref dateTimeValue, out axis._axisMinimumValueType);
+                axis.AxisMinimumNumeric = numericVal;
+                axis.AxisMinimumDateTime = dateTimeValue;
+
+                if (axis.AxisRepresentation == AxisRepresentations.AxisY)
+                {   
+                    if ((axis.Chart as Chart).Series.Count > 0)
+                        (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMinimum, null });
+                }
+                else
+                    axis.FirePropertyChanged(VcProperties.AxisMinimum);
+            }
+        }
+
+        private void ResetAxisMinimum()
+        {
+            AxisMinimumNumeric = Double.NaN;
+            AxisMinimumDateTime = new DateTime();
+            InternalAxisMinimum = Double.NaN;
+            _numericViewMinimum = 0;
+            _oldInternalAxisMinimum = 0;
+        }
+
+        private void ResetAxisMaximum()
+        {
+            AxisMaximumNumeric = Double.NaN;
+            AxisMaximumDateTime = new DateTime();
+            InternalAxisMaximum = Double.NaN;
+            _numericViewMaximum = 0;
+            _oldInternalAxisMaximum = 0;
+        }
+
+        private void ResetAxisInterval()
+        {
+            InternalInterval = Double.NaN;
         }
 
         private static void ConvertValueToDateTimeOrNumeric(String propertyName, Object newValue, ref Double numericVal, ref DateTime dateTimeValue, out ChartValueTypes valueType)
@@ -5797,9 +5841,9 @@ namespace Visifire.Charts
                 if (PlotDetails.ListOfAllDataPoints.Count != 0)
                 {
                     if (_oldScrollBarOffsetInPixel == offsetInPixel && !(Chart as Chart).ChartArea._isDragging)
-                    {
-                        if ((Chart as Chart)._resetZoomState)
-                            ResetZoomState(Chart as Chart);
+                    {   
+                        if ((Chart as Chart)._clearAndResetZoomState)
+                            ResetZoomState(Chart as Chart, true);
 
                         if (_initialState.MinXValue == null && _initialState.MaxXValue == null)
                         {
@@ -5836,7 +5880,8 @@ namespace Visifire.Charts
                                 _showAllState = false;
                             }
 
-                            if (chart.ChartArea._isFirstTimeRender || _isScrollEventFiredFirstTime)
+                            if (chart.ChartArea._isFirstTimeRender || _isScrollEventFiredFirstTime
+                                || (_initialState.MinXValue == null && _initialState.MaxXValue == null))
                             {
                                 _initialState.MinXValue = ViewMinimum;
                                 _initialState.MaxXValue = ViewMaximum;
@@ -5886,7 +5931,7 @@ namespace Visifire.Charts
             }
 
             if (Chart.PlotDetails.ChartOrientation != ChartOrientationType.Circular)
-            {
+            {   
                 // Create visual elements
                 Visual = new StackPanel() { Background = InternalBackground };
 
@@ -6004,10 +6049,10 @@ namespace Visifire.Charts
             }
 
             if(ScrollBarElement.Scale == 1)
-                ResetZoomState(chart);
+                ResetZoomState(chart, true);
         }
 
-        internal void ResetZoomState(Chart chart)
+        internal void ResetZoomState(Chart chart, Boolean initializeStack)
         {
             chart._showAllTextBlock.Visibility = Visibility.Collapsed;
             chart._zoomIconSeparater.Visibility = Visibility.Collapsed;
@@ -6015,7 +6060,16 @@ namespace Visifire.Charts
 
             _zoomStateStack.Clear();
 
-            _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
+            if (initializeStack)
+            {
+                if (ViewMinimum != null && ViewMaximum != null)
+                    _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
+            }
+            else
+            {
+                _initialState.MinXValue = null;
+                _initialState.MaxXValue = null;
+            }
 
             _oldZoomState.MinXValue = null;
             _oldZoomState.MaxXValue = null;
@@ -6070,11 +6124,7 @@ namespace Visifire.Charts
             foreach (ChartGrid grid in Grids)
             {
                 if (grid.Storyboard != null)
-                {
-                    grid.Storyboard.Stop();
-                    grid.Storyboard.Children.Clear();
                     grid.Storyboard = null;
-                }
             }
 
             Storyboard = null;
@@ -6233,8 +6283,25 @@ namespace Visifire.Charts
         Double _internalMinHeight = Double.NaN;
         Double _internalMinWidth = Double.NaN;
 
+        /// <summary>
+        /// CurrentZooming Scale
+        /// </summary>
         internal Double _internalZoomingScale;
-        internal Double _internalMinimumZoomingScale;
+
+        /// <summary>
+        /// Old value of ZoomBar. Its used only while zooming to remember the old state of ZoomBar.
+        /// </summary>
+        internal Double _internalOldZoomBarValue;
+
+        /// <summary>
+        /// Old Zooming Scale. Its used only while zooming to remember the old state of ZoomBar.
+        /// </summary>
+        internal Double _internalOldZoomingScale = Double.NaN;
+
+        /// <summary>
+        /// MinimumZooming Scale
+        /// </summary>
+        internal static readonly Double INTERNAL_MINIMUM_ZOOMING_SCALE = 0.0000001;
 
         Boolean _showAllState = false;
 

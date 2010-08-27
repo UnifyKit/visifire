@@ -412,7 +412,21 @@ namespace Visifire.Commons.Controls
 
         #region Internal Properties
 
-        internal Double _internalValue;
+        internal Boolean IsStretching
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Current ThumbSize
+        /// </summary>
+        internal Double ThumbSize
+        {
+            get { return _currentThumbSize; }
+        }
+
+
 
         /// <summary>
         /// Whether the Thumb is dragged
@@ -1061,7 +1075,7 @@ namespace Visifire.Commons.Controls
         /// Update laypout of the trackTrackLayout
         /// </summary>
         /// <param name="trackLength">Length of the track</param>
-        internal void UpdateTrackLayout(double trackLength)
+        private void UpdateTrackLayout(double trackLength)
         {
             double maximum = base.Maximum;
             double minimum = base.Minimum;
@@ -1088,10 +1102,26 @@ namespace Visifire.Commons.Controls
         #region Internal Methods
 
         /// <summary>
+        /// Update layout of the ZoomBar
+        /// </summary>
+        internal void UpdateTrackLayout()
+        {
+            UpdateTrackLayout(GetTrackLength());
+        }
+
+        /// <summary>
+        /// Reset ResetThumSize to initial size
+        /// </summary>
+        internal void ResetThumSize()
+        {
+            _currentThumbSize = Double.NaN;
+        }
+
+        /// <summary>
         /// Get length of the zoom bar track
         /// </summary>
         /// <returns>Track length</returns>
-        internal double GetTrackLength()
+        private double GetTrackLength()
         {
             double trackLength = double.NaN;
 
@@ -1272,18 +1302,14 @@ namespace Visifire.Commons.Controls
         internal Boolean _isZoomedUsingZoomRect = false;
 
         // Current size of the thumb
-        internal Double _currentThumbSize = Double.NaN;
+        private Double _currentThumbSize = Double.NaN;
 
         private Double _oldTrackLength = Double.NaN;
 
         // Whether notication is enabled for the Value changed event
         internal Boolean _isNotificationEnabled = true;
 
-        internal Boolean IsStretching
-        {
-            get;
-            private set;
-        }
+        internal Double _internalValue;
 
         #endregion
     }

@@ -2900,7 +2900,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Whether the axis need to redraw
         /// </summary>
-        private Boolean _isRedraw;
+        private  Boolean _isRedraw;
 
         /// <summary>
         /// Parent axis
