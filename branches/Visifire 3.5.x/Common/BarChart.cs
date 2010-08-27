@@ -641,6 +641,9 @@ namespace Visifire.Charts
                 marker.CreateVisual();
 
                 marker.AddToParent(labelCanvas, left + markerPosition.X, top + markerPosition.Y, new Point(0.5, 0.5));
+
+                if (marker != null && marker.Visual != null && !chart.IndicatorEnabled)
+                    dataPoint.AttachToolTip(chart, dataPoint, marker.Visual);
             }
 
             if ((Boolean)dataPoint.LabelEnabled)
@@ -648,7 +651,7 @@ namespace Visifire.Charts
                 Double right = left + barVisual.Width;
                 CreateLabel(chart, new Size(barVisual.Width, barVisual.Height), isPositive, dataPoint.IsTopOfStack, dataPoint, left, top, right, labelCanvas);
 
-                if (dataPoint.LabelVisual != null)
+                if (dataPoint.LabelVisual != null && !chart.IndicatorEnabled)
                     dataPoint.AttachToolTip(chart, dataPoint, dataPoint.LabelVisual);
             }
         }
@@ -1055,7 +1058,7 @@ namespace Visifire.Charts
             }
             else
             {
-                bar = ColumnChart.Get2DColumn(dataPoint, barWidth, finalHeight, true, false);
+                bar = ColumnChart.Get2DColumn(dataPoint, barWidth, finalHeight, true, isTopOFStack);
                 barVisual = bar.Visual as Panel;
                 dataPoint.Faces = bar;
             }
@@ -1128,16 +1131,16 @@ namespace Visifire.Charts
             Brush topBrush = barParams.Lighting ? Graphics.GetTopFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
             Brush rightBrush = barParams.Lighting ? Graphics.GetRightFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
 
-            Rectangle front = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
+            Path front = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
-                frontBrush, new CornerRadius(0), new CornerRadius(0));
+                frontBrush, new CornerRadius(0), new CornerRadius(0), false);
 
             faces.Parts.Add(front);
             faces.BorderElements.Add(front);
 
-            Rectangle top = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Depth,
+            Path top = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Depth,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
-                topBrush, new CornerRadius(0), new CornerRadius(0));
+                topBrush, new CornerRadius(0), new CornerRadius(0), false);
 
             faces.Parts.Add(top);
             faces.BorderElements.Add(top);
@@ -1147,9 +1150,9 @@ namespace Visifire.Charts
             skewTransTop.AngleX = -45;
             top.RenderTransform = skewTransTop;
 
-            Rectangle right = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Depth, barParams.Size.Height,
+            Path right = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Depth, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
-                rightBrush, new CornerRadius(0), new CornerRadius(0));
+                rightBrush, new CornerRadius(0), new CornerRadius(0), false);
 
             faces.Parts.Add(right);
             faces.BorderElements.Add(right);
@@ -1209,9 +1212,9 @@ namespace Visifire.Charts
 
             Brush background = (barParams.Lighting ? Graphics.GetLightingEnabledBrush(barParams.BackgroundBrush, "Linear", null) : barParams.BackgroundBrush);
 
-            Rectangle barBase = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
+            Path barBase = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
-                background, barParams.XRadius, barParams.YRadius);
+                background, barParams.XRadius, barParams.YRadius, true);
 
             (barBase.Tag as ElementData).VisualElementName = "ColumnBase";
 

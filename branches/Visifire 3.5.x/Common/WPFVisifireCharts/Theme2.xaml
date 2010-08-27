@@ -16,7 +16,6 @@
     <Style x:Key="PlotArea" TargetType="{x:Type vc:PlotArea}">
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderColor" Value="Gray"/>
-        <Setter Property="Background" Value="Transparent"/>
     </Style>
     <Style x:Key="MainTitle" TargetType="{x:Type vc:Title}">
         <Setter Property="Background" Value="Transparent"></Setter>

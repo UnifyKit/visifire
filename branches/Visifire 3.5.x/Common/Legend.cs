@@ -3026,7 +3026,24 @@ namespace Visifire.Charts
         }
 #endif
 
+        internal String GetLegendName()
+        {
+            if (_isAutoName)
+            {
+                String[] s = Name.Split('_');
+                return s[0];
+            }
+            else
+                return Name;
+        }
 
+        internal String GetLegendName4Series(String seriesLegendName)
+        {
+            if (seriesLegendName.Equals(Name))
+                return GetLegendName();
+            else
+                return seriesLegendName;
+        }
 
         /// <summary>
         /// Create visual object of the Legend
@@ -3135,6 +3152,11 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        /// <summary>
+        /// Whether name for Legend is generated automatically
+        /// </summary>
+        internal Boolean _isAutoName = true;
 
         private const Double DEFAULT_MARGIN = 3.5;
 

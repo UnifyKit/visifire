@@ -2343,6 +2343,9 @@ namespace Visifire.Charts
                 if (property == VcProperties.Color)
                     UpdateLegendMarker(this, (Brush)newValue);
 
+                if(Parent != null)
+                    chart.Dispatcher.BeginInvoke(new Action<DataPoint>(Parent.AttachOrDetachInteractivity4DataPoint), new object[] { this });
+
                 // chart._renderLock = false;
             }
             else
@@ -2486,6 +2489,15 @@ namespace Visifire.Charts
         /// InternalXValue used for internally generated XValue of type DateTime
         /// </summary>
         internal DateTime InternalXValueAsDateTime
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// InternalXValue used for internally generated XValue of type DateTime
+        /// </summary>
+        internal DateTime ActualXValueAsDateTime
         {
             get;
             set;
@@ -2811,6 +2823,7 @@ namespace Visifire.Charts
             if ((e.NewValue.GetType().Equals(typeof(DateTime))))
             {
                 dataPoint.InternalXValueAsDateTime = (DateTime)e.NewValue;
+                dataPoint.ActualXValueAsDateTime  = (DateTime)e.NewValue;
                 dataPoint.XValueType = ChartValueTypes.DateTime;
             }
             // Double / Int32 / DateTime entered in XAML
@@ -2834,6 +2847,7 @@ namespace Visifire.Charts
                 else if (DateTime.TryParse((string)e.NewValue, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out dateTimeresult))
                 {
                     dataPoint.InternalXValueAsDateTime = dateTimeresult;
+                    dataPoint.ActualXValueAsDateTime = dateTimeresult;
                     dataPoint.XValueType = ChartValueTypes.DateTime;
                 }
                 else
@@ -3461,10 +3475,19 @@ namespace Visifire.Charts
                 if (allowPropertyChange)
                     UpdateExplodedPropertyForSelection(false, selfDeSelect);
 
-                if (MarkerEnabled == true)
+                if (Marker != null)
                 {
-                    InteractivityHelper.RemoveBorderEffect(Marker.MarkerShape, (BorderStyles)dataPoint.BorderStyle, Marker.BorderThickness, Marker.BorderColor, Marker.MarkerFillColor, Marker.MarkerSize.Width * Marker.ScaleFactor, Marker.MarkerSize.Height * Marker.ScaleFactor);
-                    Marker.MarkerShape.Margin = new Thickness(0, 0, 0, 0);
+                    if ((Boolean)MarkerEnabled)
+                    {
+                        InteractivityHelper.RemoveBorderEffect(Marker.MarkerShape, (BorderStyles)dataPoint.BorderStyle, Marker.BorderThickness, Marker.BorderColor, Marker.MarkerFillColor, Marker.MarkerSize.Width * Marker.ScaleFactor, Marker.MarkerSize.Height * Marker.ScaleFactor);
+                        Marker.MarkerShape.Margin = new Thickness(0, 0, 0, 0);
+                    }
+                    else if((Boolean)LabelEnabled)
+                    {
+                        InteractivityHelper.RemoveBorderEffect(Marker.MarkerShape, (BorderStyles)dataPoint.BorderStyle, Marker.BorderThickness, Marker.BorderColor, Marker.MarkerFillColor, Marker.MarkerSize.Width * Marker.ScaleFactor, Marker.MarkerSize.Height * Marker.ScaleFactor);
+                        Marker.MarkerShape.Margin = new Thickness(0, 0, 0, 0);
+                        Marker.MarkerShape.Fill = new SolidColorBrush(Colors.Transparent);
+                    }
                 }
 
                 if (allowPropertyChange)
@@ -3988,11 +4011,7 @@ namespace Visifire.Charts
             //base.ClearInstanceRefs();
 
             if (Storyboard != null)
-            {
-                Storyboard.Stop();
-                Storyboard.Children.Clear();
                 Storyboard = null;
-            }
 
             StoryboardZValueAni = null;
             LegendMarker = null;

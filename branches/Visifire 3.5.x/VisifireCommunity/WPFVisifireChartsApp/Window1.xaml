@@ -3,9 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
     Title="PerfMon">
-  
-    <Grid x:Name="LayoutRoot" Background="White">
 
+    <Grid x:Name="LayoutRoot" Background="White">
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
                   Width="490" Height="290" Theme="Theme1">
 
@@ -25,6 +24,5 @@
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-
     </Grid>
 </Window>

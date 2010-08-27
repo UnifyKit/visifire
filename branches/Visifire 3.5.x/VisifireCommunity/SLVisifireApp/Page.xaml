@@ -11,7 +11,7 @@ mc:Ignorable="d">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Athens 2004 Olympics" />
-            </vc:Chart.Titles>           
+            </vc:Chart.Titles>
 
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">

@@ -385,10 +385,10 @@ namespace Visifire.Charts
         private static CornerRadius GetCorrectedRadius(CornerRadius radius,Double limit)
         {
            return new CornerRadius(
-                ((radius.TopLeft > limit) ? limit : radius.TopLeft),
-                ((radius.TopRight > limit) ? limit : radius.TopRight),
-                ((radius.BottomRight > limit) ? limit : radius.BottomRight),
-                ((radius.BottomLeft > limit) ? limit : radius.BottomLeft)
+                ((radius.TopLeft > limit) ? limit/2 : radius.TopLeft),
+                ((radius.TopRight > limit) ? limit/2 : radius.TopRight),
+                ((radius.BottomRight > limit) ? limit/2 : radius.BottomRight),
+                ((radius.BottomLeft > limit) ? limit/2 : radius.BottomLeft)
                 );
         }
 
@@ -489,45 +489,229 @@ namespace Visifire.Charts
         /// <param name="xRadius">XRadius as CornerRadius</param>
         /// <param name="yRadius">YRadius as CornerRadius</param>
         /// <returns>Canvas</returns>
-        public static Rectangle Get2DRectangle(FrameworkElement tagReference, Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius)
+        public static Rectangle Get3DRectangle(FrameworkElement tagReference, Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill)
         {
-            // Canvas canvas = new Canvas() { Width = width, Height = height };
-
             Rectangle rectangle = new Rectangle() { Width = width, Height = height, Tag = new ElementData() { Element = tagReference } };
             rectangle.StrokeDashCap = PenLineCap.Flat;
             rectangle.StrokeEndLineCap = PenLineCap.Flat;
             rectangle.StrokeMiterLimit = 1;
             rectangle.StrokeStartLineCap = PenLineCap.Flat;
             rectangle.StrokeLineJoin = PenLineJoin.Bevel;
-            UpdateBorderOf2DRectangle(ref rectangle, strokeThickness, CloneCollection(strokeDashArray), stroke, xRadius, yRadius);
+            UpdateBorderOf3DRectangle(rectangle, strokeThickness, CloneCollection(strokeDashArray), stroke);
             rectangle.Fill = fill;
-
-            // rectangle.Data = GetRectanglePathGeometry(
-            //    width,
-            //    height,
-            //    GetCorrectedRadius(xRadius, width),
-            //    GetCorrectedRadius(yRadius, height)
-            //    );
-
-            //rectangle.SetValue(Canvas.TopProperty, (Double)0);
-            //rectangle.SetValue(Canvas.LeftProperty, (Double)0);
-
-            //canvas.Children.Add(rectangle);
 
             return rectangle;
         }
 
-        public static void UpdateBorderOf2DRectangle(ref Rectangle rectangle, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, CornerRadius xRadius, CornerRadius yRadius)
-        {
-            rectangle.RadiusX = xRadius.TopLeft;
-            rectangle.RadiusY = xRadius.BottomLeft;
+        public static void UpdateBorderOf3DRectangle(Shape rectangle, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke)
+        {   
             rectangle.StrokeDashArray = strokeDashArray != null ? strokeDashArray : strokeDashArray;
             rectangle.StrokeThickness = strokeThickness;
 
             if (rectangle.StrokeThickness != 0)
             {
-
                 rectangle.Stroke = stroke;
+            }
+        }
+
+        /// <summary>
+        /// Creates and returns a rectangle based on the given params
+        /// </summary>
+        /// <param name="width">Visual width</param>
+        /// <param name="height">Visual height</param>
+        /// <param name="strokeThickness">StrokeThickness</param>
+        /// <param name="strokeDashArray">StrokeDashArray</param>
+        /// <param name="stroke">Stroke</param>
+        /// <param name="fill">Fill color</param>
+        /// <param name="xRadius">XRadius as CornerRadius</param>
+        /// <param name="yRadius">YRadius as CornerRadius</param>
+        /// <returns>Canvas</returns>
+        public static Path Get2DRectangle(FrameworkElement tagReference, Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius, Nullable<Boolean> isRadiusApplicable)
+        {
+            Boolean isPositive = false;
+
+            DataPoint dataPoint = tagReference as DataPoint;
+
+            if(dataPoint != null)
+                isPositive = (dataPoint.InternalYValue >=0)? true : false;
+
+            Path path = new Path() { Width = width, Height = height, Tag = new ElementData() { Element = tagReference } };
+            path.StrokeDashCap = PenLineCap.Flat;
+            path.StrokeEndLineCap = PenLineCap.Flat;
+            path.StrokeMiterLimit = 1;
+            path.StrokeStartLineCap = PenLineCap.Flat;
+            path.StrokeLineJoin = PenLineJoin.Bevel;
+            
+            path.Data = GetBasicPathDataForColumn(width, height, isPositive, isRadiusApplicable, xRadius.TopLeft, yRadius.TopLeft);
+
+            UpdateBorderOf2DRectangle(path as Shape, strokeThickness, CloneCollection(strokeDashArray), stroke, xRadius, yRadius, isRadiusApplicable);
+            
+            path.Fill = fill;
+
+            return path;
+        }
+
+
+        public static Geometry GetBasicPathDataForColumn(Double width, Double height, 
+            Boolean isPositive, Nullable<Boolean> isCornerRadiusAllowed, Double xRadius, Double yRadius)
+        {   
+            if (isCornerRadiusAllowed == true)
+            {   
+                PathGeometry pathGeo = new PathGeometry();
+                PathFigure pathFig = new PathFigure() { StartPoint = new Point(0, height) };
+
+                pathFig.Segments.Add(new LineSegment());
+                pathFig.Segments.Add(new ArcSegment());
+                pathFig.Segments.Add(new LineSegment());
+                pathFig.Segments.Add(new ArcSegment());
+                pathFig.Segments.Add(new LineSegment());
+                pathFig.Segments.Add(new LineSegment());
+
+                pathGeo.Figures.Add(pathFig);
+
+                return pathGeo;
+            }
+            else
+            {   
+                RectangleGeometry recGeo = new RectangleGeometry() { Rect = new Rect(0, 0, width, height) };
+                return recGeo;
+            }
+        }
+        
+        public static void UpdateBorderOf2DRectangle(Shape shape, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, CornerRadius xRadius, CornerRadius yRadius, Nullable<Boolean> isRadiusApplicable)
+        {
+            Path path = shape as Path;
+            Double height = path.Height;
+            Double width = path.Width;
+
+            DataPoint dataPoint = (path.Tag as ElementData).Element as DataPoint;
+
+            if (dataPoint != null)
+            {   
+                 Double tempRadiusX=0;
+                Double tempRadiusY=0;
+
+                if(!dataPoint.Parent.Bevel)
+                {
+                    tempRadiusX = GetCorrectedRadius(xRadius, width).TopLeft;
+                    tempRadiusY = GetCorrectedRadius(yRadius, height).TopLeft;
+                }
+
+                Chart chart = dataPoint.Chart as Chart;
+
+                Boolean isPositive = dataPoint.InternalYValue >= 0 ? true : false;
+
+                if ((Boolean)isRadiusApplicable)
+                {
+                    RectangleGeometry recGeo = (path.Data as RectangleGeometry);
+
+                    PathGeometry pathGeo = (path.Data as PathGeometry);
+                    PathFigure pathFig = pathGeo.Figures[0] as PathFigure;
+       
+                    if (recGeo != null)
+                    {   
+                        recGeo.Rect = new Rect(0, 0, width, height);
+                    }
+                    else
+                    {
+                        if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                        {
+                            if (isPositive)
+                            {
+                                pathFig.StartPoint = new Point(0, height);
+
+                                (pathFig.Segments[0] as LineSegment).Point = new Point(0, tempRadiusY);
+
+                                (pathFig.Segments[1] as ArcSegment).Point = new Point(tempRadiusX, 0);
+                                (pathFig.Segments[1] as ArcSegment).SweepDirection = SweepDirection.Clockwise;
+                                (pathFig.Segments[1] as ArcSegment).Size = new Size(tempRadiusX, tempRadiusY);
+
+                                (pathFig.Segments[2] as LineSegment).Point = new Point(width - tempRadiusX, 0);
+
+                                (pathFig.Segments[3] as ArcSegment).Point = new Point(width, tempRadiusY);
+                                (pathFig.Segments[3] as ArcSegment).SweepDirection = SweepDirection.Clockwise;
+                                (pathFig.Segments[3] as ArcSegment).Size = new Size(tempRadiusX, tempRadiusY);
+
+                                (pathFig.Segments[4] as LineSegment).Point = new Point(width, height);
+                                (pathFig.Segments[5] as LineSegment).Point = new Point(0, height);
+                            }
+                            else
+                            {
+                                pathFig.StartPoint = new Point(0, 0);
+
+                                (pathFig.Segments[0] as LineSegment).Point = new Point(0, height - tempRadiusY);
+
+                                (pathFig.Segments[1] as ArcSegment).Point = new Point(tempRadiusX, height);
+                                (pathFig.Segments[1] as ArcSegment).SweepDirection = SweepDirection.Counterclockwise;
+                                (pathFig.Segments[1] as ArcSegment).Size = new Size(tempRadiusX, tempRadiusY);
+
+                                (pathFig.Segments[2] as LineSegment).Point = new Point(width - tempRadiusX, height);
+
+                                (pathFig.Segments[3] as ArcSegment).Point = new Point(width, height - tempRadiusY);
+                                (pathFig.Segments[3] as ArcSegment).SweepDirection = SweepDirection.Counterclockwise;
+                                (pathFig.Segments[3] as ArcSegment).Size = new Size(tempRadiusX, tempRadiusY);
+
+                                (pathFig.Segments[4] as LineSegment).Point = new Point(width, 0);
+                                (pathFig.Segments[5] as LineSegment).Point = new Point(0, 0);
+                            }
+
+                        }
+                        else // For BarChart
+                        {
+                            if (isPositive)
+                            {
+                                pathFig.StartPoint = new Point(0, 0);
+
+                                (pathFig.Segments[0] as LineSegment).Point = new Point(width - tempRadiusY, 0);
+
+                                (pathFig.Segments[1] as ArcSegment).Point = new Point(width, tempRadiusX);
+                                (pathFig.Segments[1] as ArcSegment).SweepDirection = SweepDirection.Clockwise;
+                                (pathFig.Segments[1] as ArcSegment).Size = new Size(tempRadiusY, tempRadiusX);
+
+                                (pathFig.Segments[2] as LineSegment).Point = new Point(width, height - tempRadiusY);
+
+                                (pathFig.Segments[3] as ArcSegment).Point = new Point(width - tempRadiusY, height);
+                                (pathFig.Segments[3] as ArcSegment).SweepDirection = SweepDirection.Clockwise;
+                                (pathFig.Segments[3] as ArcSegment).Size = new Size(tempRadiusX, tempRadiusY);
+
+                                (pathFig.Segments[4] as LineSegment).Point = new Point(0, height);
+                                (pathFig.Segments[5] as LineSegment).Point = new Point(0, 0);
+                            }
+                            else
+                            {
+                                pathFig.StartPoint = new Point(width, height);
+
+                                (pathFig.Segments[0] as LineSegment).Point = new Point(tempRadiusY, height);
+
+                                (pathFig.Segments[1] as ArcSegment).Point = new Point(0, height - tempRadiusX);
+                                (pathFig.Segments[1] as ArcSegment).SweepDirection = SweepDirection.Clockwise;
+                                (pathFig.Segments[1] as ArcSegment).Size = new Size(tempRadiusY, tempRadiusX);
+
+                                (pathFig.Segments[2] as LineSegment).Point = new Point(0, tempRadiusX);
+
+                                (pathFig.Segments[3] as ArcSegment).Point = new Point(tempRadiusY, 0);
+                                (pathFig.Segments[3] as ArcSegment).SweepDirection = SweepDirection.Clockwise;
+                                (pathFig.Segments[3] as ArcSegment).Size = new Size(tempRadiusY, tempRadiusX);
+
+                                (pathFig.Segments[4] as LineSegment).Point = new Point(width, 0);
+                                (pathFig.Segments[5] as LineSegment).Point = new Point(width, height);
+                            }
+                        }
+                    }
+                }
+                else if (!(Boolean)isRadiusApplicable)
+                {
+                    //topRecGeo.RadiusX = 0;
+                    //topRecGeo.RadiusY = 0;
+                }
+            }
+
+            path.StrokeDashArray = strokeDashArray != null ? strokeDashArray : strokeDashArray;
+            path.StrokeThickness = strokeThickness;
+
+            if (path.StrokeThickness != 0)
+            {
+                path.Stroke = stroke;
             }
         }
         /// <summary>
