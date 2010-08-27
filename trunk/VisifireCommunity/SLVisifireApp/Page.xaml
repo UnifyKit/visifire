@@ -6,7 +6,7 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 mc:Ignorable="d"
 >
     <Grid x:Name="LayoutRoot">
-       <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" Theme="Theme1">
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" Theme="Theme1">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Visifire Line Chart"/>

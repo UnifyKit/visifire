@@ -231,38 +231,58 @@ namespace Visifire.Charts
         {
             foreach (DataSeries ds in Series)
             {
+                ds.IsNotificationEnable = false;
                 if (!_rootElement.Children.Contains(ds))
                     _rootElement.Children.Insert(0, ds);
+                ds.IsNotificationEnable = true;
             }
 
             foreach (Title title in Titles)
             {
+                title.IsNotificationEnable = false;
                 if (!_rootElement.Children.Contains(title))
                     _rootElement.Children.Add(title);
+                title.IsNotificationEnable = true;
             }
 
             foreach (Axis axis in AxesX)
             {
+                axis.IsNotificationEnable = false;
                 if (!_rootElement.Children.Contains(axis))
                     _rootElement.Children.Add(axis);
+                axis.IsNotificationEnable = true;
             }
 
             foreach (Axis axis in AxesY)
             {
+                axis.IsNotificationEnable = false;
                 if (!_rootElement.Children.Contains(axis))
                     _rootElement.Children.Add(axis);
+                axis.IsNotificationEnable = true;
             }
 
             foreach (TrendLine trendLine in TrendLines)
             {
+                trendLine.IsNotificationEnable = false;
                 if (!_rootElement.Children.Contains(trendLine))
                     _rootElement.Children.Add(trendLine);
+                trendLine.IsNotificationEnable = true;
             }
 
             foreach (Legend legend in Legends)
             {
+                legend.IsNotificationEnable = false;
                 if (!_rootElement.Children.Contains(legend))
                     _rootElement.Children.Add(legend);
+                legend.IsNotificationEnable = true;
+            }
+
+            if (PlotArea != null)
+            {
+                PlotArea.IsNotificationEnable = false;
+                if (!_rootElement.Children.Contains(PlotArea))
+                    _rootElement.Children.Add(PlotArea);
+                PlotArea.IsNotificationEnable = true;
             }
         }
 
@@ -371,7 +391,7 @@ namespace Visifire.Charts
                     c._zoomIconContainer.Visibility = Visibility.Collapsed;
             }
 
-            c._resetZoomState = true;
+            c._clearAndResetZoomState = true;
             c.InvokeRender();
         }
 
@@ -1320,9 +1340,18 @@ namespace Visifire.Charts
                         isAutoLegend = true;
 
                     if (Legends.Count > 0)
-                    {   
+                    {
                         if (String.IsNullOrEmpty((String)legend.GetValue(NameProperty)))
-                            legend.SetValue(NameProperty, "Legend" + Legends.IndexOf(legend));
+                        {
+                            if(isAutoLegend)
+                                legend.SetValue(NameProperty, "Legend" + Legends.IndexOf(legend));
+                            else
+                                legend.SetValue(NameProperty, "Legend" + Legends.IndexOf(legend) + "_" + Guid.NewGuid().ToString().Replace('-', '_'));
+
+                            legend._isAutoName = true;
+                        }
+                        else
+                            legend._isAutoName = false;
                     }
 
                     legend.Chart = this;
@@ -2646,7 +2675,7 @@ namespace Visifire.Charts
         /// This flag is used to specify whether zooming need to be resetted while
         /// partial update.
         /// </summary>
-        internal Boolean _resetZoomState;
+        internal Boolean _clearAndResetZoomState;
 
         /// <summary>
         /// Number of time render call is lapsed or failed due to render lock

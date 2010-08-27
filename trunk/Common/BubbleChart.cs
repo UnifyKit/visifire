@@ -154,6 +154,31 @@ namespace Visifire.Charts
 
         #region Internal Methods
 
+        private static void CalculateMaxAndMinZValueFromAllSeries(ref List<DataSeries> seriesList, out Double minimumZVal, out Double maximumZVal)
+        {
+            List<Double> minValues = new List<double>();
+            List<Double> maxValues = new List<double>();
+            
+            minimumZVal = 0;
+            maximumZVal = 1;
+
+            foreach (DataSeries series in seriesList)
+            {
+                if (series.Enabled == false)
+                    continue;
+                
+                CalculateMaxAndMinZValue(series, out minimumZVal, out maximumZVal);
+                minValues.Add(minimumZVal);
+                maxValues.Add(maximumZVal);
+            }
+
+            if (minValues.Count > 0)
+                minimumZVal = minValues.Min();
+
+            if (maxValues.Count > 0)
+                maximumZVal = maxValues.Max();
+        }
+
         /// <summary>
         /// Get visual object for bubble chart
         /// </summary>
@@ -183,6 +208,9 @@ namespace Visifire.Charts
             visual.SetValue(Canvas.TopProperty, visualOffset);
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
 
+            Double minimumZVal, maximumZVal;
+            CalculateMaxAndMinZValueFromAllSeries(ref seriesList, out minimumZVal, out maximumZVal);
+
             foreach (DataSeries series in seriesList)
             {
                 Faces dsFaces = new Faces() { Visual = bubbleChartCanvas };
@@ -193,14 +221,6 @@ namespace Visifire.Charts
                                 
                 //out Double minimumZVal, out Double maximumZVal
                 PlotGroup plotGroup = series.PlotGroup;
-
-                Double minimumZVal, maximumZVal;
-                CalculateMaxAndMinZValue(series, out minimumZVal, out maximumZVal);
-
-                // Boolean pixelLavelShadow = false;
-
-                //if (series.InternalDataPoints.Count <= 25)
-                //    pixelLavelShadow = true;
 
                 List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(series, false);
 
@@ -634,7 +654,7 @@ namespace Visifire.Charts
         /// <param name="newValue"></param>
         /// <param name="isAxisChanged"></param>
         private static void UpdateDataPoint(DataPoint dataPoint, VcProperties property, object newValue, Boolean isAxisChanged)
-        {
+        {   
             Chart chart = dataPoint.Chart as Chart;
             PlotDetails plotDetails = chart.PlotDetails;
             Marker marker = dataPoint.Marker;
@@ -650,7 +670,11 @@ namespace Visifire.Charts
             if (property == VcProperties.Enabled || (dataPoint.Faces == null && (property == VcProperties.XValue || property == VcProperties.YValue)))
             {   
                 dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-                CalculateMaxAndMinZValue(dataPoint.Parent, out minimumZVal, out maximumZVal);
+
+                // Calculate max and min ZValue from all DataSeries
+                List<DataSeries> seriesList = (from ds in chart.InternalSeries where ds.RenderAs == RenderAs.Bubble && ((Boolean)ds.Enabled == true) select ds).ToList(); 
+                CalculateMaxAndMinZValueFromAllSeries(ref seriesList, out minimumZVal, out maximumZVal);
+
                 CreateOrUpdateAPointDataPoint(bubleChartCanvas, dataPoint, minimumZVal, maximumZVal, plotWidth, plotHeight);
                 return;
             }
@@ -661,7 +685,7 @@ namespace Visifire.Charts
             Grid bubbleVisual = dataPoint.Faces.Visual as Grid;
             
             switch (property)
-            {
+            {   
                 case VcProperties.Bevel:
                     break;
                 
@@ -685,8 +709,8 @@ namespace Visifire.Charts
                     CalculateMaxAndMinZValue(dataPoint.Parent, out minimumZVal, out maximumZVal);
                     CreateOrUpdateAPointDataPoint(bubleChartCanvas, dataPoint, minimumZVal, maximumZVal, plotWidth, plotHeight);
 
-                    //if (marker != null)
-                    //    marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
+                    // if (marker != null)
+                    //   marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
 
                     break;
 
@@ -805,15 +829,20 @@ namespace Visifire.Charts
 
                     //if ((Boolean)dataPoint.LabelEnabled)
                     //    marker.Text = dataPoint.TextParser(dataPoint.LabelText);
-                    
-                    CalculateMaxAndMinZValue(dataPoint.Parent, out minimumZVal, out maximumZVal);
-                    
-                    foreach (DataPoint dp in dataSeries.InternalDataPoints)
-                    {
-                        if (Double.IsNaN(dp.InternalYValue) || (dp.Enabled == false))
-                            continue;
+
+                    List<DataSeries> seriesList = (from ds in chart.InternalSeries where ds.RenderAs == RenderAs.Bubble && ((Boolean)ds.Enabled == true) select ds).ToList();
+                    CalculateMaxAndMinZValueFromAllSeries(ref seriesList, out minimumZVal, out maximumZVal);
                         
-                        ApplyZValue(dp, minimumZVal, maximumZVal, plotWidth, plotHeight);
+                    // CalculateMaxAndMinZValue(dataPoint.Parent, out minimumZVal, out maximumZVal);
+                    foreach (DataSeries ds in seriesList)
+                    {
+                        foreach (DataPoint dp in ds.InternalDataPoints)
+                        {   
+                            if (Double.IsNaN(dp.InternalYValue) || (dp.Enabled == false))
+                                continue;
+
+                            ApplyZValue(dp, minimumZVal, maximumZVal, plotWidth, plotHeight);
+                        }
                     }
 
                     break;

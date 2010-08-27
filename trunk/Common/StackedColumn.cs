@@ -89,8 +89,8 @@ namespace Visifire.Charts
 
             }
             else
-            {   
-                column = ColumnChart.Get2DColumn(dataPoint, columnWidth, columnHeight, true, false);
+            {
+                column = ColumnChart.Get2DColumn(dataPoint, columnWidth, columnHeight, true, isTopOFStack);
                 columnVisual = column.Visual as Panel;
                 dataPoint.Faces = column;
             }
