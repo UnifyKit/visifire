@@ -231,10 +231,8 @@ namespace Visifire.Charts
         {
             foreach (DataSeries ds in Series)
             {
-                ds.IsNotificationEnable = false;
                 if (!_rootElement.Children.Contains(ds))
                     _rootElement.Children.Insert(0, ds);
-                ds.IsNotificationEnable = true;
             }
 
             foreach (Title title in Titles)
