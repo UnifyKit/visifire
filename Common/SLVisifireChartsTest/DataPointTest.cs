@@ -93,6 +93,7 @@ namespace SLVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
 
+
             _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
