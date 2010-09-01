@@ -3445,7 +3445,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             Legend legend = new Legend();
-            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            //legend.SetValue(FrameworkElement.NameProperty, "Legend0");
             legend.Title = "Legend";
             chart.Legends.Add(legend);
 
