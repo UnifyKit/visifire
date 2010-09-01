@@ -818,7 +818,7 @@ namespace Visifire.Charts
             if (ioffset == 0)
                 ioffset++;
 
-            Zi = (isPositive) ? Zi + (Int32)(ioffset) : Zi + Int32.MinValue + (Int32)(ioffset);
+            Zi = (isPositive) ? Zi + (Int32)(ioffset) : Zi + Int32.MinValue + Math.Abs((Int32)(ioffset));
 
             return Zi;
         }
@@ -845,7 +845,7 @@ namespace Visifire.Charts
                 if (ioffset == 0)
                     ioffset = 1;
 
-                zindex = Int32.MinValue + (Int32)(ioffset + topOffset);
+                zindex = Int32.MinValue + (Int32)(Math.Abs(ioffset) + topOffset);
             }
 
             return zindex;

@@ -757,10 +757,11 @@ namespace Visifire.Charts
             //if(is3D)
             //    center = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2 - (yRadiusChart * scaleY) / 2);
             //else
-                center = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2);
+
+            center = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2);
             
             Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle), stopAngle, meanAngle;
-            //Graphics.DrawPointAt(center, visual, System.Windows.Media.Colors.Red);
+            // Graphics.DrawPointAt(center, visual, System.Windows.Media.Colors.Red);
 
             CircularLabel prevousLabel = null;
             CircularLabel cLabel = null;
@@ -953,7 +954,7 @@ namespace Visifire.Charts
                     visual.Children.Add(label);
             }
 
-            //this is to offset the label to draw label line
+            // This is to offset the label to draw label line
             maxLabelWidth += 10;
 
             Double pieCanvasWidth = 0;
@@ -981,14 +982,7 @@ namespace Visifire.Charts
                         labelEllipseHeight = labelEllipseWidth * scaleY + LABEL_LINE_LENGTH * 2;
                     }
                     else
-                    {
-                        //pieCanvasWidth = minLength - labelLineLength * 2 - LABEL_LINE_LENGTH * 2;
-                        //pieCanvasHeight = pieCanvasWidth;
-
-                        //labelEllipseWidth = pieCanvasWidth + LABEL_LINE_LENGTH * 2;
-                        //labelEllipseHeight = labelEllipseWidth;
-
-                        //minLength = Math.Min(width, height);
+                    {   
                         pieCanvasWidth = minLength - maxLabelWidth - LABEL_LINE_LENGTH / 2;
 
                         if (pieCanvasWidth < Math.Min(width, height) / 3)
@@ -997,14 +991,13 @@ namespace Visifire.Charts
                         pieCanvasHeight = Math.Abs(pieCanvasWidth);
 
                         labelEllipseWidth = Math.Abs(pieCanvasWidth) + LABEL_LINE_LENGTH;
-                        labelEllipseHeight = labelEllipseWidth + LABEL_LINE_LENGTH / 2;
-
+                        labelEllipseHeight = labelEllipseWidth;// -LABEL_LINE_LENGTH / 2;
                     }
-                                       
+                       
                     PositionLabels(visual, totalSum, dataPoints, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
-                }
+                }   
                 else
-                {
+                {   
                     pieCanvasWidth = minLength;
                     pieCanvasHeight = minLength;
 
@@ -1012,14 +1005,17 @@ namespace Visifire.Charts
                     labelEllipseHeight = pieCanvasHeight;
 
                     PositionLabels(visual, totalSum, dataPoints, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
-
                 }
             }
             else
-            {
+            {   
                 pieCanvasWidth = minLength;
                 pieCanvasHeight = minLength;
             }
+
+            pieCanvasWidth -= (pieCanvasWidth > 10) ? pieCanvasWidth * 0.1 : 0;
+            pieCanvasHeight -= (pieCanvasHeight > 10) ? pieCanvasWidth * 0.1 : 0;
+
 
             size = new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight));
 
