@@ -611,6 +611,7 @@ namespace Visifire.Charts
                 {   
                     dp._oldVisual = dp.Faces.Visual;
                     columnCanvas.Children.Remove(dp._oldVisual);
+                    CleanUpMarkerAndLabel(dp, labelCanvas);
                 }
             }
 
@@ -828,6 +829,7 @@ namespace Visifire.Charts
                 {
                     dp._oldVisual = dp.Faces.Visual;
                     columnCanvas.Children.Remove(dp._oldVisual);
+                    CleanUpMarkerAndLabel(dp, labelCanvas);
                 }
             }
 

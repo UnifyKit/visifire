@@ -137,23 +137,10 @@ namespace Visifire.Charts
 
                     dataSeries.ClearInstanceRefs();
                 }
-
-                InternalSeries.Clear();
             }
-
-            InternalSeries = null;
 
             if (ChartArea != null)
                 ChartArea.ClearInstanceRefs();
-
-            foreach (Legend legend in Legends)
-                legend.ClearInstanceRefs();
-
-            if (PlotArea != null)
-                PlotArea.ClearInstanceRefs();
-
-            if (PlotDetails != null)
-                PlotDetails.ClearInstanceRefs();
 
             foreach (Axis axis in AxesX)
                 axis.ClearInstanceRefs();
@@ -163,8 +150,6 @@ namespace Visifire.Charts
 
             if(_rootElement != null)
                 _rootElement.IsHitTestVisible = true;
-
-            GC.Collect();
         }
 
         #endregion

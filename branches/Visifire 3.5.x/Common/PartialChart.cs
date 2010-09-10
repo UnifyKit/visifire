@@ -1,4 +1,4 @@
-﻿/*   
+/*   
     Copyright (C) 2008 Webyog Softworks Private Limited
 
     This file is a part of Visifire Charts.
@@ -231,6 +231,11 @@ namespace Visifire.Charts
         {
             foreach (DataSeries ds in Series)
             {
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(ds);
+#endif
+
                 if (!_rootElement.Children.Contains(ds))
                     _rootElement.Children.Insert(0, ds);
             }
@@ -238,6 +243,12 @@ namespace Visifire.Charts
             foreach (Title title in Titles)
             {
                 title.IsNotificationEnable = false;
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(title);
+#endif
+
                 if (!_rootElement.Children.Contains(title))
                     _rootElement.Children.Add(title);
                 title.IsNotificationEnable = true;
@@ -246,6 +257,12 @@ namespace Visifire.Charts
             foreach (Axis axis in AxesX)
             {
                 axis.IsNotificationEnable = false;
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(axis);
+#endif
+
                 if (!_rootElement.Children.Contains(axis))
                     _rootElement.Children.Add(axis);
                 axis.IsNotificationEnable = true;
@@ -254,6 +271,12 @@ namespace Visifire.Charts
             foreach (Axis axis in AxesY)
             {
                 axis.IsNotificationEnable = false;
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(axis);
+#endif
+
                 if (!_rootElement.Children.Contains(axis))
                     _rootElement.Children.Add(axis);
                 axis.IsNotificationEnable = true;
@@ -262,6 +285,12 @@ namespace Visifire.Charts
             foreach (TrendLine trendLine in TrendLines)
             {
                 trendLine.IsNotificationEnable = false;
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(trendLine);
+#endif
+
                 if (!_rootElement.Children.Contains(trendLine))
                     _rootElement.Children.Add(trendLine);
                 trendLine.IsNotificationEnable = true;
@@ -270,6 +299,12 @@ namespace Visifire.Charts
             foreach (Legend legend in Legends)
             {
                 legend.IsNotificationEnable = false;
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(legend);
+#endif
+
                 if (!_rootElement.Children.Contains(legend))
                     _rootElement.Children.Add(legend);
                 legend.IsNotificationEnable = true;
@@ -278,6 +313,12 @@ namespace Visifire.Charts
             if (PlotArea != null)
             {
                 PlotArea.IsNotificationEnable = false;
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(PlotArea);
+#endif
+
                 if (!_rootElement.Children.Contains(PlotArea))
                     _rootElement.Children.Add(PlotArea);
                 PlotArea.IsNotificationEnable = true;
@@ -1883,7 +1924,20 @@ namespace Visifire.Charts
 
             _toolTip.Chart = this;
 
+#if WPF
+            if (IsInDesignMode)
+            {
+                if (_toolTip.Parent != null && _toolTipCanvas != _toolTip.Parent)
+                    ObservableObject.RemoveElementFromElementTree(_toolTip);
+
+                if (!_toolTipCanvas.Children.Contains(_toolTip))
+                    _toolTipCanvas.Children.Add(_toolTip);
+            }
+            else
+                _toolTipCanvas.Children.Add(_toolTip);
+#else
             _toolTipCanvas.Children.Add(_toolTip);
+#endif
 
             // Attach events to the root element of the chart to track mouse movement over chart.
             this._rootElement.MouseLeave += new MouseEventHandler(Chart_MouseLeave);
@@ -2637,7 +2691,14 @@ namespace Visifire.Charts
         #endregion
         
         #region Data
-       
+
+        /// <summary>
+        /// This is used to check whether chart should go for partial update or full render.
+        /// For instance, it might happen if YValue and RenderAs both are changed at realtime.
+        /// So in this case, both partial upadte and full render will occur.
+        /// </summary>
+        internal Boolean _internalPartialUpdateEnabled;
+
         /// <summary>
         /// Whether chart is rendered
         /// </summary>

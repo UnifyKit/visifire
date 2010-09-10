@@ -205,6 +205,12 @@ namespace Visifire.Charts
 
             foreach (DataPoint dp in DataPoints)
             {
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(dp);
+#endif
+
                 _rootElement.Children.Add(dp);
             }
         }
@@ -503,6 +509,17 @@ namespace Visifire.Charts
             typeof(DataSeries),
             new PropertyMetadata(OnColorPropertyChanged));
 
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.StickColor dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.StickColor dependency property.
+        /// </returns>
+        public static readonly DependencyProperty StickColorProperty = DependencyProperty.Register
+             ("StickColor",
+             typeof(Brush),
+             typeof(DataSeries),
+             new PropertyMetadata(OnStickColorPropertyChanged));
 
         public static readonly DependencyProperty PriceUpColorProperty = DependencyProperty.Register
            ("PriceUpColor",
@@ -1316,6 +1333,21 @@ namespace Visifire.Charts
             set
             {
                 SetValue(ColorProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the high-low line color of CandleStick DataPoints
+        /// </summary>
+        public Brush StickColor
+        {
+            get
+            {
+                return (Brush)GetValue(StickColorProperty);
+            }
+            set
+            {
+                SetValue(StickColorProperty, value);
             }
         }
 
@@ -2655,7 +2687,6 @@ namespace Visifire.Charts
                 return;
             }
 
-
             if (ValidatePartialUpdate(RenderAs, property))
             {
                 if (NonPartialUpdateChartTypes(RenderAs) && property != VcProperties.ScrollBarScale)
@@ -2669,6 +2700,12 @@ namespace Visifire.Charts
                 }
 
                 Chart chart = Chart as Chart;
+
+                if (chart == null)
+                    return;
+                else
+                    chart._internalPartialUpdateEnabled = true;
+
                 Boolean renderAxis = false;
 
                 _isZooming = false;
@@ -3256,6 +3293,17 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             dataSeries.UpdateVisual(VcProperties.Color, e.NewValue);
+        }
+
+        /// <summary>
+        /// StickColorProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnStickColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.UpdateVisual(VcProperties.StickColor, e.NewValue);
         }
 
         /// <summary>
@@ -3942,7 +3990,7 @@ namespace Visifire.Charts
         {
             Chart chart = Chart as Chart;
 
-            if (!chart.PARTIAL_DS_RENDER_LOCK)
+            if (chart != null && !chart.PARTIAL_DS_RENDER_LOCK)
             {
                 chart.PARTIAL_DS_RENDER_LOCK = true;
                 chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(UpdateVisual), new Object[] { VcProperties.DataPoints, newValue });
@@ -4167,6 +4215,9 @@ namespace Visifire.Charts
 
         internal void AttachOrDetachInteractivity4DataPoint(DataPoint dp)
         {
+            if (Chart == null)
+                return;
+
             if (dp.Faces != null)
             {
                 if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.StreamLineFunnel || RenderAs == RenderAs.Pyramid))
@@ -4203,30 +4254,11 @@ namespace Visifire.Charts
 
         internal override void ClearInstanceRefs()
         {
-            //base.ClearInstanceRefs();
-
-            _internalColor = null;
-            _nearestDataPoint = null;
-            InternalDataPoints.Clear();
-
-            if(ListOfSelectedDataPoints != null)
-                ListOfSelectedDataPoints.Clear();
-
-            VisualParams = null;
-            LegendMarker = null;
-
             if (Storyboard != null)
-                Storyboard = null;
-
-            if (Faces != null)
-                Faces.ClearInstanceRefs();
-
-            Faces = null;
-
-            if (null != _weakEventListener)
             {
-                _weakEventListener.Detach();
-                _weakEventListener = null;
+                Storyboard.FillBehavior = FillBehavior.Stop;
+                Storyboard.Stop();
+                Storyboard = null;
             }
         }
 

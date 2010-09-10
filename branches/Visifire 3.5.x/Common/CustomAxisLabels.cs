@@ -89,6 +89,11 @@ namespace Visifire.Charts
 
             foreach (CustomAxisLabel label in Labels)
             {
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(label);
+#endif
+
                 if (!_rootElement.Children.Contains(label))
                     _rootElement.Children.Add(label);
             }

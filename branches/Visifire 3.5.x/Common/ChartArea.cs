@@ -1,4 +1,4 @@
-﻿/*   
+/*   
     Copyright (C) 2008 Webyog Softworks Private Limited
 
     This file is a part of Visifire Charts.
@@ -697,28 +697,56 @@ namespace Visifire.Charts
         {
             if (isScrollingActive && Chart.IsScrollingActivated)
             {
+#if WPF
+                if(chart.IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(PlotAreaCanvas);
+                else
+                    chart._centerInnerGrid.Children.Remove(PlotAreaCanvas);
+#else
                 chart._centerInnerGrid.Children.Remove(PlotAreaCanvas);
+#endif
 
                 if (!chart._drawingCanvas.Children.Contains(PlotAreaCanvas))
                     chart._drawingCanvas.Children.Add(PlotAreaCanvas);
             }
             else if (!isScrollingActive && !Chart.IsScrollingActivated)
             {
+#if WPF
+                if (chart.IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(PlotAreaCanvas);
+                else
+                    chart._drawingCanvas.Children.Remove(PlotAreaCanvas);
+#else
                 chart._drawingCanvas.Children.Remove(PlotAreaCanvas);
+#endif
 
                 if (!chart._centerInnerGrid.Children.Contains(PlotAreaCanvas))
                     chart._centerInnerGrid.Children.Add(PlotAreaCanvas);
             }
             else if (!isScrollingActive && Chart.IsScrollingActivated)
             {
+#if WPF
+                if (chart.IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(PlotAreaCanvas);
+                else
+                    chart._centerInnerGrid.Children.Remove(PlotAreaCanvas);
+#else
                 chart._centerInnerGrid.Children.Remove(PlotAreaCanvas);
+#endif
 
                 if (!chart._drawingCanvas.Children.Contains(PlotAreaCanvas))
                     chart._drawingCanvas.Children.Add(PlotAreaCanvas);
             }
             else if (isScrollingActive && !Chart.IsScrollingActivated)
             {
+#if WPF
+                if (chart.IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(PlotAreaCanvas);
+                else
+                    chart._drawingCanvas.Children.Remove(PlotAreaCanvas);
+#else
                 chart._drawingCanvas.Children.Remove(PlotAreaCanvas);
+#endif
 
                 if (!chart._centerInnerGrid.Children.Contains(PlotAreaCanvas))
                     chart._centerInnerGrid.Children.Add(PlotAreaCanvas);
@@ -2169,15 +2197,18 @@ namespace Visifire.Charts
         /// <param name="axis"></param>
         private void SetScrollBarChanges(Axis axis)
         {
-            if (ScrollableLength < 1000)
+            if (Chart != null && !Chart.ZoomingEnabled)
             {
-                axis.ScrollBarElement.SmallChange = 10;
-                axis.ScrollBarElement.LargeChange = 50;
-            }
-            else
-            {
-                axis.ScrollBarElement.SmallChange = 20;
-                axis.ScrollBarElement.LargeChange = 80;
+                if (ScrollableLength < 1000)
+                {
+                    axis.ScrollBarElement.SmallChange = 10;
+                    axis.ScrollBarElement.LargeChange = 50;
+                }
+                else
+                {
+                    axis.ScrollBarElement.SmallChange = 20;
+                    axis.ScrollBarElement.LargeChange = 80;
+                }
             }
         }
 
@@ -3175,7 +3206,7 @@ namespace Visifire.Charts
         /// <param name="position">Position</param>
         private void DrawHorizontalPlank(Double plankDepth, Double plankThickness, Double position, AxisRepresentations axisChanged, Boolean isPartialUpdate)
         {
-            if (isPartialUpdate && axisChanged == AxisRepresentations.AxisY)
+            if (isPartialUpdate && _horizontalPlank != null && axisChanged == AxisRepresentations.AxisY)
             {   
                 //  Update with new size
                 ColumnChart.Update3DPlank(ScrollableLength - plankDepth, plankThickness, plankDepth, _horizontalPlank);
@@ -6068,6 +6099,9 @@ namespace Visifire.Charts
                                 }
                                 else if (ds.RenderAs != RenderAs.StackedArea && ds.RenderAs != RenderAs.StackedArea100)
                                     dp.AttachToolTip(Chart, dp, dp.Faces.Visual);
+
+                                if (dp.LabelVisual != null && (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut))
+                                    dp.AttachToolTip(Chart, dp, dp.LabelVisual);
                             }
 
                             if (ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
@@ -6410,13 +6444,12 @@ namespace Visifire.Charts
 
         internal void ClearInstanceRefs()
         {
-            GridLineCanvas4VerticalPlank = null;
-
             if (Storyboard4PlankGridLines != null)
+            {
+                Storyboard4PlankGridLines.FillBehavior = FillBehavior.Stop;
+                Storyboard4PlankGridLines.Stop();
                 Storyboard4PlankGridLines = null;
-
-            InterlacedPathsOverVerticalPlank = null;
-            InterlacedLinesOverVerticalPlank = null;
+            }
         }
 
         #endregion
@@ -6447,7 +6480,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Maximum size of the chart drawn inside the ScrollViewer.
         /// </summary>
-        internal readonly static Double MAX_PLOTAREA_SIZE = 22000;
+        internal readonly static Double MAX_PLOTAREA_SIZE = 31000;
 
         /// <summary>
         /// Chart scroll-viewer Offset for horizontal chart. 

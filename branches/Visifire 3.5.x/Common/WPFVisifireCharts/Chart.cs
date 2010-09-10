@@ -121,6 +121,39 @@ namespace Visifire.Charts
 
             // Attach event handler for LayoutUpdated event
             this.LayoutUpdated += new EventHandler(Chart_LayoutUpdated);
+
+            this.Unloaded += new RoutedEventHandler(Chart_Unloaded);
+        }
+
+        void Chart_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (Parent != null)
+                return;
+
+            if (InternalSeries != null)
+            {
+                foreach (DataSeries dataSeries in InternalSeries)
+                {
+                    foreach (DataPoint dp in dataSeries.InternalDataPoints)
+                    {
+                        dp.ClearInstanceRefs();
+                    }
+
+                    dataSeries.ClearInstanceRefs();
+                }
+            }
+
+            if (ChartArea != null)
+                ChartArea.ClearInstanceRefs();
+
+            foreach (Axis axis in AxesX)
+                axis.ClearInstanceRefs();
+
+            foreach (Axis axis in AxesY)
+                axis.ClearInstanceRefs();
+
+            if (_rootElement != null)
+                _rootElement.IsHitTestVisible = true;
         }
 
         /// <summary>

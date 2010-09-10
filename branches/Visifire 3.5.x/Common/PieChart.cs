@@ -4026,7 +4026,6 @@ namespace Visifire.Charts
             {
                 IsLabelEnabled = true;
                 labelCanvas.SetValue(Canvas.ZIndexProperty, 50001);
-                labelCanvas.IsHitTestVisible = false;
             }
 
             Double radius = Math.Min(pieSize.Width, pieSize.Height) / (chart.View3D ? 1 : 2);
@@ -4295,7 +4294,6 @@ namespace Visifire.Charts
             if (labelCanvas != null)
             {
                 labelCanvas.SetValue(Canvas.ZIndexProperty, 50001);
-                labelCanvas.IsHitTestVisible = false;
             }
 
             if (series.Storyboard == null)

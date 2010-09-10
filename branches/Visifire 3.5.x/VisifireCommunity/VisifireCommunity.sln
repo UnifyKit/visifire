@@ -70,6 +70,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVisifireChartsXap", "SLVi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVisifireChartsWeb", "SLVisifireChartsWeb\SLVisifireChartsWeb.csproj", "{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLWpVisifireCharts", "SLWpVisifireCharts\SLWpVisifireCharts.csproj", "{C961EF51-5DBD-4F80-8516-632DCF2493B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLWpVisifireChartsApp", "SLWpVisifireChartsApp\SLWpVisifireChartsApp.csproj", "{9918F10B-8FE2-4925-B29E-557775DE6255}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +148,26 @@ Global
 		{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}.Silverlight|Any CPU.Build.0 = Release|Any CPU
 		{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}.WPF|Any CPU.ActiveCfg = Release|Any CPU
 		{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}.WPF|Any CPU.Build.0 = Release|Any CPU
+		{C961EF51-5DBD-4F80-8516-632DCF2493B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C961EF51-5DBD-4F80-8516-632DCF2493B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C961EF51-5DBD-4F80-8516-632DCF2493B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C961EF51-5DBD-4F80-8516-632DCF2493B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C961EF51-5DBD-4F80-8516-632DCF2493B7}.Silverlight|Any CPU.ActiveCfg = Release|Any CPU
+		{C961EF51-5DBD-4F80-8516-632DCF2493B7}.Silverlight|Any CPU.Build.0 = Release|Any CPU
+		{C961EF51-5DBD-4F80-8516-632DCF2493B7}.WPF|Any CPU.ActiveCfg = Release|Any CPU
+		{C961EF51-5DBD-4F80-8516-632DCF2493B7}.WPF|Any CPU.Build.0 = Release|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.Silverlight|Any CPU.ActiveCfg = Release|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.Silverlight|Any CPU.Build.0 = Release|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.Silverlight|Any CPU.Deploy.0 = Release|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.WPF|Any CPU.ActiveCfg = Release|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.WPF|Any CPU.Build.0 = Release|Any CPU
+		{9918F10B-8FE2-4925-B29E-557775DE6255}.WPF|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

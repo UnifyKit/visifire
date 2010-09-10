@@ -181,7 +181,7 @@ namespace Visifire.Charts
         
         internal static void UpdateVisualObject(Chart chart, VcProperties property, object newValue, Boolean partialUpdate)
         {
-            if (Double.IsNaN(chart.ActualWidth) || Double.IsNaN(chart.ActualHeight) || chart.ActualWidth == 0 || chart.ActualHeight == 0)
+            if (!chart._internalPartialUpdateEnabled || Double.IsNaN(chart.ActualWidth) || Double.IsNaN(chart.ActualHeight) || chart.ActualWidth == 0 || chart.ActualHeight == 0)
                 return;
 
             if (partialUpdate && chart._datapoint2UpdatePartially.Count <= 500)

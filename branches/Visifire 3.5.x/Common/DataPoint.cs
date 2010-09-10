@@ -995,7 +995,7 @@ namespace Visifire.Charts
         {   
             get
             {
-                if (YValues != null)
+                if (YValues != null && Chart != null && Parent != null)
                 {
                     Chart chart = Chart as Chart;
                     Double[] convertedYValues = new Double[4];
@@ -1134,7 +1134,10 @@ namespace Visifire.Charts
         {
             get
             {
-                return (Brush)GetValue(StickColorProperty);
+                if ((Brush)GetValue(StickColorProperty) == null && _parent != null)
+                    return _parent.StickColor;
+                else
+                    return (Brush)GetValue(StickColorProperty);
             }
             set
             {
@@ -2088,8 +2091,10 @@ namespace Visifire.Charts
         /// <returns>Is need to update all DataPoints on axis change</returns>
         internal Boolean UpdateVisual(VcProperties property, object newValue, Boolean recursive)
         {
+
             Chart chart = Chart as Chart;
 
+           
             if (IsInDesignMode)
             {
                 if(chart != null)
@@ -2122,7 +2127,10 @@ namespace Visifire.Charts
                 FirePropertyChanged(property);
                 return false;
             }
-            
+
+            if (chart != null)
+                chart._internalPartialUpdateEnabled = true;
+
             if (!chart.PARTIAL_DP_RENDER_LOCK || recursive)
             {   
                 Boolean updateAllDpsOnAxisChange = false;
@@ -2158,6 +2166,9 @@ namespace Visifire.Charts
                         if (property == VcProperties.BorderThickness || property == VcProperties.BorderColor || property == VcProperties.BorderStyle)
                             return false;
                     }
+
+                    if (chart.PlotDetails == null || plotGroup == null)
+                        return true;
 
                     if (property == VcProperties.YValue || property == VcProperties.YValues)
                     {
@@ -2387,7 +2398,8 @@ namespace Visifire.Charts
 
         public void ActivePartialUpdateRenderLock()
         {
-            (Chart as Chart).PARTIAL_DP_RENDER_LOCK = false;
+            if(Chart != null)
+                (Chart as Chart).PARTIAL_DP_RENDER_LOCK = false;
             // Visifire.Profiler.Profiler.End("Render");
             // Visifire.Profiler.Profiler.Report("Render", true, false);
         }
@@ -3956,8 +3968,8 @@ namespace Visifire.Charts
                 case "Low":
 
                     Double[] newYValues = new Double[4];
-                    if (InternalYValues != null)
-                        InternalYValues.CopyTo(newYValues, 0);
+                    if (YValues != null)
+                        YValues.CopyTo(newYValues, 0);
 
                     // find the array index of OCHL (open close high low)
                     Int32 enumIndex = (Int32)Enum.Parse(typeof(OCHL), dm.MemberName, true);
@@ -3982,8 +3994,8 @@ namespace Visifire.Charts
         {   
             Double[] newYValues = new Double[4];
 
-            if (InternalYValues != null)
-                InternalYValues.CopyTo(newYValues, 0);
+            if (YValues != null)
+                YValues.CopyTo(newYValues, 0);
 
             switch (dm.MemberName)
             {   
@@ -3992,10 +4004,10 @@ namespace Visifire.Charts
                 case "High":
                 case "Low":
 
-                    if (InternalYValues == null)
+                    if (YValues == null)
                     {   
                         Int32 enumIndex = (Int32)Enum.Parse(typeof(OCHL), dm.MemberName, true);
-                        InternalYValues[enumIndex] = 0;
+                        YValues[enumIndex] = 0;
                     }
 
                     break;
@@ -4008,35 +4020,12 @@ namespace Visifire.Charts
 
         internal override void ClearInstanceRefs()
         {
-            //base.ClearInstanceRefs();
-
             if (Storyboard != null)
+            {
+                Storyboard.FillBehavior = FillBehavior.Stop;
+                Storyboard.Stop();
                 Storyboard = null;
-
-            StoryboardZValueAni = null;
-            LegendMarker = null;
-
-            if (this.Faces != null)
-                this.Faces.ClearInstanceRefs();
-
-            Faces = null;
-
-            if (this.ShadowFaces != null)
-                this.ShadowFaces.ClearInstanceRefs();
-
-            ShadowFaces = null;
-
-            LabelVisual = null;
-            Marker = null;
-            LabelLine = null;
-            ExplodeAnimation = null;
-            UnExplodeAnimation = null;
-            VisualParams = null;
-            DataContext = null;
-
-            _oldVisual = null;
-
-            DetachEventFromWeakEventListner();
+            }
         }
 
         private void iNotifyPropertyChanged_PropertyChanged(object dataSource, PropertyChangedEventArgs e)
@@ -4354,13 +4343,16 @@ namespace Visifire.Charts
                         }
                     }
                     else
-                    {   
-                        AttachEvents2Visual(Object, this, Faces.Visual);
-
-                        if ((Chart as Chart).ChartArea != null && (Chart as Chart).ChartArea._isDefaultInteractivityAllowed)
+                    {
+                        if (Faces.Visual != null)
                         {
-                            Faces.Visual.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_ExplodeUnExplode);
-                            Faces.Visual.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_ExplodeUnExplode);
+                            AttachEvents2Visual(Object, this, Faces.Visual);
+
+                            if ((Chart as Chart).ChartArea != null && (Chart as Chart).ChartArea._isDefaultInteractivityAllowed)
+                            {
+                                Faces.Visual.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_ExplodeUnExplode);
+                                Faces.Visual.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_ExplodeUnExplode);
+                            }
                         }
                     }
 
@@ -4375,6 +4367,12 @@ namespace Visifire.Charts
                         this.UnExplodeAnimation.Completed -= new EventHandler(UnExplodeAnimation_Completed);
                         this.UnExplodeAnimation.Completed += new EventHandler(UnExplodeAnimation_Completed);
                     }
+                }
+
+                if (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut)
+                {
+                    if (LabelVisual != null)
+                        AttachEvents2Visual(Object, this, LabelVisual);
                 }
             }
             else if (Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100 
@@ -4402,6 +4400,12 @@ namespace Visifire.Charts
                     foreach (FrameworkElement face in Faces.VisualComponents)
                     {
                         AttachEvents2Visual(Object, this, face);
+                    }
+
+                    if (Parent.RenderAs == RenderAs.Stock || Parent.RenderAs == RenderAs.CandleStick)
+                    {
+                        if (LabelVisual != null)
+                            AttachEvents2Visual(Object, this, LabelVisual);
                     }
                 }
                 else

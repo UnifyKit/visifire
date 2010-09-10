@@ -34,6 +34,7 @@ using System.Windows.Media.Effects;
 namespace Visifire.Charts
 {
     public enum Face3DType
+
     {
         FrontFace,
         BackFace,
