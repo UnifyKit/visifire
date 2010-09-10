@@ -1,4 +1,4 @@
-﻿/*   
+/*   
     Copyright (C) 2008 Webyog Softworks Private Limited
 
     This file is a part of Visifire Charts.
@@ -208,9 +208,11 @@ namespace Visifire.Commons
         internal void FirePropertyChanged(VcProperties propertyName)
         {
             _isPropertyChangedFired = false; // Used for testing
-                       
+
             if (this.PropertyChanged != null && this.IsNotificationEnable)
             {
+                if (Chart != null)
+                    (Chart as Chart)._internalPartialUpdateEnabled = false;
                 
 #if SL
 
@@ -380,6 +382,20 @@ namespace Visifire.Commons
 
         #region Internal Methods
 
+        /// <summary>
+        /// Disconnect element from its parent.
+        /// </summary>
+        /// <param name="newParent"></param>
+        /// <param name="obj"></param>
+        internal static void RemoveElementFromElementTree(FrameworkElement obj)
+        {   
+            if (obj.Parent != null)
+            {   
+                Panel panel = obj.Parent as Panel;
+                panel.Children.Remove(obj);
+            }
+        }
+        
         /// <summary>
         /// Validates PartialUpdate
         /// </summary>

@@ -471,7 +471,7 @@ namespace Visifire.Charts
             Double plotWidth = chart.ChartArea.ChartVisualCanvas.Width;
             ColumnChart.UpdateParentVisualCanvasSize(chart, pointChartCanvas);
 
-            if (property == VcProperties.Enabled || (dataPoint.Faces == null && (property == VcProperties.XValue || property == VcProperties.YValue)))
+            if (property == VcProperties.Enabled || ((dataPoint.Faces == null || Double.IsNaN(dataPoint.InternalYValue)) && (property == VcProperties.XValue || property == VcProperties.YValue)))
             {
                 CreateOrUpdateAPointDataPoint(pointChartCanvas, dataPoint, plotWidth, plotHeight);
                 return;

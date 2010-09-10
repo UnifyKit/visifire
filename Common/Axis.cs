@@ -113,24 +113,48 @@ namespace Visifire.Charts
 
             if (AxisLabels != null)
             {
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(AxisLabels);
+#endif
+
                 if (!_rootElement.Children.Contains(AxisLabels))
                     _rootElement.Children.Add(AxisLabels);
             }
 
             foreach (CustomAxisLabels labels in CustomAxisLabels)
             {
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(labels);
+#endif
+
                 if (!_rootElement.Children.Contains(labels))
                     _rootElement.Children.Add(labels);
             }
 
             foreach (ChartGrid grid in Grids)
             {
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(grid);
+#endif
+
                 if (!_rootElement.Children.Contains(grid))
                     _rootElement.Children.Add(grid);
             }
 
             foreach (Ticks ticks in Ticks)
             {
+
+#if WPF
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(ticks);
+#endif
+
                 if (!_rootElement.Children.Contains(ticks))
                     _rootElement.Children.Add(ticks);
             }
@@ -281,6 +305,9 @@ namespace Visifire.Charts
         internal void ZoomIn(Object minXValue, Object maxXValue)
         {
             Chart chart = Chart as Chart;
+
+            if (chart == null)
+                return;
 
             ScrollBarElement.Scale = _internalZoomingScale = CalculateZoomingScaleFromXValueRange(minXValue, maxXValue);
 
@@ -2755,7 +2782,7 @@ namespace Visifire.Charts
 
                 if (axis.AxisRepresentation == AxisRepresentations.AxisY)
                 {
-                    if ((axis.Chart as Chart).Series.Count > 0)
+                    if (axis.Chart != null && (axis.Chart as Chart).Series.Count > 0)
                         (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMaximum, null });
                 }
                 else
@@ -2787,7 +2814,7 @@ namespace Visifire.Charts
 
                 if (axis.AxisRepresentation == AxisRepresentations.AxisY)
                 {   
-                    if ((axis.Chart as Chart).Series.Count > 0)
+                    if (axis.Chart != null && (axis.Chart as Chart).Series.Count > 0)
                         (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMinimum, null });
                 }
                 else
@@ -6033,6 +6060,9 @@ namespace Visifire.Charts
         {
             Chart chart = (Chart as Chart);
 
+            if (chart == null)
+                return;
+
             if (!_dragCompletedLock && ScrollBarElement.Scale < 1)
             {
                 _dragCompletedLock = true;
@@ -6119,16 +6149,22 @@ namespace Visifire.Charts
 
         internal override void ClearInstanceRefs()
         {
-            //base.ClearInstanceRefs();
-
             foreach (ChartGrid grid in Grids)
             {
                 if (grid.Storyboard != null)
+                {
+                    grid.Storyboard.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+                    grid.Storyboard.Stop();
                     grid.Storyboard = null;
+                }
             }
 
-            Storyboard = null;
-            Visual = null;
+            if (Storyboard != null)
+            {
+                Storyboard.FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop;
+                Storyboard.Stop();
+                Storyboard = null;
+            }
         }
 
         #endregion

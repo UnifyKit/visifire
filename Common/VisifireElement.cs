@@ -105,9 +105,21 @@ namespace Visifire.Commons
             }
             set
             {
-                SetValue(NameProperty, value);
+               SetValue(NameProperty, value);
             }
         }
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.VisifireElement.ToolTipText dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.VisifireElement.ToolTipText dependency property.
+        /// </returns>
+        public static new readonly DependencyProperty NameProperty = DependencyProperty.Register
+            ("Name",
+            typeof(String),
+            typeof(VisifireElement),
+            new PropertyMetadata(String.Empty));
 
         /// <summary>
         /// ToolTipText Property
@@ -124,6 +136,8 @@ namespace Visifire.Commons
             }
         }
 
+
+ 
         /// <summary>
         /// Identifies the Visifire.Charts.VisifireElement.ToolTipText dependency property.
         /// </summary>

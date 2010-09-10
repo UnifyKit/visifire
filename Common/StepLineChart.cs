@@ -122,7 +122,7 @@ namespace Visifire.Charts
 
             Chart chart = dataPoint.Chart as Chart;
 
-            if (dataPoint.Faces == null)
+            if (dataPoint.Faces == null || Double.IsNaN(dataPoint.InternalYValue))
                 return retVal;
 
             if ((Boolean)dataPoint.LabelEnabled && !String.IsNullOrEmpty(dataPoint.LabelText))

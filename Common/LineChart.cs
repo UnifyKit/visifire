@@ -123,7 +123,7 @@ namespace Visifire.Charts
 
             Chart chart = dataPoint.Chart as Chart;
 
-            if (dataPoint.Faces == null)
+            if (dataPoint.Faces == null || Double.IsNaN(dataPoint.InternalYValue))
                 return retVal;
 
             if ((Boolean)dataPoint.LabelEnabled && !String.IsNullOrEmpty(dataPoint.LabelText))
@@ -1548,7 +1548,7 @@ namespace Visifire.Charts
             Canvas labelsCanvas = dataSeries.Faces.LabelCanvas.Parent as Canvas;
 
             UpdateSizeOfTheParentCanvas(dataSeries, width, height);
-                        
+            
             // Groups of broken line segments
             List<List<DataPoint>> pointCollectionList = new List<List<DataPoint>>();
             
@@ -1563,26 +1563,54 @@ namespace Visifire.Charts
 
             if (property == VcProperties.DataPointUpdate && isAnimatedUpdate == true)
             {
-                /* If old YValue of any DataPoint was NAN then its needed to redraw 
-                the Spline of while doing PartialUpdate  */
+                /* If old YValue of any DataPoint was NAN or YValue of any DataPoint set to NAN 
+                 * then its needed to redraw the Spline of while doing PartialUpdate  */
                 Boolean forceRedraw = false;
-                foreach (List<DataPoint> pointList in pointCollectionList)
-                {
-                    foreach (DataPoint dp in pointList)
-                        if (dp.Faces == null)
-                        {
-                            forceRedraw = true;
-                            break;
-                        }
 
-                    if (forceRedraw)
+                // Check whether any YValue is updated and its set to NaN
+                foreach (DataPoint dp in viewPortDataPoints)
+                {
+                    if ((!Double.IsNaN(dp._oldYValue) && Double.IsNaN(dp.InternalYValue)) ||
+                        (!Double.IsNaN(dp.InternalYValue) && Double.IsNaN(dp._oldYValue)))
+                    {   
+                        // dp.Faces = null;
+                        dp._oldYValue = dp.InternalYValue;
+                        forceRedraw = true;
                         break;
+                    }
                 }
 
-                if(forceRedraw)
+                if (forceRedraw == false)
+                {
+                    foreach (List<DataPoint> pointList in pointCollectionList)
+                    {
+                        foreach (DataPoint dp in pointList)
+                        {
+                            if (dp.Faces == null)
+                            {
+                                forceRedraw = true;
+                                break;
+                            }
+                        }
+
+                        if (forceRedraw)
+                            break;
+
+                    }
+                }
+
+                if (forceRedraw)
                     ReDrawLineSplineSereis(dataSeries, pointCollectionList, width, height, label2dCanvas);
-                
+
+                //if (dataSeries.Storyboard != null)
+                //{
+                //    dataSeries.Storyboard.FillBehavior = FillBehavior.Stop;
+                //    dataSeries.Storyboard.Stop();
+                //    dataSeries.Storyboard.Children.Clear();
+                //}
+
                 dataSeries.Storyboard = AnimateSpline(pointCollectionList);
+
                 if(dataSeries.Storyboard != null)
                     dataSeries.Storyboard.Begin();
 
@@ -1743,18 +1771,18 @@ namespace Visifire.Charts
             }
         }
 
-        private static Storyboard AnimateSpline(List<List<DataPoint>> pointCollectionList)
+        private static Storyboard AnimateSpline( List<List<DataPoint>> pointCollectionList)
         {
-            Storyboard storyBoard = new Storyboard();
-            
+            Storyboard storyboard = new Storyboard();
+
             foreach (List<DataPoint> pointCollection in pointCollectionList)
             {
-                AnimateBezierCurves(pointCollection, storyBoard);
-                AnimateMarkers4Spline(pointCollection, storyBoard);
-                AnimateLabel4Spline(pointCollection, storyBoard);
+                AnimateBezierCurves(pointCollection, storyboard);
+                AnimateMarkers4Spline(pointCollection, storyboard);
+                AnimateLabel4Spline(pointCollection, storyboard);
             }
 
-            return storyBoard;
+            return storyboard;
         }
 
         private static Point[] CollectOldControlPoints(Int32 index, List<DataPoint> pointCollection, out Point oldStartPoint)
@@ -1790,7 +1818,7 @@ namespace Visifire.Charts
 
                 BezierSegment bezierSeg = dp.Faces.Parts[0] as BezierSegment;
                 PathFigure pathFigure = dp.Faces.Parts[1] as PathFigure;
-                               
+
                 ApplyAnimationToBezierSegments(dpIndex, storyBoard, bezierSeg, oldBezierPoints,
                     newBezierPoints, pathFigure, oldStartPoint, pointCollection[0]._visualPosition);
 
@@ -1817,6 +1845,8 @@ namespace Visifire.Charts
 
                     if (labelVisual != null)
                     {
+                        (((labelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = dataPoint.TextParser(dataPoint.LabelText);
+                       
                         Point oldLabelPosition = new Point((Double)labelVisual.GetValue(Canvas.LeftProperty), (Double)labelVisual.GetValue(Canvas.TopProperty));
 
                         Double newMarkerXPos = 0, newMarkerYPos = 0;
@@ -1870,6 +1900,8 @@ namespace Visifire.Charts
             // Animate Marker
             foreach (DataPoint dataPoint in pointCollection)
             {
+                dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+
                 if ((Boolean)dataPoint.MarkerEnabled)
                 {
                     #region Attach Animation with Marker
@@ -2225,25 +2257,28 @@ namespace Visifire.Charts
 #endif
             }
 
-            // Loop for 3 control points
-            for (int i = 0; i < 3; i++)
+            // Animate control points
+            if (oldCtrlPoints != null && newCtrlPoints != null && oldCtrlPoints.Count() == 3 && newCtrlPoints.Count() == 3)
             {
-                // Creates PointAnimation for each control points
-                if (!oldCtrlPoints[i].Equals(newCtrlPoints[i]))
+                // Loop for 3 control points
+                for (int i = 0; i < 3; i++)
                 {
-                    PointAnimation pointAnimation = new PointAnimation()
+                    // Creates PointAnimation for each control points
+                    if (!oldCtrlPoints[i].Equals(newCtrlPoints[i]))
                     {
-                        From = oldCtrlPoints[i],
-                        To = newCtrlPoints[i],
-                        SpeedRatio = 2,
-                        Duration = new Duration(new TimeSpan(0, 0, 1))
-                    };
+                        PointAnimation pointAnimation = new PointAnimation()
+                        {
+                            From = oldCtrlPoints[i],
+                            To = newCtrlPoints[i],
+                            SpeedRatio = 2,
+                            Duration = new Duration(new TimeSpan(0, 0, 1))
+                        };
 
-                    Storyboard.SetTarget(pointAnimation, bezierSegment);
-                    Storyboard.SetTargetProperty(pointAnimation, new PropertyPath("Point" + (i + 1).ToString()));
-                    Storyboard.SetTargetName(pointAnimation, (String)bezierSegment.GetValue(FrameworkElement.NameProperty));
+                        Storyboard.SetTarget(pointAnimation, bezierSegment);
+                        Storyboard.SetTargetProperty(pointAnimation, new PropertyPath("Point" + (i + 1).ToString()));
+                        Storyboard.SetTargetName(pointAnimation, (String)bezierSegment.GetValue(FrameworkElement.NameProperty));
 
-                    storyBoard.Children.Add(pointAnimation);
+                        storyBoard.Children.Add(pointAnimation);
 
 #if WPF
                     switch(i)
@@ -2259,6 +2294,7 @@ namespace Visifire.Charts
                             break;
                     }
 #endif
+                    }
                 }
             }
 

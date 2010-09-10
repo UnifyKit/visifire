@@ -313,17 +313,18 @@ namespace Visifire.Commons
         {
             if (objectToAnimate != null && parentObj != null)
             {
-                DoubleCollection values = Graphics.GenerateDoubleCollection(fromValue, targetValue);
-                DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, duration);
+                DoubleCollection values = Graphics.GenerateDoubleCollection(fromValue, fromValue, targetValue);
+                DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, beginTime + 0.5, duration + beginTime + 0.5);
                 List<KeySpline> splines = GenerateKeySplineList
                     (
                     new Point(0, 0), new Point(1, 1),
+                     new Point(0, 0), new Point(1, 1),
                     new Point(0, 0), new Point(0.5, 1)
                     );
 
-                objectToAnimate.Opacity = fromValue;
+                // objectToAnimate.Opacity = fromValue;
 
-                DoubleAnimationUsingKeyFrames opacityAnimation = AnimationHelper.CreateDoubleAnimation(parentObj, objectToAnimate, "(UIElement.Opacity)", beginTime + 0.5, frameTimes, values, splines);
+                DoubleAnimationUsingKeyFrames opacityAnimation = AnimationHelper.CreateDoubleAnimation(parentObj, objectToAnimate, "(UIElement.Opacity)", 0, frameTimes, values, splines);
                 storyboard.Children.Add(opacityAnimation);
             }
 

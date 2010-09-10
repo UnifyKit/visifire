@@ -489,8 +489,13 @@ namespace Visifire.Charts
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-            if(!chart.IndicatorEnabled)
+            if (!chart.IndicatorEnabled)
+            {
                 dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+
+                if(dataPoint.LabelVisual != null)
+                    dataPoint.AttachToolTip(chart, dataPoint, dataPoint.LabelVisual);
+            }
             dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
         }
 
@@ -901,6 +906,7 @@ namespace Visifire.Charts
                 case VcProperties.Color:
                 case VcProperties.PriceUpColor:
                 case VcProperties.PriceDownColor:
+                case VcProperties.StickColor:
                     ApplyOrUpdateColorForACandleStick(dataPoint);
                     break;
                     
@@ -976,7 +982,7 @@ namespace Visifire.Charts
                 case VcProperties.XValue:
                 case VcProperties.YValue:
                 case VcProperties.YValues:
-                    if (isAxisChanged)
+                    if (isAxisChanged || dataPoint.InternalYValues == null)
                         UpdateDataSeries(dataSeries, property, newValue, isAxisChanged);
                     else
                     {

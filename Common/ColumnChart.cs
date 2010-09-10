@@ -1557,6 +1557,7 @@ namespace Visifire.Charts
             }
 
             Chart chart = dataPoint.Chart as Chart;
+
             PlotDetails plotDetails = chart.PlotDetails;
 
             Marker marker = dataPoint.Marker;
@@ -1949,6 +1950,9 @@ namespace Visifire.Charts
             Canvas columnChartCanvas, labelCanvas;
             Double depth3d = chart.ChartArea.PLANK_DEPTH / chart.PlotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
 
+            if (chart != null && !chart._internalPartialUpdateEnabled)
+                return;
+
             if (dataPoint.Faces == null)
             {
                 // When datapoint faces is null and dataSeries faces is null we need to create atleast once DataPoint 
@@ -1983,10 +1987,13 @@ namespace Visifire.Charts
             Canvas oldVisual = dataPoint.Faces.Visual as Canvas;  // Old visual for the column
             columnChartCanvas = oldVisual.Parent as Canvas;     // Existing parent canvas of column
 
+            Canvas oldLabelVisual = dataSeries.Faces.LabelCanvas as Canvas;
+
             if (Double.IsNaN(dataPoint.InternalYValue))
             {
                 columnChartCanvas.Children.Remove(oldVisual);
                 dataPoint.Faces = null;
+                CleanUpMarkerAndLabel(dataPoint, oldLabelVisual);
                 return;
             }
 
@@ -2718,12 +2725,11 @@ namespace Visifire.Charts
                 frontBrush = lightingEnabled ? Graphics.GetFrontFaceBrush(backgroundBrush) : backgroundBrush;
 
             if (topBrush == null)
-                topBrush = lightingEnabled ? Graphics.GetTopFaceBrush(backgroundBrush) : backgroundBrush;
+                topBrush = lightingEnabled ? Graphics.GetTopFaceBrush(backgroundBrush) : Graphics.GetDarkerBrush(backgroundBrush, 0.7665);
 
             if (rightBrush == null)
-                rightBrush = lightingEnabled ? Graphics.GetRightFaceBrush(backgroundBrush) : backgroundBrush;
-
-
+                rightBrush = lightingEnabled ? Graphics.GetRightFaceBrush(backgroundBrush) : Graphics.GetDarkerBrush(backgroundBrush, 0.55);
+            
             Shape front = ExtendedGraphics.Get3DRectangle(tagRef, width, height,
                 borderThickness, strokeDashArray, borderBrush,
                 frontBrush);
