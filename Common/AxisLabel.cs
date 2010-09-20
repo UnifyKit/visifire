@@ -507,7 +507,7 @@ namespace Visifire.Charts
             Double angle = GetAngle(Angle);
 
             // Set the transform angle
-            Rotation.Angle = angle;
+                Rotation.Angle = angle;
 
             // Set the transform position
             Rotation.CenterX = 0;

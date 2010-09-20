@@ -542,6 +542,9 @@ namespace Visifire.Charts
             //if (dataPoint.Faces == null)
             //    return;
 
+            if (chart != null && !chart._internalPartialUpdateEnabled)
+                return;
+
             Boolean animationEnabled = (Boolean)chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
             Canvas columnCanvas, labelCanvas;
@@ -748,6 +751,9 @@ namespace Visifire.Charts
         public static void UpdateVisualForYValue4StackedColumnChart(RenderAs chartType, Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
         {
             System.Diagnostics.Debug.WriteLine("Animate--YValue" + dataPoint.YValue.ToString() + " IsAxisChange=" + isAxisChanged.ToString());
+
+            if (chart != null && !chart._internalPartialUpdateEnabled)
+                return;
 
             Boolean animationEnabled = (Boolean)chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint

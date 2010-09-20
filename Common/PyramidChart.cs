@@ -34,6 +34,9 @@ using Visifire.Commons;
 
 namespace Visifire.Charts
 {
+    /// <summary>
+    /// Visifire.Charts.PyramidChart class
+    /// </summary>
     internal static class PyramidChart
     {
         /// <summary>
@@ -58,7 +61,10 @@ namespace Visifire.Charts
                 List<DataSeries> selectedDataSeriesList = (from ds in seriesList where (Boolean)ds.Enabled == true select ds).ToList();
 
                 if (selectedDataSeriesList.Count > 0)
+                {
                     pyramidSeries = selectedDataSeriesList.First();
+                    pyramidSeries.Faces = null;
+                }
                 else
                     return null;
 

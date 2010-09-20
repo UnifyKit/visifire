@@ -414,20 +414,43 @@ namespace Visifire.Charts
                 case RenderAs.CandleStick:
                 case RenderAs.Stock:
 
-                    List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true);
-                    minimumY = (from dp in dataPointsInViewPort where dp.YValues != null select dp.YValues.Min()).Min();
+                    List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true, 1);
+                    //var listOfMinimumYValues = (from dp in dataPointsInViewPort where dp.YValues != null select dp.YValues.Min()).Min();
+
+                    var listOfMinimumYValues = (from dp in dataPointsInViewPort where dp.YValues != null select dp.YValues.Min());
+
+                    Double min = 0;
+
+                    if (listOfMinimumYValues.Count() > 0)
+                        min = listOfMinimumYValues.Min();
+
+                    minimumY = min;
 
                     break;
                 default:
 
-                    List<DataPoint> dataPointsInViewPort1 = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true);
+                    List<DataPoint> dataPointsInViewPort1 = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true, RenderAs == RenderAs.Spline? 3 : 1);
+                    
+                    Double chartSpecificMinY = Double.NaN; // Min YValue specific to chart type. 
+
+                    if (RenderAs == RenderAs.Spline)
+                    {
+                        foreach (DataSeries dataSeries in DataSeriesList)
+                        {
+                            Double minX = Double.NaN, maxX = Double.NaN, minY = Double.NaN, maxY = Double.NaN;
+                            CalculateMinMaxOfASplineCurve(RenderAs.Spline, dataPointsInViewPort1, ref minX, ref maxX, ref minY, ref maxY);
+
+                            chartSpecificMinY = Double.IsNaN(chartSpecificMinY) ? minY : Math.Min(chartSpecificMinY, minY);
+                        }
+                    }
+
                     var yValues = (from dp in dataPointsInViewPort1 select dp.YValue);
 
                     if (yValues.Count() > 0)
-                        minimumY = yValues.Min();
+                        minimumY = Double.IsNaN(chartSpecificMinY) ? yValues.Min() : Math.Min(chartSpecificMinY, yValues.Min());
                     else
                         minimumY = Double.NaN;
-
+                    
                     break;
             };
         }
@@ -476,18 +499,40 @@ namespace Visifire.Charts
                 case RenderAs.CandleStick:
                 case RenderAs.Stock:
 
-                    List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true);
+                    List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true, 3);
 
-                    maximumY = (from dp in dataPointsInViewPort where dp.YValues != null select dp.YValues.Max()).Max();
+                    //maximumY = (from dp in dataPointsInViewPort where dp.YValues != null select dp.YValues.Max()).Max();
+
+                    var listOfMaximumYValues = (from dp in dataPointsInViewPort where dp.YValues != null select dp.YValues.Max());
+
+                    Double max = 0;
+
+                    if (listOfMaximumYValues.Count() > 0)
+                        max = listOfMaximumYValues.Max();
+
+                    maximumY = max;
+
                     break;
                 default:
 
-                    List<DataPoint> dataPointsInViewPort1 = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true);
+                    List<DataPoint> dataPointsInViewPort1 = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true, (RenderAs == RenderAs.Spline? 3: 1));
+                    
+                    Double chartSpecificMaxY = Double.NaN; // Min YValue specific to chart type. 
 
+                    if (RenderAs == RenderAs.Spline)
+                    {
+                        foreach (DataSeries dataSeries in DataSeriesList)
+                        {
+                            Double minX = Double.NaN, maxX = Double.NaN, minY = Double.NaN, maxY = Double.NaN;
+                            CalculateMinMaxOfASplineCurve(RenderAs.Spline, dataPointsInViewPort1, ref minX, ref maxX, ref minY, ref maxY);
+                            chartSpecificMaxY = Double.IsNaN(chartSpecificMaxY) ? maxY : Math.Min(chartSpecificMaxY, maxY);
+                        }
+                    }
+                                        
                     var yValues = (from dp in dataPointsInViewPort1 select dp.YValue);
 
                     if (yValues.Count() > 0)
-                        maximumY = yValues.Max();
+                        maximumY = Double.IsNaN(chartSpecificMaxY) ? yValues.Max() : Math.Max(chartSpecificMaxY,  yValues.Max());
                     else
                         maximumY = Double.NaN;
 
@@ -495,11 +540,11 @@ namespace Visifire.Charts
             };
         }
 
-        private static void CalculateMinMaxOfASplineCurve(DataSeries dataSeries, ref Double chartSpecificMinX, ref Double chartSpecificMaxX, ref Double chartSpecificMinY, ref Double chartSpecificMaxY)
-        {
-            if (dataSeries.RenderAs == RenderAs.Spline)
-            {
-                List<Point> knotPoints = (from dataPoint in dataSeries.InternalDataPoints where !Double.IsNaN(dataPoint.InternalXValue) && !Double.IsNaN(dataPoint.YValue) select new Point(dataPoint.InternalXValue, dataPoint.YValue)).ToList();
+        private static void CalculateMinMaxOfASplineCurve(RenderAs renderAs, List<DataPoint> dataPoints, ref Double chartSpecificMinX, ref Double chartSpecificMaxX, ref Double chartSpecificMinY, ref Double chartSpecificMaxY)
+        {   
+            if (renderAs == RenderAs.Spline)
+            {   
+                List<Point> knotPoints = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalXValue) && !Double.IsNaN(dataPoint.YValue) select new Point(dataPoint.InternalXValue, dataPoint.YValue)).ToList();
 
                 if (knotPoints.Count() > 0)
                 {
@@ -511,7 +556,7 @@ namespace Visifire.Charts
                     {
                         // Calculate Max and min value among control points of Bezier segment.
                         if (controlPoints1.Count() > 0)
-                        {
+                        {   
                             chartSpecificMinX = Math.Min(Double.IsNaN(chartSpecificMinX) ? Double.MaxValue : chartSpecificMinX, (from point in controlPoints1 select point.X).Min());
                             chartSpecificMinY = Math.Min(Double.IsNaN(chartSpecificMinY) ? Double.MaxValue : chartSpecificMinY, (from point in controlPoints1 select point.Y).Min());
 
@@ -529,6 +574,21 @@ namespace Visifire.Charts
                         }
                     }
                 }
+            }
+            else
+            {
+                chartSpecificMinX = Double.NaN; // Min XValue specific to chart type. 
+                chartSpecificMaxX = Double.NaN; // Min XValue specific to chart type. 
+                chartSpecificMinY = Double.NaN; // Min YValue specific to chart type. 
+                chartSpecificMaxY = Double.NaN; // Min YValue specific to chart type. 
+            }
+        }
+
+        private static void CalculateMinMaxOfASplineCurve(DataSeries dataSeries, ref Double chartSpecificMinX, ref Double chartSpecificMaxX, ref Double chartSpecificMinY, ref Double chartSpecificMaxY)
+        {
+            if (dataSeries.RenderAs == RenderAs.Spline)
+            {
+                CalculateMinMaxOfASplineCurve(dataSeries.RenderAs, dataSeries.InternalDataPoints, ref chartSpecificMinX, ref chartSpecificMaxX, ref chartSpecificMinY, ref chartSpecificMaxY);
             }
             else
             {
@@ -662,7 +722,9 @@ namespace Visifire.Charts
                 else if (property == VcProperties.YValue)
                 {
                     _yValues.Remove((Double)oldValue);
-                    _yValues.Add((Double)newValue);
+
+                    if(!Double.IsNaN((Double)newValue))
+                        _yValues.Add((Double)newValue);
                 }
                 else if (property == VcProperties.YValues)
                 {
@@ -694,6 +756,7 @@ namespace Visifire.Charts
                     case RenderAs.Line:
                     case RenderAs.StepLine:
                     case RenderAs.Spline:
+                    case RenderAs.QuickLine:
                     case RenderAs.Pie:
                     case RenderAs.Point:
                     case RenderAs.Stock:

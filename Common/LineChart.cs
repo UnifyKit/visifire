@@ -294,7 +294,7 @@ namespace Visifire.Charts
 
                 if (autoLabelStyle != dataPoint.LabelStyle)
                 {
-                    tb.TextElement.Foreground = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.YValue <= 0 ? LabelStyles.OutSide : autoLabelStyle));
+                    tb.TextElement.Foreground = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.InternalYValue <= 0 ? LabelStyles.OutSide : autoLabelStyle));
                 }
 
                 dataPoint.LabelVisual = tb.Visual;
@@ -1106,7 +1106,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="dataPointCollectionList">List of Segments. And EachSegments contains a list of DataPoints</param>
         /// <returns></returns>
-        private static Geometry GetPathGeometry(RenderAs renderAs, GeometryGroup oldData, List<List<DataPoint>> dataPointCollectionList, Boolean isShadow, Double width, Double height, Canvas line2dLabelCanvas)
+        internal static Geometry GetPathGeometry(RenderAs renderAs, GeometryGroup oldData, List<List<DataPoint>> dataPointCollectionList, Boolean isShadow, Double width, Double height, Canvas line2dLabelCanvas)
         {   
             GeometryGroup gg;
 
@@ -1125,9 +1125,6 @@ namespace Visifire.Charts
                 PathGeometry geometry = new PathGeometry();
 
                 PathFigure pathFigure = new PathFigure();
-
-                Double xPosition = 0;
-                Double yPosition = 0;
 
                 if (pointCollection.Count > 0)
                 {
@@ -1151,40 +1148,7 @@ namespace Visifire.Charts
                         if(pointCollection.Count > 1)
                             faces.NextDataPoint = pointCollection[1];
 
-                        if (pointCollection[0].Marker != null && pointCollection[0].Marker.Visual != null)
-                        {   
-                            Point newMarkerPosition = pointCollection[0].Marker.CalculateActualPosition(pointCollection[0]._visualPosition.X, pointCollection[0]._visualPosition.Y, new Point(0.5, 0.5));
-
-                            pointCollection[0]._parsedToolTipText = pointCollection[0].TextParser(pointCollection[0].ToolTipText);
-            
-                            pointCollection[0].Marker.Visual.Visibility = Visibility.Visible;
-                            pointCollection[0].Marker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
-                            pointCollection[0].Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
-                        }
-                        else
-                        {   
-                            CreateMarkerAForLineDataPoint(pointCollection[0], width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
-                        }
-
-                        if ((Boolean)pointCollection[0].LabelEnabled)
-                        {   
-                            if (pointCollection[0].LabelVisual != null)
-                            {   
-                                Double labelLeft = 0;
-                                Double labelTop = 0;
-
-                                SetLabelPosition4LineDataPoint(pointCollection[0], ref labelLeft, ref labelTop);
-
-                                (((pointCollection[0].LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = pointCollection[0].TextParser(pointCollection[0].LabelText);
-                                pointCollection[0].LabelVisual.Visibility = Visibility.Visible;
-                                pointCollection[0].LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
-                                pointCollection[0].LabelVisual.SetValue(Canvas.TopProperty, labelTop);
-                            }
-                            else
-                            {   
-                                CreateLabel4LineDataPoint(pointCollection[0], width, height, pointCollection[0].InternalYValue >= 0, xPosition, yPosition, ref line2dLabelCanvas, true);
-                            }
-                        }
+                        CreateMarkerAndLabel(pointCollection, 0, width, height, line2dLabelCanvas);
                     }
 
                     if (renderAs == RenderAs.Spline)
@@ -1199,7 +1163,51 @@ namespace Visifire.Charts
 
             return gg;
         }
-        
+
+        private static void CreateMarkerAndLabel(List<DataPoint> pointCollection, Int32 index, Double width, Double height, Canvas line2dLabelCanvas)
+        {
+            if (pointCollection[index].Parent.RenderAs != RenderAs.QuickLine)
+            {
+                Double xPosition = 0;
+                Double yPosition = 0;
+
+                if (pointCollection[index].Marker != null && pointCollection[index].Marker.Visual != null)
+                {
+                    Point newMarkerPosition = pointCollection[index].Marker.CalculateActualPosition(pointCollection[index]._visualPosition.X, pointCollection[index]._visualPosition.Y, new Point(0.5, 0.5));
+
+                    pointCollection[index]._parsedToolTipText = pointCollection[index].TextParser(pointCollection[index].ToolTipText);
+
+                    pointCollection[index].Marker.Visual.Visibility = Visibility.Visible;
+                    pointCollection[index].Marker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
+                    pointCollection[index].Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
+                }
+                else
+                {
+                    CreateMarkerAForLineDataPoint(pointCollection[index], width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+                }
+
+                if ((Boolean)pointCollection[index].LabelEnabled)
+                {
+                    if (pointCollection[index].LabelVisual != null)
+                    {
+                        Double labelLeft = 0;
+                        Double labelTop = 0;
+
+                        SetLabelPosition4LineDataPoint(pointCollection[index], ref labelLeft, ref labelTop);
+
+                        (((pointCollection[index].LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = pointCollection[index].TextParser(pointCollection[index].LabelText);
+                        pointCollection[index].LabelVisual.Visibility = Visibility.Visible;
+                        pointCollection[index].LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
+                        pointCollection[index].LabelVisual.SetValue(Canvas.TopProperty, labelTop);
+                    }
+                    else
+                    {
+                        CreateLabel4LineDataPoint(pointCollection[index], width, height, pointCollection[index].InternalYValue >= 0, xPosition, yPosition, ref line2dLabelCanvas, true);
+                    }
+                }
+            }
+        }
+
         private static void GeneratePointCollections4SpLine(List<DataPoint> pointCollection, Double width, Double height, Boolean isShadow, PathFigure pathFigure, ref Canvas line2dLabelCanvas)
         {   
             Point[] knotPoints = (from dp in pointCollection select dp._visualPosition).ToArray();
@@ -1208,9 +1216,6 @@ namespace Visifire.Charts
             Point[] cp1, cp2;
             Bezier.GetCurveControlPoints(2, knotPoints, out cp1, out cp2);
             
-            Double xPosition = 0;
-            Double yPosition = 0;
-
             if (pointCollection.Count > 0 && pointCollection[0].Faces != null)
                 pointCollection[0].Faces.DataContext = pointCollection;
             
@@ -1259,41 +1264,7 @@ namespace Visifire.Charts
 
                 if (!isShadow)
                 {   
-                    if (pointCollection[i].Marker != null && pointCollection[i].Marker.Visual != null)
-                    {
-                        Point newMarkerPosition = pointCollection[i].Marker.CalculateActualPosition(pointCollection[i]._visualPosition.X, pointCollection[i]._visualPosition.Y, new Point(0.5, 0.5));
-
-                        pointCollection[i]._parsedToolTipText = pointCollection[i].TextParser(pointCollection[i].ToolTipText);
-            
-                        pointCollection[i].Marker.Visual.Visibility = Visibility.Visible;
-                        pointCollection[i].Marker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
-                        pointCollection[i].Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
-                    }
-                    else
-                    {   
-                        CreateMarkerAForLineDataPoint(pointCollection[i], width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
-                    }
-
-                    if ((Boolean)pointCollection[i].LabelEnabled)
-                    {
-                        if (pointCollection[i].LabelVisual != null)
-                        {
-                            Double labelLeft = 0;
-                            Double labelTop = 0;
-
-                            SetLabelPosition4LineDataPoint(pointCollection[i], ref labelLeft, ref labelTop);
-
-                            (((pointCollection[i].LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = pointCollection[i].TextParser(pointCollection[i].LabelText);
-
-                            pointCollection[i].LabelVisual.Visibility = Visibility.Visible;
-                            pointCollection[i].LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
-                            pointCollection[i].LabelVisual.SetValue(Canvas.TopProperty, labelTop);
-                        }
-                        else
-                        {
-                            CreateLabel4LineDataPoint(pointCollection[i], width, height, pointCollection[i].InternalYValue >= 0, xPosition, yPosition, ref line2dLabelCanvas, true);
-                        }
-                    }
+                    CreateMarkerAndLabel(pointCollection, i, width, height, line2dLabelCanvas);
                 }
             }
         }
@@ -1301,9 +1272,6 @@ namespace Visifire.Charts
 
         private static void GeneratePointCollections4Line(List<DataPoint> pointCollection, Double width, Double height, Boolean isShadow, PathFigure pathFigure, ref Canvas line2dLabelCanvas)
         {              
-            Double xPosition = 0;
-            Double yPosition = 0;
-
             /*
              * PolyLineSegment segment = new PolyLineSegment();
                segment.Points = GeneratePointCollection(segment, pointCollection, createFaces);
@@ -1342,43 +1310,7 @@ namespace Visifire.Charts
                 pathFigure.Segments.Add(segment);
 
                 if(!isShadow)
-                {
-                    if (pointCollection[i].Marker != null && pointCollection[i].Marker.Visual != null)
-                    {
-                        Point newMarkerPosition = pointCollection[i].Marker.CalculateActualPosition(pointCollection[i]._visualPosition.X, pointCollection[i]._visualPosition.Y, new Point(0.5, 0.5));
-                        
-                        pointCollection[i]._parsedToolTipText = pointCollection[i].TextParser(pointCollection[i].ToolTipText);
-            
-                        pointCollection[i].Marker.Visual.Visibility = Visibility.Visible;
-                        pointCollection[i].Marker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
-                        pointCollection[i].Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
-                    }
-                    else
-                    {
-                        CreateMarkerAForLineDataPoint(pointCollection[i], width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
-                    }
-
-                    if ((Boolean)pointCollection[i].LabelEnabled)
-                    {
-                        if (pointCollection[i].LabelVisual != null)
-                        {
-                            Double labelLeft = 0;
-                            Double labelTop = 0;
-
-                            SetLabelPosition4LineDataPoint(pointCollection[i], ref labelLeft, ref labelTop);
-
-                            (((pointCollection[i].LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = pointCollection[i].TextParser(pointCollection[i].LabelText);
-
-                            pointCollection[i].LabelVisual.Visibility = Visibility.Visible;
-                            pointCollection[i].LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
-                            pointCollection[i].LabelVisual.SetValue(Canvas.TopProperty, labelTop);
-                        }
-                        else
-                        {
-                            CreateLabel4LineDataPoint(pointCollection[i], width, height, pointCollection[i].InternalYValue >= 0, xPosition, yPosition, ref line2dLabelCanvas, true);
-                        }
-                    }
-                }
+                    CreateMarkerAndLabel(pointCollection, i, width, height, line2dLabelCanvas);
             }
         }
 
@@ -1657,7 +1589,7 @@ namespace Visifire.Charts
         /// <param name="dataSeries"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        private static void UpdateSizeOfTheParentCanvas(DataSeries dataSeries, Double width, Double height)
+        internal static void UpdateSizeOfTheParentCanvas(DataSeries dataSeries, Double width, Double height)
         {
             (dataSeries.Faces.Visual as Canvas).Width = width;
             (dataSeries.Faces.Visual as Canvas).Height = height;
@@ -1680,7 +1612,7 @@ namespace Visifire.Charts
         /// <param name="width">Width</param>
         /// <param name="height">Height</param>
         /// <param name="pointCollectionList">List of group of DataPoints</param>
-        private static void CreateGroupOfBrokenLineSegment(DataSeries dataSeries, List<DataPoint> viewPortDataPoints, Double width, Double height, out List<List<DataPoint>> pointCollectionList)
+        internal static void CreateGroupOfBrokenLineSegment(DataSeries dataSeries, List<DataPoint> viewPortDataPoints, Double width, Double height, out List<List<DataPoint>> pointCollectionList)
         {
             Chart chart = dataSeries.Chart as Chart;
             Axis axisX = dataSeries.PlotGroup.AxisX;
@@ -1699,12 +1631,14 @@ namespace Visifire.Charts
                     continue;
                 }
 
-                if (Double.IsNaN(dp.YValue))
+                if (Double.IsNaN(dp.InternalYValue))
                 {
+                    dp.Faces = null;
                     pc = new List<DataPoint>();
                     pointCollectionList.Add(pc);
                     continue;
                 }
+
 
                 Double x = Graphics.ValueToPixelPosition(0, width, axisX.InternalAxisMinimum, axisX.InternalAxisMaximum, dp.InternalXValue);
                 Double y = Graphics.ValueToPixelPosition(height, 0, axisY.InternalAxisMinimum, axisY.InternalAxisMaximum, dp.InternalYValue);
@@ -2019,7 +1953,8 @@ namespace Visifire.Charts
                 }
             }
 
-            dataSeries._movingMarker.Visibility = Visibility.Collapsed;
+            if(dataSeries._movingMarker != null)
+                dataSeries._movingMarker.Visibility = Visibility.Collapsed;
 
             Clip(chart, chartsCanvas, labelsCanvas , dataSeries.PlotGroup);
 
@@ -2056,7 +1991,7 @@ namespace Visifire.Charts
             switch (property)
             {
                 case VcProperties.Color:
-                    if(marker != null)
+                    if(marker != null && (Boolean)dataPoint.MarkerEnabled)
                         marker.BorderColor = (dataPoint.GetValue(DataPoint.MarkerBorderColorProperty) as Brush == null) ? ((newValue != null) ? newValue as Brush : dataPoint.MarkerBorderColor) : dataPoint.MarkerBorderColor;
                     break;
                 case VcProperties.Cursor:
@@ -2107,7 +2042,7 @@ namespace Visifire.Charts
 
                 case VcProperties.LabelFontSize:
                     //CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
-                    CreateLabel4LineDataPoint(dataPoint, width, height, dataPoint.YValue >= 0, xPosition, yPosition,
+                    CreateLabel4LineDataPoint(dataPoint, width, height, dataPoint.InternalYValue >= 0, xPosition, yPosition,
                         ref line2dLabelCanvas, true);
                     // marker.FontSize = (Double) dataPoint.LabelFontSize;
                     break;
@@ -2149,7 +2084,10 @@ namespace Visifire.Charts
                     if (marker == null)
                         CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
                     else
-                        marker.BorderColor = dataPoint.MarkerBorderColor;
+                    {
+                        if((Boolean)dataPoint.MarkerEnabled)
+                            marker.BorderColor = dataPoint.MarkerBorderColor;
+                    }
 
                     break;
                 case VcProperties.MarkerBorderThickness:
@@ -2159,7 +2097,7 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.MarkerColor:
-                    if (marker != null)
+                    if (marker != null && (Boolean)dataPoint.MarkerEnabled)
                         marker.MarkerFillColor = dataPoint.MarkerColor;
                     break;
 
@@ -2194,7 +2132,7 @@ namespace Visifire.Charts
                 case VcProperties.YValueFormatString:
                     dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
                     //CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
-                    CreateLabel4LineDataPoint(dataPoint, width, height, dataPoint.YValue >= 0, xPosition, yPosition,
+                    CreateLabel4LineDataPoint(dataPoint, width, height, dataPoint.InternalYValue >= 0, xPosition, yPosition,
                         ref line2dLabelCanvas, true);
                     break;
                 case VcProperties.XValueType:
@@ -2785,9 +2723,9 @@ namespace Visifire.Charts
             lineParams.LineColor = series.Color;
             lineParams.LineStyle = ExtendedGraphics.GetDashArray(series.LineStyle);
             lineParams.Lighting = (Boolean)series.LightingEnabled;
-            lineParams.ShadowEnabled = (Boolean)series.ShadowEnabled;
+            lineParams.ShadowEnabled = (Boolean)series.ShadowEnabled && !(series.RenderAs == RenderAs.QuickLine);
 
-            if ((Boolean)series.ShadowEnabled)
+            if ((Boolean)lineParams.ShadowEnabled)
                 lineParams.LineShadowGeometryGroup = new GeometryGroup();
 
             #endregion
@@ -2809,6 +2747,7 @@ namespace Visifire.Charts
 
                 dataPoint.Marker = null;
                 dataPoint.LabelVisual = null;
+                dataPoint.Faces = null;
 
                 if (Double.IsNaN(dataPoint.InternalYValue))
                 {
@@ -2854,6 +2793,10 @@ namespace Visifire.Charts
                     if (lineParams.ShadowEnabled)
                         lineParams.ShadowPoints.Add(dataPoint);
                 }
+
+                if (dataPoint.Parent != null && dataPoint.Parent.RenderAs == RenderAs.QuickLine)
+                    dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+            
             }
 
             pointCollectionList.Add(lineParams.Points);

@@ -1648,23 +1648,29 @@ namespace Visifire.Charts
         {
             get
             {
+                String str;
+
+                Chart chart = Chart as Chart;
+
                 if (String.IsNullOrEmpty((String)GetValue(LabelTextProperty)))
                 {
                     if (RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.Pie || RenderAs == RenderAs.StreamLineFunnel || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.Pyramid)
                     {
-                        return "#AxisXLabel, #YValue";
+                        str = "#AxisXLabel, #YValue";
                     }
                     else if (RenderAs == RenderAs.Stock || RenderAs == RenderAs.CandleStick)
                     {
-                        return "#Close";
+                        str = "#Close";
                     }
                     else
                     {
-                        return "#YValue";
+                        str = "#YValue";
                     }
                 }
                 else
-                    return (String)GetValue(LabelTextProperty);
+                    str = (String)GetValue(LabelTextProperty);
+
+                return (chart != null && chart.SamplingThreshold > 0) ? str.Replace("#AxisXLabel", "#XValue") : str;
             }
             set
             {
@@ -2231,12 +2237,13 @@ namespace Visifire.Charts
                 if ((Chart != null && !String.IsNullOrEmpty((Chart as Chart).ToolTipText)))
                     return null;
 
+                String str; 
+                Chart chart = Chart as Chart;
+
                 if (String.IsNullOrEmpty((String)GetValue(ToolTipTextProperty)))
                 {
                     if (GetValue(ToolTipTextProperty) == null)
-                        return null;
-
-                    Chart chart = Chart as Chart;
+                        return null;                  
 
                     switch (RenderAs)
                     {
@@ -2244,36 +2251,39 @@ namespace Visifire.Charts
                         case RenderAs.StackedBar100:
                         case RenderAs.StackedArea100:
                             if (chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
-                                return "#XValue, #YValue(#Sum)";
+                                str = "#XValue, #YValue(#Sum)";
                             else
-                                return "#AxisXLabel, #YValue(#Sum)";
-
+                                str = "#AxisXLabel, #YValue(#Sum)";
+                            break;
                         case RenderAs.Pie:
                         case RenderAs.Doughnut:
                             if (InternalXValueType != ChartValueTypes.Numeric)
-                                return "#XValue, #YValue(#Percentage%)";
+                                str = "#XValue, #YValue(#Percentage%)";
                             else
-                                return "#AxisXLabel, #YValue(#Percentage%)";
-
+                                str = "#AxisXLabel, #YValue(#Percentage%)";
+                            break;
                         case RenderAs.Stock:
                         case RenderAs.CandleStick:
-                            return "Open: #Open\nClose: #Close\nHigh:  #High\nLow:   #Low";
-                        
+                            str = "Open: #Open\nClose: #Close\nHigh:  #High\nLow:   #Low";
+                            break;
                         case RenderAs.Radar:
-                            return "#AxisXLabel, #YValue";
-
+                            str = "#AxisXLabel, #YValue";
+                            break;
                         case RenderAs.Polar:
-                            return "#XValue, #YValue";
-
+                            str = "#XValue, #YValue";
+                            break;
                         default:
                             if (chart != null && chart.ChartArea != null && chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
-                                return "#XValue, #YValue";
+                                str = "#XValue, #YValue";
                             else
-                                return "#AxisXLabel, #YValue";
+                                str = "#AxisXLabel, #YValue";
+                            break;
                     }
                 }
                 else
-                    return (String)GetValue(ToolTipTextProperty);
+                    str = (String)GetValue(ToolTipTextProperty);
+
+                return (chart != null && chart.SamplingThreshold > 0) ? str.Replace("#AxisXLabel", "#XValue") : str;
             }
             set
             {
@@ -2679,7 +2689,7 @@ namespace Visifire.Charts
                 return;
 
             if (IsInDesignMode)
-            {
+            {   
                 if (Chart != null)
                     (Chart as Chart).RENDER_LOCK = false;
 
@@ -2687,10 +2697,13 @@ namespace Visifire.Charts
                 return;
             }
 
+            if (Chart != null && (Chart as Chart).IS_FULL_RENDER_PENDING)
+                return;
+
             if (ValidatePartialUpdate(RenderAs, property))
-            {
+            {   
                 if (NonPartialUpdateChartTypes(RenderAs) && property != VcProperties.ScrollBarScale)
-                {   
+                {
                     if (property == VcProperties.Color)
                         PartialUpdateOfColorProperty((Brush)newValue);
                     else
@@ -2846,7 +2859,7 @@ namespace Visifire.Charts
                         {
                             foreach (DataSeries ds in chart.InternalSeries)
                             {
-                                if(ds.RenderAs == RenderAs.Spline)
+                                if (ds.RenderAs == RenderAs.Spline || ds.RenderAs == RenderAs.QuickLine)
                                     RenderHelper.UpdateVisualObject(this.RenderAs, this, property, newValue, renderAxis);
                                 else
                                 {

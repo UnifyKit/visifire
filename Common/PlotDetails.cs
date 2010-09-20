@@ -67,14 +67,7 @@ namespace Visifire.Charts
 
             // Set default chart orientation
             this.ChartOrientation = ChartOrientationType.Undefined;
-
-            // Validate XValue type of the DataPoint and DataSeries
-            SetDataPointsNameAndValidateDataPointXValueType();
-
-            // Calculate all the required details
-            this.Calculate();
         }
-
 
         public void ReCreate(VisifireElement element, ElementTypes elementType, VcProperties property, object oldValue, object newValue)
         {   
@@ -461,8 +454,22 @@ namespace Visifire.Charts
             }
         }
 
-        private void Calculate()
+        internal void CalculateInternalXValuesOfDataPoints()
         {
+            _axisXPrimary = GetAxisXFromChart(Chart, AxisTypes.Primary);
+
+            CalculateInternalXValue4NumericAxis(Chart);
+
+            // Generate XValues for DataTime axis
+            if (GetChartOrientation() != ChartOrientationType.Circular)
+                GenerateXValueForDataTimeAxis(_axisXPrimary);
+        }
+        
+        public void Calculate(Boolean isUpdateAxisLabelsList)
+        {
+            // Validate XValue type of the DataPoint and DataSeries
+            SetDataPointsNameAndValidateDataPointXValueType();
+            
             // Create Axis incase if it doesnt exist
             CreateMissingAxes();
 
@@ -473,21 +480,7 @@ namespace Visifire.Charts
 
             _axisXPrimary = GetAxisXFromChart(Chart, AxisTypes.Primary);
 
-            //DataSeries ds = null;
-            //if (Chart.InternalSeries.Count > 0)
-            //{
-            //    ds = Chart.InternalSeries[0];
-            //}
-
-            //// Generate XValues for DataTime axis
-            //if (ds != null && ds.RenderAs != RenderAs.Polar)
-            //    GenerateXValueForDataTimeAxis(_axisXPrimary);
-
-            CalculateInternalXValue4NumericAxis(Chart);
-
-            // Generate XValues for DataTime axis
-            if (GetChartOrientation() != ChartOrientationType.Circular)
-                GenerateXValueForDataTimeAxis(_axisXPrimary);
+            CalculateInternalXValuesOfDataPoints();
 
             // Create list of datapoints from all series
             CreateListOfDataPoints();
@@ -515,7 +508,9 @@ namespace Visifire.Charts
             }
             else
             {
+                if(isUpdateAxisLabelsList)
                 AxisXPrimaryLabels = GetAxisXLabels(AxisTypes.Primary);
+
                 AxisXSecondaryLabels = GetAxisXLabels(AxisTypes.Secondary);
             }
 
@@ -756,6 +751,7 @@ namespace Visifire.Charts
         {   
             if (axisX != null)
             {
+                
                 axisX._isDateTimeAutoInterval = false;// Minimum difference between two DataTime values
                 axisX.IsDateTimeAxis = CheckIsDateTimeAxis(axisX);
 
@@ -1640,6 +1636,7 @@ namespace Visifire.Charts
                 case RenderAs.Bubble:
                 case RenderAs.Column:
                 case RenderAs.Line:
+                case RenderAs.QuickLine:
                 case RenderAs.Spline:
                 case RenderAs.StepLine:
                 case RenderAs.Stock:
@@ -1788,6 +1785,7 @@ namespace Visifire.Charts
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Line, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StepLine, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Spline, sortedSeriesIndexGroupedBySeries);
+            sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.QuickLine, sortedSeriesIndexGroupedBySeries);
             
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Point, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Stock, sortedSeriesIndexGroupedBySeries);
@@ -1818,7 +1816,7 @@ namespace Visifire.Charts
             Boolean ignore = false;     // is used to indicate whether the series has any affect on index or not
 
             // This is a array of ignorable render as types while calculating drawing index
-            RenderAs[] ignorableCharts = { RenderAs.Line, RenderAs.StepLine, RenderAs.Spline, RenderAs.Point, RenderAs.Bubble, RenderAs.Stock, RenderAs.CandleStick };
+            RenderAs[] ignorableCharts = { RenderAs.Line, RenderAs.StepLine, RenderAs.QuickLine, RenderAs.Spline, RenderAs.Point, RenderAs.Bubble, RenderAs.Stock, RenderAs.CandleStick };
 
             // repeat the loop until the seriesIndexList becomes empty
             while (seriesIndexList.Count > 0)
@@ -2111,7 +2109,7 @@ namespace Visifire.Charts
         /// <param name="axisY"></param>
         /// <returns>Returns the minimum data value as Double</returns>
         internal Double GetAxisYMinimumDataValue(Axis axisY)
-        {
+        {   
             Double min = Double.PositiveInfinity;
             Axis axisX = this.GetAxisXFromChart(Chart, AxisTypes.Primary);
 

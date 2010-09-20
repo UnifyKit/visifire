@@ -2469,6 +2469,7 @@ namespace Visifire.Charts
                 if (markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line
                     || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.StepLine
                     || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Spline
+                    || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.QuickLine
                     || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Stock
                     || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
                     )
@@ -2629,6 +2630,7 @@ namespace Visifire.Charts
                 if (marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line
                     || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.StepLine
                     || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Spline
+                    || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.QuickLine
                     || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Stock
                     || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
                     )

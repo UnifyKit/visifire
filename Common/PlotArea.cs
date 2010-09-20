@@ -1312,6 +1312,66 @@ namespace Visifire.Charts
             }
         }
 
+        private void SetPlotAreaMouseButtonEventArgs4AxesY(Chart chart, Axis axis, MouseButtonEventArgs e, PlotAreaMouseButtonEventArgs eventArgs)
+        {
+            Double yValue;
+            AxisOrientation axisOrientation = axis.AxisOrientation;
+            Double pixelPosition = (axisOrientation == AxisOrientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+            Double lenthInPixel = ((axisOrientation == AxisOrientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+
+            yValue = axis.PixelPositionToYValue(lenthInPixel, (axisOrientation == AxisOrientation.Vertical) ? pixelPosition : lenthInPixel - pixelPosition);
+
+            if (axis.Logarithmic)
+                eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, axis.AxisType);
+            else
+                eventArgs.YValue = yValue;
+        }
+
+        private void SetPlotAreaMouseEventArgs4AxesY(Chart chart, Axis axis, MouseEventArgs e, PlotAreaMouseEventArgs eventArgs)
+        {
+            Double yValue;
+            AxisOrientation axisOrientation = axis.AxisOrientation;
+            Double pixelPosition = (axisOrientation == AxisOrientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+            Double lenthInPixel = ((axisOrientation == AxisOrientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+
+            yValue = axis.PixelPositionToYValue(lenthInPixel, (axisOrientation == AxisOrientation.Vertical) ? pixelPosition : lenthInPixel - pixelPosition);
+
+            if (axis.Logarithmic)
+                eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, axis.AxisType);
+            else
+                eventArgs.YValue = yValue;
+        }
+
+        private void SetPlotAreaMouseButtonEventArgs4AxesX(Chart chart, Axis axis, MouseButtonEventArgs e, PlotAreaMouseButtonEventArgs eventArgs)
+        {
+            Double xValue;
+            AxisOrientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
+            Double pixelPosition = (axisOrientation == AxisOrientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
+            Double lenthInPixel = ((axisOrientation == AxisOrientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
+
+            xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lenthInPixel, (axisOrientation == AxisOrientation.Horizontal) ? pixelPosition : lenthInPixel - pixelPosition);
+
+            if (chart.ChartArea.AxisX.IsDateTimeAxis)
+                eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
+            else
+                eventArgs.XValue = xValue;
+        }
+
+        private void SetPlotAreaMouseEventArgs4AxesX(Chart chart, Axis axis, MouseEventArgs e, PlotAreaMouseEventArgs eventArgs)
+        {
+            Double xValue;
+            AxisOrientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
+            Double pixelPosition = (axisOrientation == AxisOrientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
+            Double lenthInPixel = ((axisOrientation == AxisOrientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
+
+            xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lenthInPixel, (axisOrientation == AxisOrientation.Horizontal) ? pixelPosition : lenthInPixel - pixelPosition);
+
+            if (chart.ChartArea.AxisX.IsDateTimeAxis)
+                eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
+            else
+                eventArgs.XValue = xValue;
+        }
+
         /// <summary>
         /// Creates PlotAreaMouseButtonEventArgs
         /// </summary>
@@ -1323,35 +1383,12 @@ namespace Visifire.Charts
             PlotAreaMouseButtonEventArgs eventArgs = new PlotAreaMouseButtonEventArgs(e);
 
             if (chart.ChartArea.AxisX != null)
-            {
-                Double xValue;
-                AxisOrientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
-                Double pixelPosition = (axisOrientation == AxisOrientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
-                Double lenthInPixel = ((axisOrientation == AxisOrientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
-
-                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lenthInPixel, (axisOrientation == AxisOrientation.Horizontal) ? pixelPosition : lenthInPixel - pixelPosition);
-
-                if (chart.ChartArea.AxisX.IsDateTimeAxis)
-                    eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
-                else
-                    eventArgs.XValue = xValue;
-
-            }
+                SetPlotAreaMouseButtonEventArgs4AxesX(chart, chart.ChartArea.AxisX, e, eventArgs);
 
             if (chart.ChartArea.AxisY != null)
-            {
-                Double yValue;
-                AxisOrientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
-                Double pixelPosition = (axisOrientation == AxisOrientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-                Double lenthInPixel = ((axisOrientation == AxisOrientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
-
-                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lenthInPixel, (axisOrientation == AxisOrientation.Vertical) ? pixelPosition : lenthInPixel - pixelPosition);
-
-                if (chart.ChartArea.AxisY.Logarithmic)
-                    eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, chart.ChartArea.AxisY.AxisType);
-                else
-                    eventArgs.YValue = yValue;
-            }
+                SetPlotAreaMouseButtonEventArgs4AxesY(chart, chart.ChartArea.AxisY, e, eventArgs);
+            else if (chart.ChartArea.AxisY2 != null)
+                SetPlotAreaMouseButtonEventArgs4AxesY(chart, chart.ChartArea.AxisY2, e, eventArgs);
 
             return eventArgs;
         }
@@ -1367,49 +1404,12 @@ namespace Visifire.Charts
             PlotAreaMouseEventArgs eventArgs = new PlotAreaMouseEventArgs(e);
 
             if (chart.ChartArea.AxisX != null)
-            {   
-                Double xValue;
-                AxisOrientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
-                Double pixelPosition = (axisOrientation == AxisOrientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
-                Double lengthInPixel = ((axisOrientation == AxisOrientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
-
-                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lengthInPixel, (axisOrientation == AxisOrientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
-
-                if (chart.ChartArea.AxisX.IsDateTimeAxis)
-                    eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
-                else
-                    eventArgs.XValue = xValue;
-            }
+                SetPlotAreaMouseEventArgs4AxesX(chart, chart.ChartArea.AxisX, e, eventArgs);
 
             if (chart.ChartArea.AxisY != null)
-            {   
-                Double yValue;
-                AxisOrientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
-                Double pixelPosition = (axisOrientation == AxisOrientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-                Double lengthInPixel = ((axisOrientation == AxisOrientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
-
-                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lengthInPixel, (axisOrientation == AxisOrientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
-
-                if(chart.ChartArea.AxisY.Logarithmic)
-                    eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, chart.ChartArea.AxisY.AxisType);
-                else
-                    eventArgs.YValue = yValue;
-            }
-
-            if (chart.ChartArea.AxisY2 != null)
-            {
-                Double yValue;
-                AxisOrientation axisOrientation = chart.ChartArea.AxisY2.AxisOrientation;
-                Double pixelPosition = (axisOrientation == AxisOrientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-                Double lengthInPixel = ((axisOrientation == AxisOrientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
-
-                yValue = chart.ChartArea.AxisY2.PixelPositionToYValue(lengthInPixel, (axisOrientation == AxisOrientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
-
-                if (chart.ChartArea.AxisY2.Logarithmic)
-                    eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, chart.ChartArea.AxisY2.AxisType);
-                else
-                    eventArgs.YValue = yValue;
-            }
+                SetPlotAreaMouseEventArgs4AxesY(chart, chart.ChartArea.AxisY, e, eventArgs);
+            else if (chart.ChartArea.AxisY2 != null)
+                SetPlotAreaMouseEventArgs4AxesY(chart, chart.ChartArea.AxisY2, e, eventArgs);
 
             return eventArgs;
         }

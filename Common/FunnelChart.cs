@@ -34,6 +34,9 @@ using Visifire.Commons;
 
 namespace Visifire.Charts
 {
+    /// <summary>
+    /// Visifire.Charts.FunnelChart class
+    /// </summary>
     internal static class FunnelChart
     {
         /// <summary>
@@ -58,7 +61,10 @@ namespace Visifire.Charts
                 List<DataSeries> selectedDataSeriesList = (from ds in seriesList where (Boolean)ds.Enabled == true select ds).ToList();
 
                 if (selectedDataSeriesList.Count > 0)
+                {
                     funnelSeries = selectedDataSeriesList.First();
+                    funnelSeries.Faces = null;
+                }
                 else
                     return null;
 

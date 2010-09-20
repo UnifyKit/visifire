@@ -22,6 +22,7 @@
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -80,9 +81,8 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\Common\WPFToolkit.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
+      <HintPath>..\..\Common\WPFToolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +170,9 @@
     <Compile Include="..\..\Common\DataPoint.cs">
       <Link>DataPoint.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\DataSamplingHelper.cs">
+      <Link>DataSamplingHelper.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\DataSeries.cs">
       <Link>DataSeries.cs</Link>
     </Compile>
@@ -241,6 +244,9 @@
     </Compile>
     <Compile Include="..\..\Common\PyramidChart.cs">
       <Link>PyramidChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\QuickLineChart.cs">
+      <Link>QuickLineChart.cs</Link>
     </Compile>
     <Compile Include="..\..\Common\RadarChart.cs">
       <Link>RadarChart.cs</Link>

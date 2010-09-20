@@ -3994,6 +3994,7 @@ namespace Visifire.Charts
 
             Canvas visual = new Canvas() { Width = width, Height = height };
             DataSeries series = seriesList[0];
+            series.Faces = null;
 
             if (series.Enabled == false)
                 return visual;
@@ -4252,6 +4253,7 @@ namespace Visifire.Charts
             visual.Height = height;
 
             DataSeries series = seriesList[0];
+            series.Faces = null;
 
             if (series.Enabled == false)
                 return visual;

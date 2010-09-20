@@ -164,6 +164,12 @@
     <Compile Include="..\..\Common\SLVisifireChartsTest\PlotDetailsTest.cs">
       <Link>PlotDetailsTest.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\SLVisifireChartsTest\QuickLineTest.cs">
+      <Link>QuickLineTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireChartsTest\SamplingTest.cs">
+      <Link>SamplingTest.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\SLVisifireChartsTest\SilverlightControlTest.cs">
       <Link>SilverlightControlTest.cs</Link>
     </Compile>

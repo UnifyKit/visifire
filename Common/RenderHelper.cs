@@ -51,6 +51,10 @@ namespace Visifire.Charts
                     renderedCanvas = LineChart.GetVisualObjectForLineChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
+                case RenderAs.QuickLine:
+                    renderedCanvas = QuickLineChart.GetVisualObjectForQuickLineChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                    break;
+
                 case RenderAs.Point:
                     renderedCanvas = PointChart.GetVisualObjectForPointChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
@@ -180,7 +184,7 @@ namespace Visifire.Charts
         }
         
         internal static void UpdateVisualObject(Chart chart, VcProperties property, object newValue, Boolean partialUpdate)
-        {
+        {   
             if (!chart._internalPartialUpdateEnabled || Double.IsNaN(chart.ActualWidth) || Double.IsNaN(chart.ActualHeight) || chart.ActualWidth == 0 || chart.ActualHeight == 0)
                 return;
 
@@ -189,14 +193,14 @@ namespace Visifire.Charts
                 chart.PARTIAL_DP_RENDER_LOCK = false;
                 Boolean isNeed2UpdateAllSeries = false;
 
-                List<DataSeries> _splineDataSeries = (from value in chart._datapoint2UpdatePartially 
-                                                      where value.Key.Parent.RenderAs == RenderAs.Spline
+                List<DataSeries> _dataSeries2UpdateAtSeriesWise = (from value in chart._datapoint2UpdatePartially
+                                                                   where value.Key.Parent.RenderAs == RenderAs.Spline || value.Key.Parent.RenderAs == RenderAs.QuickLine
                                                       select value.Key.Parent).Distinct().ToList();
 
-                foreach (DataSeries splineDs in _splineDataSeries)
+                foreach (DataSeries splineDs in _dataSeries2UpdateAtSeriesWise)
                     splineDs.UpdateVisual(VcProperties.DataPointUpdate, null);
 
-                List<KeyValuePair<DataPoint, VcProperties>> remainingDpInfo = (from dpInfo in chart._datapoint2UpdatePartially where !_splineDataSeries.Contains(dpInfo.Key.Parent) select dpInfo).ToList();
+                List<KeyValuePair<DataPoint, VcProperties>> remainingDpInfo = (from dpInfo in chart._datapoint2UpdatePartially where !_dataSeries2UpdateAtSeriesWise.Contains(dpInfo.Key.Parent) select dpInfo).ToList();
 
                 // If there is nothing to render anymore
                 if (remainingDpInfo.Count == 0)
@@ -206,7 +210,7 @@ namespace Visifire.Charts
                 {   
                     DataPoint dp = dpInfo.Key;
 
-                    if (dp.Parent.RenderAs == RenderAs.Spline)
+                    if (dp.Parent.RenderAs == RenderAs.Spline || dp.Parent.RenderAs == RenderAs.QuickLine)
                     {
                         isNeed2UpdateAllSeries = false;
                         continue;
@@ -279,6 +283,7 @@ namespace Visifire.Charts
                         break;
 
                   case RenderAs.Spline:
+                  case RenderAs.QuickLine:
                         if (property == VcProperties.Enabled)
                             ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
                         else
@@ -405,7 +410,10 @@ namespace Visifire.Charts
                     LineChart.Update(sender, property, newValue, isAXisChanged);
                     
                     break;
+                case RenderAs.QuickLine:
+                    QuickLineChart.Update(sender, property, newValue, isAXisChanged);
 
+                    break;
                 case RenderAs.StepLine:
                     StepLineChart.Update(sender, property, newValue, isAXisChanged);
 
@@ -484,7 +492,7 @@ namespace Visifire.Charts
             //chart.ChartArea.AttachScrollEvents();
         }
 
-        internal static List<DataPoint> GetDataPointsUnderViewPort(List<DataPoint> dataPoints, Boolean isUsedForAxisRange)
+        internal static List<DataPoint> GetDataPointsUnderViewPort(List<DataPoint> dataPoints, Boolean isUsedForAxisRange, Int32 leftRightPointPadding)
         {
             if (dataPoints.Count > 0)
             {   
@@ -519,11 +527,12 @@ namespace Visifire.Charts
 
                     System.Diagnostics.Debug.WriteLine("viewPortDataPoints=" + viewPortDataPoints.Count.ToString());
 
-                    if (viewPortDataPoints.Count <= 3)
+                    //
+                    if (viewPortDataPoints.Count <= leftRightPointPadding)
                     {
                         var leftDataPoints = (from dp in dataPoints where (dp.InternalXValue < minXValueRangeOfViewPort) orderby dp.InternalXValue select dp);
                         List<DataPoint> rightDataPoints = (from dp in dataPoints where (dp.InternalXValue > maxXValueRangeOfViewPort) orderby dp.InternalXValue select dp).ToList();
-
+                        
                         if (leftDataPoints.Count() > 0)
                             viewPortDataPoints.Insert(0, leftDataPoints.Last());
 
@@ -749,7 +758,7 @@ namespace Visifire.Charts
             DataPoint nearestDataPoint = null;
 
             // Get all DataPoints order by the XValue distance from the internalXValue.
-            List<DataPoint> dataPointsAlongX = (from dp in dataSeries.DataPoints
+            List<DataPoint> dataPointsAlongX = (from dp in dataSeries.InternalDataPoints
                                                 where
                                                 !(RenderHelper.IsFinancialCType(dp.Parent) && dp.InternalYValues == null)
                                                 || !(!RenderHelper.IsFinancialCType(dp.Parent) && Double.IsNaN(dp.YValue))
@@ -825,6 +834,7 @@ namespace Visifire.Charts
         {
             return (dataSeries.RenderAs == RenderAs.Line 
                 || dataSeries.RenderAs == RenderAs.Spline
+                || dataSeries.RenderAs == RenderAs.QuickLine
                 || dataSeries.RenderAs == RenderAs.StepLine);
         }
 
@@ -884,5 +894,6 @@ namespace Visifire.Charts
                 || dataSeries.RenderAs == RenderAs.StreamLineFunnel
                 || dataSeries.RenderAs == RenderAs.Pyramid);
         }
+
    }
 }

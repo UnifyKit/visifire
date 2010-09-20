@@ -107,8 +107,12 @@ namespace Visifire.Charts
         /// <param name="label">Axis labels</param>
         private String FormatDate4Labels(DateTime dt, Axis axis)
         {
-            String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : axis.XValueType == ChartValueTypes.Time ? "h:mm:ss tt" : "M/d/yyyy h:mm:ss tt";
+            // String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : axis.XValueType == ChartValueTypes.Time ? "h:mm:ss tt" : "M/d/yyyy h:mm:ss tt";
+
+            String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "d" :
+                axis.XValueType == ChartValueTypes.Time ? "t" : "G";
             valueFormatString = String.IsNullOrEmpty(Parent.XValueFormatString) ? valueFormatString : Parent.XValueFormatString;
+
             return axis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture));
         }
 
@@ -1038,7 +1042,10 @@ namespace Visifire.Charts
             if (dataPoint.Parent != null && dataPoint.Parent.PlotGroup != null)
                 axis = dataPoint.Parent.PlotGroup.AxisY;
 
-            if (axis != null && axis.Logarithmic)
+            Chart chart = dataPoint.Chart as Chart;
+
+            if (chart != null && chart.PlotDetails != null && chart.PlotDetails.ChartOrientation != ChartOrientationType.NoAxis
+                && axis != null && axis.Logarithmic)
                 value = Math.Log(dataPoint.YValue, axis.LogarithmBase);
             else
                 value = dataPoint.YValue;
@@ -2016,43 +2023,47 @@ namespace Visifire.Charts
                             case RenderAs.Doughnut:
 
                                 SectorChartShapeParams pieParams = (SectorChartShapeParams)this.VisualParams;
-                                pieParams.Background = (Brush)value;
 
-                                if (!(Parent.Chart as Chart).View3D)
+                                if (pieParams != null)
                                 {
-                                    if (Faces.Parts.Count > 0 && Faces.Parts[0] != null)
-                                        (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Radial", null) : (Brush)value;
+                                    pieParams.Background = (Brush)value;
 
-                                    if (Faces.Parts.Count > 1 && Faces.Parts[1] != null)
-                                        (Faces.Parts[1] as Shape).Fill = (pieParams.StartAngle > Math.PI * 0.5 && pieParams.StartAngle <= Math.PI * 1.5) ? PieChart.GetDarkerBevelBrush(pieParams.Background, pieParams.StartAngle * 180 / Math.PI + 135) : PieChart.GetLighterBevelBrush(pieParams.Background, -pieParams.StartAngle * 180 / Math.PI);
-
-                                    if (Faces.Parts.Count > 2 && Faces.Parts[2] != null)
-                                        (Faces.Parts[2] as Shape).Fill = (pieParams.StopAngle > Math.PI * 0.5 && pieParams.StopAngle <= Math.PI * 1.5) ? PieChart.GetLighterBevelBrush(pieParams.Background, pieParams.StopAngle * 180 / Math.PI + 135) : PieChart.GetDarkerBevelBrush(pieParams.Background, -pieParams.StopAngle * 180 / Math.PI);
-
-                                    if (Faces.Parts.Count > 3 && Faces.Parts[3] != null)
-                                        (Faces.Parts[3] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(-0.745, -0.85), Graphics.GenerateDoubleCollection(0, 1)) : (Faces.Parts[3] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(0.745, -0.99), Graphics.GenerateDoubleCollection(0, 1));
-
-                                    if (Parent.RenderAs == RenderAs.Doughnut && Faces.Parts.Count > 4 && Faces.Parts[4] != null)
-                                        (Faces.Parts[4] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(-0.745, -0.85), Graphics.GenerateDoubleCollection(0, 1)) : (Faces.Parts[4] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(0.745, -0.99), Graphics.GenerateDoubleCollection(0, 1));
-                                }
-                                else
-                                {
-                                    //foreach (FrameworkElement fe in Faces.Parts)
-                                    //    if (fe != null) (fe as Shape).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
-
-                                    int i=0;
-                                    foreach (FrameworkElement fe in Faces.Parts)
+                                    if (!(Parent.Chart as Chart).View3D)
                                     {
-                                        PieFaceTypes pieFaceType = (PieFaceTypes)Enum.Parse(typeof(PieFaceTypes), Enum.GetName(typeof(PieFaceTypes), i), true);
-                                        if (fe != null) 
-                                            (fe as Shape).Fill = PieChart.Get3DFaceColor(Parent.RenderAs, pieParams.Lighting, pieParams.Background, pieFaceType, pieParams.StartAngle, pieParams.StopAngle, pieParams.TiltAngle);
-                                        i++;
+                                        if (Faces.Parts.Count > 0 && Faces.Parts[0] != null)
+                                            (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Radial", null) : (Brush)value;
 
-                                        if (i >= 4)
-                                            i = 4;
+                                        if (Faces.Parts.Count > 1 && Faces.Parts[1] != null)
+                                            (Faces.Parts[1] as Shape).Fill = (pieParams.StartAngle > Math.PI * 0.5 && pieParams.StartAngle <= Math.PI * 1.5) ? PieChart.GetDarkerBevelBrush(pieParams.Background, pieParams.StartAngle * 180 / Math.PI + 135) : PieChart.GetLighterBevelBrush(pieParams.Background, -pieParams.StartAngle * 180 / Math.PI);
+
+                                        if (Faces.Parts.Count > 2 && Faces.Parts[2] != null)
+                                            (Faces.Parts[2] as Shape).Fill = (pieParams.StopAngle > Math.PI * 0.5 && pieParams.StopAngle <= Math.PI * 1.5) ? PieChart.GetLighterBevelBrush(pieParams.Background, pieParams.StopAngle * 180 / Math.PI + 135) : PieChart.GetDarkerBevelBrush(pieParams.Background, -pieParams.StopAngle * 180 / Math.PI);
+
+                                        if (Faces.Parts.Count > 3 && Faces.Parts[3] != null)
+                                            (Faces.Parts[3] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(-0.745, -0.85), Graphics.GenerateDoubleCollection(0, 1)) : (Faces.Parts[3] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(0.745, -0.99), Graphics.GenerateDoubleCollection(0, 1));
+
+                                        if (Parent.RenderAs == RenderAs.Doughnut && Faces.Parts.Count > 4 && Faces.Parts[4] != null)
+                                            (Faces.Parts[4] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(-0.745, -0.85), Graphics.GenerateDoubleCollection(0, 1)) : (Faces.Parts[4] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(0.745, -0.99), Graphics.GenerateDoubleCollection(0, 1));
+                                    }
+                                    else
+                                    {
+                                        //foreach (FrameworkElement fe in Faces.Parts)
+                                        //    if (fe != null) (fe as Shape).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
+
+                                        int i = 0;
+                                        foreach (FrameworkElement fe in Faces.Parts)
+                                        {
+                                            PieFaceTypes pieFaceType = (PieFaceTypes)Enum.Parse(typeof(PieFaceTypes), Enum.GetName(typeof(PieFaceTypes), i), true);
+                                            if (fe != null)
+                                                (fe as Shape).Fill = PieChart.Get3DFaceColor(Parent.RenderAs, pieParams.Lighting, pieParams.Background, pieFaceType, pieParams.StartAngle, pieParams.StopAngle, pieParams.TiltAngle);
+                                            i++;
+
+                                            if (i >= 4)
+                                                i = 4;
+                                        }
                                     }
                                 }
-                                
+
                                 break;
 
                             case RenderAs.SectionFunnel:
@@ -2060,18 +2071,24 @@ namespace Visifire.Charts
                             
                                 TriangularChartSliceParms funnelSliceParms = (TriangularChartSliceParms)this.VisualParams;
 
-                                foreach (Shape path in Faces.Parts)
+                                if (funnelSliceParms != null)
                                 {
-                                    FunnelChart.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D, funnelSliceParms);
+                                    foreach (Shape path in Faces.Parts)
+                                    {
+                                        FunnelChart.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D, funnelSliceParms);
+                                    }
                                 }
                                 break;
 
                             case RenderAs.Pyramid:
                                 TriangularChartSliceParms pyramidSliceParms = (TriangularChartSliceParms)this.VisualParams;
 
-                                foreach (Shape path in Faces.Parts)
+                                if (pyramidSliceParms != null)
                                 {
-                                    PyramidChart.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D, pyramidSliceParms);
+                                    foreach (Shape path in Faces.Parts)
+                                    {
+                                        PyramidChart.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D, pyramidSliceParms);
+                                    }
                                 }
 
                                 break;
@@ -2082,7 +2099,22 @@ namespace Visifire.Charts
 
                     #endregion
         }
-        
+
+        /// <summary>
+        /// Reset VisualParams for non-partial update chart types
+        /// </summary>
+        private void ResetVisualParams4NonPartialUpdateChartTypes()
+        {
+            if (Parent != null)
+            {
+                foreach (DataPoint dp in Parent.InternalDataPoints)
+                {
+                    if (Double.IsNaN(dp.InternalYValue))
+                        VisualParams = null;
+                }
+            }
+        }
+
         /// <summary>
         /// UpdateVisual is used for partial rendering
         /// </summary>
@@ -2091,10 +2123,8 @@ namespace Visifire.Charts
         /// <returns>Is need to update all DataPoints on axis change</returns>
         internal Boolean UpdateVisual(VcProperties property, object newValue, Boolean recursive)
         {
-
             Chart chart = Chart as Chart;
-
-           
+                       
             if (IsInDesignMode)
             {
                 if(chart != null)
@@ -2105,15 +2135,21 @@ namespace Visifire.Charts
                 return false;
             }
 
+            if (chart != null && chart.IS_FULL_RENDER_PENDING)
+                return false;
+
             /* Don’t proceed for the chart types which do not support partial update of properties
              * (Except Color property).
              */
             if (!recursive && NonPartialUpdateChartTypes(Parent.RenderAs))
-            {   
+            {
                 if (property == VcProperties.Color)
                     PartialUpdateOfColorProperty(newValue as Brush);
                 else
+                {
+                    ResetVisualParams4NonPartialUpdateChartTypes();
                     FirePropertyChanged(property);
+                }
 
                 return false;
             }
@@ -2140,16 +2176,16 @@ namespace Visifire.Charts
 
                 /* Line and bubble are first while updating DataPoints one by one. So to take advantage of updating DataPoints one by one
                 conditions are written below */
-                if (Parent.RenderAs == RenderAs.Spline 
+                if (Parent.RenderAs == RenderAs.Spline || Parent.RenderAs == RenderAs.QuickLine
                     || (Parent.RenderAs != RenderAs.Line && Parent.RenderAs != RenderAs.StepLine) 
                     || ((Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StepLine) && chart.AnimatedUpdate == false))
-                {   
-                    if((!recursive && (property == VcProperties.YValue) && Parent.RenderAs == RenderAs.Spline)
+                {
+                    if ((!recursive && (property == VcProperties.YValue) && (Parent.RenderAs == RenderAs.Spline || Parent.RenderAs == RenderAs.QuickLine))
                     ||
                     (!recursive && (property == VcProperties.YValue) && (chart.PlotDetails.ListOfAllDataPoints.Count > 1000 || !(Boolean)chart.AnimatedUpdate))
                     ||
                     (!recursive && property == VcProperties.XValue && (!RenderHelper.IsLineCType(Parent) || Parent.RenderAs != RenderAs.Bubble || Parent.RenderAs != RenderAs.Point)))
-                    {
+                    {   
                         chart.PARTIAL_DP_RENDER_LOCK = true;
                         chart._partialRenderBlockedCount = 0;
                         chart._datapoint2UpdatePartially = new Dictionary<DataPoint, VcProperties>();
@@ -2351,7 +2387,7 @@ namespace Visifire.Charts
 
                 #endregion
 
-                if (property == VcProperties.Color)
+                if (property == VcProperties.Color && Parent.RenderAs != RenderAs.QuickLine)
                     UpdateLegendMarker(this, (Brush)newValue);
 
                 if(Parent != null)
@@ -2642,8 +2678,11 @@ namespace Visifire.Charts
 
             Boolean selected = selectedValue & dataPoint.Parent.SelectionEnabled;
 
-            if (dataPoint.Parent.ListOfSelectedDataPoints != null)
-                dataPoint.Parent.ListOfSelectedDataPoints.Add(dataPoint);
+            if (dataPoint.IsNotificationEnable)
+            {
+                if (dataPoint.Parent.ListOfSelectedDataPoints != null)
+                    dataPoint.Parent.ListOfSelectedDataPoints.Add(dataPoint);
+            }
 
             if (selected)
             {
@@ -3494,7 +3533,7 @@ namespace Visifire.Charts
                         InteractivityHelper.RemoveBorderEffect(Marker.MarkerShape, (BorderStyles)dataPoint.BorderStyle, Marker.BorderThickness, Marker.BorderColor, Marker.MarkerFillColor, Marker.MarkerSize.Width * Marker.ScaleFactor, Marker.MarkerSize.Height * Marker.ScaleFactor);
                         Marker.MarkerShape.Margin = new Thickness(0, 0, 0, 0);
                     }
-                    else if((Boolean)LabelEnabled)
+                    else
                     {
                         InteractivityHelper.RemoveBorderEffect(Marker.MarkerShape, (BorderStyles)dataPoint.BorderStyle, Marker.BorderThickness, Marker.BorderColor, Marker.MarkerFillColor, Marker.MarkerSize.Width * Marker.ScaleFactor, Marker.MarkerSize.Height * Marker.ScaleFactor);
                         Marker.MarkerShape.Margin = new Thickness(0, 0, 0, 0);
@@ -3632,7 +3671,12 @@ namespace Visifire.Charts
                         if (Parent.RenderAs == RenderAs.Radar)
                             labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue + 1);
                         else
-                            labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue);
+                        {
+                            if (Parent.PlotGroup.AxisX.IsDateTimeAxis)
+                                labelString = AxisLabels.FormatDate(this.InternalXValueAsDateTime, Parent.PlotGroup.AxisX);
+                            else
+                                labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue);
+                        }
                     }
                 }
                 else
@@ -3849,6 +3893,8 @@ namespace Visifire.Charts
                 {
                     case RenderAs.Line:
                     case RenderAs.StepLine:
+                    case RenderAs.Spline:
+                    case RenderAs.QuickLine:
                     case RenderAs.CandleStick:
                     case RenderAs.Stock:
 

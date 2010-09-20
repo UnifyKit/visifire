@@ -1009,7 +1009,12 @@ namespace Visifire.Commons
                     break;
 
                 case MarkerTypes.Line:
-                    xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Data=""M188.63132,258.42844 L188.63132,258.42847 C188.9104,278.91281 201.84741,278.91315 202.18343,258.49094 203.19153,235.62109 187.90231,234.79944 188.63132,258.42844 z M202.56129,256.09153 C202.26549,256.27575 202.32971,260.25791 202.54637,260.48211 202.68528,260.62585 208.86081,260.26716 212.77637,260.48211 214.29462,260.56545 214.56375,256.40657 212.8964,256.19363 211.16966,255.97311 202.56129,256.09153 202.56129,256.09153 z M188.24223,260.6353 L177.59218,260.65346 C176.06613,260.87177 176.17243,255.97066 177.43324,255.91033 L188.28842,255.91961"" Stretch=""Fill"" Width=""18"" Height=""8"" VerticalAlignment=""Center"" HorizontalAlignment=""Center"" Stroke=""#FF000000"" Fill=""#FFFFFFFF"" />");
+
+                    if(_isLineWithoutMarker)
+                        xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Data=""M215,305 L252,305"" Stretch=""Fill"" Width=""18"" Height=""10"" StrokeStartLineCap=""Round"" StrokeEndLineCap=""Round"" VerticalAlignment=""Center"" HorizontalAlignment=""Center"" Stroke=""#FF000000"" StrokeThickness=""0.8"" Fill=""#FFFFFFFF"" />");
+                    else
+                        xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Data=""M188.63132,258.42844 L188.63132,258.42847 C188.9104,278.91281 201.84741,278.91315 202.18343,258.49094 203.19153,235.62109 187.90231,234.79944 188.63132,258.42844 z M202.56129,256.09153 C202.26549,256.27575 202.32971,260.25791 202.54637,260.48211 202.68528,260.62585 208.86081,260.26716 212.77637,260.48211 214.29462,260.56545 214.56375,256.40657 212.8964,256.19363 211.16966,255.97311 202.56129,256.09153 202.56129,256.09153 z M188.24223,260.6353 L177.59218,260.65346 C176.06613,260.87177 176.17243,255.97066 177.43324,255.91033 L188.28842,255.91961"" Stretch=""Fill"" Width=""18"" Height=""8"" VerticalAlignment=""Center"" HorizontalAlignment=""Center"" Stroke=""#FF000000"" Fill=""#FFFFFFFF"" />");
+
                     break;
             }
 
@@ -1717,6 +1722,8 @@ namespace Visifire.Commons
         private Boolean _labelEnabled;
 
         private Brush _textBackground;
+
+        internal Boolean _isLineWithoutMarker;
 
         /// <summary>
         /// The identifier for property FontSize
