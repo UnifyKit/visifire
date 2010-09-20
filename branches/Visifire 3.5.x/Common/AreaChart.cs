@@ -2856,7 +2856,18 @@ namespace Visifire.Charts
             Marker marker = dataPoint.Marker;
             DataSeries dataSeries = dataPoint.Parent;
             PlotGroup plotGroup = dataSeries.PlotGroup;
+
+            if (dataSeries.Faces == null)
+                return;
+
             Canvas areaVisual = dataSeries.Faces.Visual as Canvas;
+
+            // Here areaVisual is checked because while updating chart very fast at realtime, areaVisual may be null or 
+            // dataSeries.Faces.Visual may come as any other visual (say Polygon) instead of Canvas. If dataSeries.Faces.Visual
+            // is not Canvas then it may throw exception below.
+            if (areaVisual == null)
+                return;
+
             Canvas labelCanvas = ((areaVisual as FrameworkElement).Parent as Panel).Children[0] as Canvas;
             Double height = chart.ChartArea.ChartVisualCanvas.Height;
             Double width = chart.ChartArea.ChartVisualCanvas.Width;
@@ -3844,12 +3855,15 @@ namespace Visifire.Charts
                 case VcProperties.LightingEnabled:
                     if(dataSeries.Faces != null)
                     {
-                        foreach (Path path in dataSeries.Faces.FrontFacePaths)
+                        if (dataSeries.Faces.FrontFacePaths != null)
                         {
-                            if (chart.View3D)
-                                path.Fill = (Boolean)dataSeries.LightingEnabled ? Graphics.GetFrontFaceBrush(dataSeries.Color) : dataSeries.Color;
-                            else
-                                path.Fill = (Boolean)dataSeries.LightingEnabled ? Graphics.GetLightingEnabledBrush(dataSeries.Color, "Linear", null) : dataSeries.Color;
+                            foreach (Path path in dataSeries.Faces.FrontFacePaths)
+                            {
+                                if (chart.View3D)
+                                    path.Fill = (Boolean)dataSeries.LightingEnabled ? Graphics.GetFrontFaceBrush(dataSeries.Color) : dataSeries.Color;
+                                else
+                                    path.Fill = (Boolean)dataSeries.LightingEnabled ? Graphics.GetLightingEnabledBrush(dataSeries.Color, "Linear", null) : dataSeries.Color;
+                            }
                         }
                     }
 
@@ -3857,8 +3871,11 @@ namespace Visifire.Charts
                 case VcProperties.Opacity:
                     if (dataSeries.Faces != null)
                     {
-                        foreach (Path path in dataSeries.Faces.FrontFacePaths)
-                            path.Opacity = (Double) newValue;
+                        if (dataSeries.Faces.FrontFacePaths != null)
+                        {
+                            foreach (Path path in dataSeries.Faces.FrontFacePaths)
+                                path.Opacity = (Double)newValue;
+                        }
                     }
                     break;
 
@@ -3867,8 +3884,11 @@ namespace Visifire.Charts
                 case VcProperties.BorderThickness:
                     if (dataSeries.Faces != null)
                     {
-                        foreach (Path path in dataSeries.Faces.FrontFacePaths)
-                            ApplyBorderProperties(path, dataSeries);
+                        if (dataSeries.Faces.FrontFacePaths != null)
+                        {
+                            foreach (Path path in dataSeries.Faces.FrontFacePaths)
+                                ApplyBorderProperties(path, dataSeries);
+                        }
                     }
 
                     break;

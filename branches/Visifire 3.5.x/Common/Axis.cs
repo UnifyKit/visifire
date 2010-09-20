@@ -5342,6 +5342,17 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Calculate DateTime from numeric XValue
+        /// </summary>
+        internal Object CalculateDateTimeFromNumericXValue(Double xValue)
+        {
+            if (IsDateTimeAxis)
+                return DateTimeHelper.XValueToDateTime(MinDate, xValue, InternalIntervalType);
+            else
+                return xValue;
+        }
+
+        /// <summary>
         /// Apply axis visual properties
         /// </summary>
         private void ApplyVisualProperty()
@@ -5868,7 +5879,7 @@ namespace Visifire.Charts
                 if (PlotDetails.ListOfAllDataPoints.Count != 0)
                 {
                     if (_oldScrollBarOffsetInPixel == offsetInPixel && !(Chart as Chart).ChartArea._isDragging)
-                    {   
+                    {
                         if ((Chart as Chart)._clearAndResetZoomState)
                             ResetZoomState(Chart as Chart, true);
 

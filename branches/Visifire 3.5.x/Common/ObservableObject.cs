@@ -407,13 +407,14 @@ namespace Visifire.Commons
             Chart chart = Chart as Chart;
 
             if (chart == null || chart.ChartArea == null || chart.ChartArea._isFirstTimeRender)
-            {
+                return false;
+            else if (chart.SamplingThreshold != 0 && property != VcProperties.ScrollBarScale)
+            {   
+                FirePropertyChanged(property);
                 return false;
             }
             else
-            {
                 return true;
-            }
         }
 
         internal static Boolean NonPartialUpdateChartTypes(RenderAs renderAs)

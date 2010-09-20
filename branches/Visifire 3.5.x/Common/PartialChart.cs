@@ -1,4 +1,4 @@
-/*   
+﻿/*   
     Copyright (C) 2008 Webyog Softworks Private Limited
 
     This file is a part of Visifire Charts.
@@ -383,7 +383,37 @@ namespace Visifire.Charts
 
         #endregion
 
-        #region Public Properties
+        #region Public Properties      
+        
+        /// <summary>
+        /// Get or Set SamplingThreshold property
+        /// Limits the number of points to be displayed on the chart.
+        /// </summary>
+        public Int32 SamplingThreshold
+        {   
+            get
+            {
+                return (Int32)GetValue(SamplingThresholdProperty);
+            }
+            set
+            {
+                SetValue(SamplingThresholdProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.SamplingThreshold dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.SamplingThreshold dependency property.
+        /// Default value for the SamplingThreshold is set to 200 which means that if SamplingThreshold is not specified and the dataset which is more than 200 
+        /// will be reduce to 200.
+        /// </returns>
+        public static DependencyProperty SamplingThresholdProperty = DependencyProperty.Register
+            ("SamplingThreshold",
+            typeof(Int32),
+            typeof(Chart),
+            new PropertyMetadata(0, OnSamplingThresholdPropertyChanged));
 
         /// <summary>
         /// Get or Set ZoomingEnabled property
@@ -431,6 +461,20 @@ namespace Visifire.Charts
             }
 
             c._clearAndResetZoomState = true;
+            c.InvokeRender();
+        }
+
+        /// <summary>
+        /// Event handler manages OnSamplingThreshold property change event of Chart
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnSamplingThresholdPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if ((Int32)e.NewValue < 0)
+                throw new ArgumentOutOfRangeException("SamplingThreshold should be always greater than or equals to 0.");
+
+            Chart c = d as Chart;
             c.InvokeRender();
         }
 
@@ -2503,6 +2547,8 @@ namespace Visifire.Charts
                         Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
                     else
                         Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
+
+                    IS_FULL_RENDER_PENDING = true;
 #else
                     if (IsInDesignMode)
                     {
@@ -2512,6 +2558,7 @@ namespace Visifire.Charts
                     else
                     {
                         System.Diagnostics.Debug.WriteLine("xxxx----Render() dispatched from InvokeRender Function");
+                        IS_FULL_RENDER_PENDING = true;
                         this.Dispatcher.BeginInvoke(Render);
                     }
 #endif              
@@ -2523,9 +2570,9 @@ namespace Visifire.Charts
         /// Render redraws the chart
         /// </summary>
         internal void Render()
-        {
+        {   
             if (_isTemplateApplied && !RENDER_LOCK && _rootElement != null)
-            {
+            {   
                 if (Double.IsNaN(this.ActualWidth) || Double.IsNaN(this.ActualHeight) || this.ActualWidth == 0 || this.ActualHeight == 0)
                     return;
 
@@ -2537,20 +2584,25 @@ namespace Visifire.Charts
                     PrepareChartAreaForDrawing();
 
                     ChartArea.Draw(this);
+
+                    IS_FULL_RENDER_PENDING = false;
                 }
                 catch (Exception e)
                 {
                     RENDER_LOCK = false;
+
+                    IS_FULL_RENDER_PENDING = false;
+
                     if (CheckSizeError(e as ArgumentException))
                         return;
                     else
                         throw new Exception(e.Message, e);
                 }
             }
-            //else if (RENDER_LOCK)
-            //{
-            //    System.Diagnostics.Debug.WriteLine("----Rendered Locked in Render Function");
-            //}
+            // else if (RENDER_LOCK)
+            // {
+            //     System.Diagnostics.Debug.WriteLine("----Rendered Locked in Render Function");
+            // }
         }
         
         /// <summary>
@@ -2696,8 +2748,17 @@ namespace Visifire.Charts
         /// This is used to check whether chart should go for partial update or full render.
         /// For instance, it might happen if YValue and RenderAs both are changed at realtime.
         /// So in this case, both partial upadte and full render will occur.
+        /// This porperty is generally used while updating YValue property at realtime.
         /// </summary>
         internal Boolean _internalPartialUpdateEnabled;
+
+        /// <summary>
+        /// This is used to check full render of chart is pending or not.
+        /// For instance, if RenderAs property and Color property are set at realtime one after the other,
+        /// this flag will be set to true due to RenderAs property changed because of which chart will not
+        /// go for partial render of Color property.
+        /// </summary>
+        internal Boolean IS_FULL_RENDER_PENDING;
 
         /// <summary>
         /// Whether chart is rendered

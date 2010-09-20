@@ -13,6 +13,7 @@ using System.Globalization;
 using Visifire.Charts;
 using Visifire.Commons;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Browser;
 
 namespace SLVisifireChartsTest
 {
@@ -259,6 +260,70 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
         }
 
+        /// <summary>
+        /// Create and add DataSeries
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        public static void CreateAndAddDefaultDataSeriesWithLargeNoOfDps(Chart chart)
+        {
+            DataSeries dataSeries = new DataSeries();
+
+            Random rand = new Random();
+
+            for (Int32 i = 0; i < 1000; i++)
+            {
+                DataPoint datapoint = new DataPoint();
+                datapoint.AxisXLabel = "abc" + i;
+                datapoint.YValue = rand.Next(0, 100);
+                datapoint.XValue = i + 1;
+                dataSeries.DataPoints.Add(datapoint);
+            }
+
+            chart.Series.Add(dataSeries);
+        }
+
+
+        /// <summary>
+        /// Create and add DataSeries
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        public static void CreateAndAddDefaultDataSeries4Sampling(Chart chart)
+        {
+            DataSeries dataSeries = new DataSeries();
+
+            Random rand = new Random();
+
+            for (Int32 i = 0; i < 50; i++)
+            {
+                DataPoint datapoint = new DataPoint();
+                datapoint.AxisXLabel = "abc" + i;
+                datapoint.YValue = rand.Next(0, 100);
+                datapoint.XValue = i + 1;
+                dataSeries.DataPoints.Add(datapoint);
+            }
+
+            chart.Series.Add(dataSeries);
+        }
+
+        public static void CreateAndAddDefaultDateTimeAxis(Chart chart)
+        {
+            DataSeries dataSeries = new DataSeries();
+            Random rn = new Random(DateTime.Now.Second);
+
+            DateTime dateTime = DateTime.Now;
+
+            for (int i = 0; i < 30; i++)
+            {
+
+                DataPoint datapoint = new DataPoint();
+                datapoint.XValue = dateTime;
+                datapoint.YValue = rn.Next(10, 100);
+                dataSeries.DataPoints.Add(datapoint);
+                dateTime = dateTime.AddDays(1);
+            }
+            chart.Series.Add(dataSeries);
+        }
+
         public static void CreateDefaultDataSeries4FinancialCharts(Chart chart)
         {
             DataSeries dataSeries = new DataSeries();
@@ -335,5 +400,113 @@ namespace SLVisifireChartsTest
 
             return htmlElement;
         }
+        
+        public static void SetSLPluginHeight(Double height)
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", height.ToString() + "px");
+        }
+
+        public static void OnTestCompleted(SilverlightControlTest testClass)
+        {
+           
+            testClass.EnqueueTestComplete();
+          
+            RemoveMessageButton(TestHtmlButton);
+
+           
+        }
+
+        public static void EnableAutoTimerCallBack(SilverlightControlTest testClass, TimeSpan interval, TimeSpan duration, params Action[] actions)
+        {
+            TestingTimer.Interval = interval;
+            TestingTimer.Duration = duration;
+
+            TestingTimer.Tick += delegate
+            {
+                testClass.EnqueueCallback(actions);
+            };
+
+            TestingTimer.OnStop += delegate
+            {   
+                OnTestCompleted(testClass);
+            };
+
+            testClass.EnqueueCallback(() => TestingTimer.Start());
+        }
+
+        public static void AddMessageButton(SilverlightControlTest testClass, String content)
+        {
+            testClass.EnqueueCallback(() =>
+            {   
+                TestHtmlButton = Common.GetDisplayMessageButton(TestHtmlButton);
+                TestHtmlButton.SetStyleAttribute("width", "900px");
+                TestHtmlButton.SetProperty("value", content);
+                TestHtmlButton.AttachEvent("onclick", delegate(object obj, HtmlEventArgs args) { OnTestCompleted(testClass); });
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(TestHtmlButton);
+            });
+        }
+
+        public static void RemoveMessageButton(HtmlElement button)
+        {
+            try
+            {   
+                if (button != null)
+                {
+                    System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(button);
+                    System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(button);
+                    System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(button);
+                }
+                System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+            }
+            catch { }
+        }
+
+        private static HtmlElement TestHtmlButton;
+        private static TestingTimer TestingTimer = new TestingTimer();
+
+     
+    }
+    
+    public class TestingTimer : System.Windows.Threading.DispatcherTimer
+    {   
+        public Nullable<TimeSpan> Duration
+        {
+            get;
+            set;
+        }
+
+        public new event EventHandler Tick;
+        public event EventHandler OnStop;
+
+         public new void Stop()
+         {
+             base.Stop();
+
+             if(IsRunning)
+                OnStop(this, null);
+
+             IsRunning = false;
+         }
+
+        public new void Start()
+        {
+            _timerStartTime = DateTime.Now;
+            base.Start();
+            IsRunning = true;
+            base.Tick -= TestingTimer_Tick;
+            base.Tick += new EventHandler(TestingTimer_Tick);
+        }
+
+        void TestingTimer_Tick(object sender, EventArgs e)
+        {
+            Tick(sender, e);
+
+            if (Duration != null && (DateTime.Now - _timerStartTime) >= Duration)
+                this.Stop();
+        }
+
+        DateTime _timerStartTime;
+        
+        public Boolean IsRunning;
     }
 }

@@ -1748,7 +1748,7 @@ namespace Visifire.Charts
         /// <param name="label">Axis labels</param>
         internal static String FormatDate(DateTime dt, Axis axis)
         {   
-            String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : axis.XValueType == ChartValueTypes.Time ? "h:mm:ss tt" : "M/d/yyyy h:mm:ss tt";
+            String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "d" : axis.XValueType == ChartValueTypes.Time ? "t" : "G";
             valueFormatString = (String.IsNullOrEmpty((String)axis.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : axis.ValueFormatString;
 
             return axis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture));

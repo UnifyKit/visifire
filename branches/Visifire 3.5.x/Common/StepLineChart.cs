@@ -61,7 +61,7 @@ namespace Visifire.Charts
     }
 
     /// <summary>
-    /// Visifire.Charts.LineChart class
+    /// Visifire.Charts.StepLineChart class
     /// </summary>
     internal class StepLineChart
     {
@@ -292,7 +292,7 @@ namespace Visifire.Charts
 
                 if (autoLabelStyle != dataPoint.LabelStyle)
                 {
-                    tb.TextElement.Foreground = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.YValue <= 0 ? LabelStyles.OutSide : autoLabelStyle));
+                    tb.TextElement.Foreground = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.InternalYValue <= 0 ? LabelStyles.OutSide : autoLabelStyle));
                 }
 
                 dataPoint.LabelVisual = tb.Visual;
@@ -1502,6 +1502,9 @@ namespace Visifire.Charts
 
                     if (dp.LabelVisual != null)
                         dp.LabelVisual.Visibility = Visibility.Collapsed;
+
+                    if(Double.IsNaN(dp.InternalYValue))
+                        dp.Faces = null;
                 }
                 
                 List<DataPoint> viewPortDataPoints = RenderHelper.GetDataPointsUnderViewPort(dataSeries, false);
@@ -1513,7 +1516,7 @@ namespace Visifire.Charts
                         continue;
                     }
 
-                    if (Double.IsNaN(dp.YValue))
+                    if (Double.IsNaN(dp.InternalYValue))
                     {
                         pc = new List<DataPoint>();
                         pointCollectionList.Add(pc);
@@ -1629,7 +1632,7 @@ namespace Visifire.Charts
             switch (property)
             {
                 case VcProperties.Color:
-                    if (marker != null)
+                    if (marker != null && (Boolean)dataPoint.MarkerEnabled)
                         marker.BorderColor = (dataPoint.GetValue(DataPoint.MarkerBorderColorProperty) as Brush == null) ? ((newValue != null) ? newValue as Brush : dataPoint.MarkerBorderColor) : dataPoint.MarkerBorderColor;
                     break;
                 case VcProperties.Cursor:
@@ -1680,7 +1683,7 @@ namespace Visifire.Charts
 
                 case VcProperties.LabelFontSize:
                     //CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
-                    CreateLabel4LineDataPoint(dataPoint, width, height, dataPoint.YValue >= 0, xPosition, yPosition,
+                    CreateLabel4LineDataPoint(dataPoint, width, height, dataPoint.InternalYValue >= 0, xPosition, yPosition,
                         ref line2dLabelCanvas, true);
                     // marker.FontSize = (Double) dataPoint.LabelFontSize;
                     break;
@@ -1722,7 +1725,10 @@ namespace Visifire.Charts
                     if (marker == null)
                         LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
                     else
-                        marker.BorderColor = dataPoint.MarkerBorderColor;
+                    {
+                        if ((Boolean)dataPoint.MarkerEnabled)
+                            marker.BorderColor = dataPoint.MarkerBorderColor;
+                    }
 
                     break;
                 case VcProperties.MarkerBorderThickness:
@@ -1732,7 +1738,7 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.MarkerColor:
-                    if (marker != null)
+                    if (marker != null && (Boolean)dataPoint.MarkerEnabled)
                         marker.MarkerFillColor = dataPoint.MarkerColor;
                     break;
 
@@ -1767,7 +1773,7 @@ namespace Visifire.Charts
                 case VcProperties.YValueFormatString:
                     dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
                     //CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
-                    CreateLabel4LineDataPoint(dataPoint, width, height, dataPoint.YValue >= 0, xPosition, yPosition,
+                    CreateLabel4LineDataPoint(dataPoint, width, height, dataPoint.InternalYValue >= 0, xPosition, yPosition,
                         ref line2dLabelCanvas, true);
                     break;
                 case VcProperties.XValueType:
@@ -1806,7 +1812,7 @@ namespace Visifire.Charts
         {
             Boolean isAnimationEnabled = (Boolean)(dataPoint.Chart as Chart).AnimatedUpdate;
 
-            if (!(Boolean)dataPoint.Enabled)
+            if (!(Boolean)dataPoint.Enabled || dataPoint.Faces == null)
                 return;
 
             Chart chart = dataPoint.Chart as Chart;
@@ -2457,6 +2463,7 @@ namespace Visifire.Charts
 
                 dataPoint.Marker = null;
                 dataPoint.LabelVisual = null;
+                dataPoint.Faces = null;
 
                 if (Double.IsNaN(dataPoint.InternalYValue))
                 {

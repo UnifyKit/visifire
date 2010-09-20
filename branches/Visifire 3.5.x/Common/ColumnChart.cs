@@ -1478,45 +1478,51 @@ namespace Visifire.Charts
                 return;
 
             foreach (FrameworkElement fe in faces.Parts)
-            {   
-                if(fe.Tag == null)
-                    continue;
-                
-                switch((fe.Tag as ElementData).VisualElementName)
+            {
+                if (fe != null)
                 {
-                    case "ColumnBase": (fe as Shape).Fill = ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(colorNewValue, "Linear", null) : colorNewValue);
-                    break;
+                    if (fe.Tag == null)
+                        continue;
 
-                    case "FrontFace": (fe as Shape).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue; 
-                    break;
+                    switch ((fe.Tag as ElementData).VisualElementName)
+                    {
+                        case "ColumnBase": (fe as Shape).Fill = ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(colorNewValue, "Linear", null) : colorNewValue);
+                            break;
 
-                    case "TopFace": (fe as Shape).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
-                    break;
+                        case "FrontFace": (fe as Shape).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
+                            break;
 
-                    case "RightFace": (fe as Shape).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
-                    break;
+                        case "TopFace": (fe as Shape).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
+                            break;
+
+                        case "RightFace": (fe as Shape).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
+                            break;
+                    }
                 }
             }
 
             foreach(FrameworkElement fe in faces.BevelElements)
-            {   
-                switch((fe.Tag as ElementData).VisualElementName)
-                {   
-                    case "TopBevel":
-                        (fe as Shape).Fill = Graphics.GetBevelTopBrush(colorNewValue);
-                        break;
+            {
+                if (fe != null)
+                {
+                    switch ((fe.Tag as ElementData).VisualElementName)
+                    {
+                        case "TopBevel":
+                            (fe as Shape).Fill = Graphics.GetBevelTopBrush(colorNewValue);
+                            break;
 
-                    case "LeftBevel":
-                        (fe as Shape).Fill = Graphics.GetBevelSideBrush(((Boolean)dataPoint.LightingEnabled ? -70 : 0), colorNewValue);
-                        break;
+                        case "LeftBevel":
+                            (fe as Shape).Fill = Graphics.GetBevelSideBrush(((Boolean)dataPoint.LightingEnabled ? -70 : 0), colorNewValue);
+                            break;
 
-                    case "RightBevel":
-                        (fe as Shape).Fill = Graphics.GetBevelSideBrush(((Boolean)dataPoint.LightingEnabled ? -110 : 180), colorNewValue);
-                        break;
+                        case "RightBevel":
+                            (fe as Shape).Fill = Graphics.GetBevelSideBrush(((Boolean)dataPoint.LightingEnabled ? -110 : 180), colorNewValue);
+                            break;
 
-                    case "BottomBevel":
-                        (fe as Shape).Fill = null;
-                        break;
+                        case "BottomBevel":
+                            (fe as Shape).Fill = null;
+                            break;
+                    }
                 }
             }
 

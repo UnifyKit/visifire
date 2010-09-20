@@ -659,6 +659,10 @@ namespace Visifire.Charts
             PlotDetails plotDetails = chart.PlotDetails;
             Marker marker = dataPoint.Marker;
             DataSeries dataSeries = dataPoint.Parent;
+
+            if (dataSeries.Faces == null)
+                return;
+
             Canvas bubleChartCanvas = dataSeries.Faces.Visual as Canvas;
             
             Double plotHeight = chart.ChartArea.ChartVisualCanvas.Height;

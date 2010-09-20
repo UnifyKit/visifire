@@ -170,6 +170,9 @@
     <Compile Include="..\..\Common\DataPoint.cs">
       <Link>DataPoint.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\DataSamplingHelper.cs">
+      <Link>DataSamplingHelper.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\DataSeries.cs">
       <Link>DataSeries.cs</Link>
     </Compile>
@@ -241,6 +244,9 @@
     </Compile>
     <Compile Include="..\..\Common\PyramidChart.cs">
       <Link>PyramidChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\QuickLineChart.cs">
+      <Link>QuickLineChart.cs</Link>
     </Compile>
     <Compile Include="..\..\Common\RadarChart.cs">
       <Link>RadarChart.cs</Link>

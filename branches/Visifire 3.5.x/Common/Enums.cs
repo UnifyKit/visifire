@@ -20,6 +20,16 @@
 
 namespace Visifire.Charts
 {
+    public enum SamplingFunction
+    {
+        Average,
+        //First,
+        //KeepExtreames,
+        //Last,
+        //Max,
+        //Min,
+        //Sum
+    }
 
     public enum OCHL
     {   
@@ -194,7 +204,8 @@ namespace Visifire.Charts
         Spline = 19,
         Radar = 20,
         Polar = 21,
-        Pyramid = 22
+        Pyramid = 22,
+        QuickLine = 23
     }
     
     /// <summary>

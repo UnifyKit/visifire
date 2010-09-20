@@ -2133,7 +2133,7 @@ namespace SLVisifireChartsTest
 
         [TestMethod]
         [Asynchronous]
-        public void TestLessYValuesInCandleStick()
+        public void AATestLessYValuesInCandleStick()
         {
             Chart chart = new Chart();
             chart.Width = 400;
