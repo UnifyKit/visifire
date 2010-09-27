@@ -1580,9 +1580,9 @@ namespace Visifire.Charts
             if (dataPoint.Faces != null)
                 columnVisual = dataPoint.Faces.Visual as Canvas;
 
-            if (dataPoint.Faces == null && property != VcProperties.Enabled
+            if ((dataPoint.Faces == null && property != VcProperties.Enabled
                 && property != VcProperties.YValue && property != VcProperties.YValues
-                && property != VcProperties.XValue)
+                && property != VcProperties.XValue) || columnVisual == null)
                 return;
 
             //if (labelCanvas == null)
@@ -1997,7 +1997,9 @@ namespace Visifire.Charts
 
             if (Double.IsNaN(dataPoint.InternalYValue))
             {
-                columnChartCanvas.Children.Remove(oldVisual);
+                if(columnChartCanvas != null)
+                    columnChartCanvas.Children.Remove(oldVisual);
+
                 dataPoint.Faces = null;
                 CleanUpMarkerAndLabel(dataPoint, oldLabelVisual);
                 return;
@@ -2044,7 +2046,7 @@ namespace Visifire.Charts
                 oldColumnHeight = oldVisual.Width;
             }
 
-            if (columnChartCanvas.Parent == null || Double.IsNaN(dataPoint.InternalYValue))
+            if (columnChartCanvas == null || columnChartCanvas.Parent == null || Double.IsNaN(dataPoint.InternalYValue))
                 return;
                 
             labelCanvas = (columnChartCanvas.Parent as Canvas).Children[0] as Canvas;

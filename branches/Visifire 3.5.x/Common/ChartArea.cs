@@ -2833,7 +2833,8 @@ namespace Visifire.Charts
                 #region For vertical chart
 
                 Double totalWidthReduced1 = DrawAxesY(plotAreaSize, true);
-                plotAreaSize.Width -= totalWidthReduced1;
+                //plotAreaSize.Width -= totalWidthReduced1;
+                plotAreaSize.Width = Math.Max(plotAreaSize.Width - totalWidthReduced1, 0);
 
                 UpdateLayoutSettings(plotAreaSize);
 
@@ -2871,7 +2872,8 @@ namespace Visifire.Charts
                 {
                     plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
                     plotAreaSize.Height += totalHeightReduced1;
-                    plotAreaSize.Height -= totalHeightReduced2;
+                    //plotAreaSize.Height -= totalHeightReduced2;
+                    plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced2, 0);
                     UpdateLayoutSettings(plotAreaSize);
                     DrawAxesY(plotAreaSize, false);
                     DrawAxesX(plotAreaSize, false);
@@ -3889,8 +3891,8 @@ namespace Visifire.Charts
                 return;
 
             // set the ChartVisualCanvas Size
-            ChartVisualCanvas.Width = chartCanvasSize.Width - ((PlotDetails.ChartOrientation == ChartOrientationType.Horizontal) ? SCROLLVIEWER_OFFSET4HORIZONTAL_CHART : 0);
-            ChartVisualCanvas.Height = chartCanvasSize.Height - ((PlotDetails.ChartOrientation == ChartOrientationType.NoAxis) ? Chart.SHADOW_DEPTH : 0);
+            ChartVisualCanvas.Width = Math.Max(chartCanvasSize.Width - ((PlotDetails.ChartOrientation == ChartOrientationType.Horizontal) ? SCROLLVIEWER_OFFSET4HORIZONTAL_CHART : 0), 0);
+            ChartVisualCanvas.Height = Math.Max(chartCanvasSize.Height - ((PlotDetails.ChartOrientation == ChartOrientationType.NoAxis) ? Chart.SHADOW_DEPTH : 0), 0);
             Chart.PlotArea.BorderElement.Height = ChartVisualCanvas.Height;
             Chart.PlotArea.BorderElement.Width = chartCanvasSize.Width;
             Chart.PlotArea.ApplyBevel(PLANK_DEPTH, PLANK_THICKNESS);
@@ -6036,11 +6038,17 @@ namespace Visifire.Charts
             Chart._rightOffsetGrid.Width = right;
             Chart._leftOffsetGrid.Width = left;
 
-            newSize.Height -= top;
-            newSize.Height -= bottom;
+            //newSize.Height -= top;
+            //newSize.Height -= bottom;
 
-            newSize.Width -= left;
-            newSize.Width -= right;
+            //newSize.Width -= left;
+            //newSize.Width -= right;
+
+            newSize.Height = Math.Max(newSize.Height - top, 0);
+            newSize.Height = Math.Max(newSize.Height - bottom, 0);
+            newSize.Width = Math.Max(newSize.Width - left, 0);
+            newSize.Width = Math.Max(newSize.Width - right, 0);
+
 
             return newSize;
         }

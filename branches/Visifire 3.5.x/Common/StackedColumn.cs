@@ -574,6 +574,9 @@ namespace Visifire.Charts
                         // Create new Column with new YValue
                         BarChart.DrawStackedBarsAtXValue(chartType, dataPoint.InternalXValue, plotGroup, columnCanvas, labelCanvas, plotGroup.DrawingIndex, heightPerBar, maxBarHeight, limitingYValue, depth3d, false);
                     }
+
+                    if (dataPoint.Faces == null)
+                        return;
                 }
                 else
                 {
@@ -584,6 +587,10 @@ namespace Visifire.Charts
 
             Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column
             labelCanvas = dataPoint.Faces.LabelCanvas;  // Parent canvas of Datapoint label
+
+            if (labelCanvas == null)
+                return;
+
             columnCanvas = (labelCanvas.Parent as Canvas).Children[1] as Canvas;//dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
 
             heightPerBar = CalculateWidthOfEachStackedColumn(chart, plotGroup, columnCanvas.Height, out minDiff, out  maxBarHeight);
@@ -791,6 +798,9 @@ namespace Visifire.Charts
                         // Create new Column with new YValue
                         DrawStackedColumnsAtXValue(chartType, dataPoint.InternalXValue, plotGroup, columnCanvas, labelCanvas, plotGroup.DrawingIndex, widthPerColumn, maxColumnWidth, limitingYValue, depth3d, false);
                     }
+
+                    if (dataPoint.Faces == null)
+                        return;
                 }
                 else
                 {
@@ -798,8 +808,12 @@ namespace Visifire.Charts
                     return;
                 }
             }
-
+            
             labelCanvas = dataPoint.Faces.LabelCanvas;// (columnCanvas.Parent as Canvas).Children[0] as Canvas; // Parent canvas of Datapoint label
+
+            if (labelCanvas == null)
+                return;
+
             columnCanvas = (labelCanvas.Parent as Canvas).Children[1] as Canvas;
 
             height = labelCanvas.Height;

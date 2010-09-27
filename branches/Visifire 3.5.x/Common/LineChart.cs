@@ -59,6 +59,7 @@ namespace Visifire.Charts
         internal Boolean Lighting { get; set; }
         internal DoubleCollection LineStyle { get; set; }
         internal Boolean ShadowEnabled { get; set; }
+        internal Double Opacity { get; set; }
     }
 
     /// <summary>
@@ -1056,6 +1057,7 @@ namespace Visifire.Charts
             line.Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush(lineParams.LineColor, "Linear", new Double[] { 0.65, 0.55 }) : lineParams.LineColor;
             line.StrokeThickness = lineParams.LineThickness;
             line.StrokeDashArray = lineParams.LineStyle;
+            line.Opacity = lineParams.Opacity;
 
             line.Data = GetPathGeometry(tagReference.RenderAs, null, pointCollectionList, false, width, height, line2dLabelCanvas);
 
@@ -2663,7 +2665,9 @@ namespace Visifire.Charts
 
             // Create Marker
             Marker marker = GetMarkerForDataPoint(true, chart, width, height, yPosition, dataPoint, dataPoint.InternalYValue > 0);
-            marker.AddToParent(line2dLabelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
+            
+            if(line2dLabelCanvas != null)
+                marker.AddToParent(line2dLabelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
 
             //Graphics.DrawPointAt(new Point(xPosition, yPosition), line2dLabelCanvas, Colors.Red);
 
@@ -2724,6 +2728,7 @@ namespace Visifire.Charts
             lineParams.LineStyle = ExtendedGraphics.GetDashArray(series.LineStyle);
             lineParams.Lighting = (Boolean)series.LightingEnabled;
             lineParams.ShadowEnabled = (Boolean)series.ShadowEnabled && !(series.RenderAs == RenderAs.QuickLine);
+            lineParams.Opacity = series.Opacity;
 
             if ((Boolean)lineParams.ShadowEnabled)
                 lineParams.LineShadowGeometryGroup = new GeometryGroup();

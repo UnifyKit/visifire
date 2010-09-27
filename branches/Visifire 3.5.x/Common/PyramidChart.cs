@@ -63,6 +63,10 @@ namespace Visifire.Charts
                 if (selectedDataSeriesList.Count > 0)
                 {
                     pyramidSeries = selectedDataSeriesList.First();
+
+                    foreach (DataPoint dp in pyramidSeries.DataPoints)
+                        dp.VisualParams = null;
+
                     pyramidSeries.Faces = null;
                 }
                 else
@@ -1323,7 +1327,7 @@ namespace Visifire.Charts
                     }
                 }
 
-                // Apply animation for the 3D funnel slice
+                // Apply animation for the 3D pyramid slice
                 if (animationEnabled)
                 {
                     foreach (Path path in paths)

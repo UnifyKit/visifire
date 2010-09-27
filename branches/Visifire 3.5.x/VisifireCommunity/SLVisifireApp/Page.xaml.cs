@@ -15,6 +15,8 @@ using System.Windows.Threading;
 using Visifire.Charts;
 using Visifire.Commons;
 using System.Windows.Data;
+using System.Windows.Printing;
+using System.Windows.Media.Imaging;
 
 namespace SLVisifireApp
 {

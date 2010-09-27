@@ -63,6 +63,10 @@ namespace Visifire.Charts
                 if (selectedDataSeriesList.Count > 0)
                 {
                     funnelSeries = selectedDataSeriesList.First();
+
+                    foreach (DataPoint dp in funnelSeries.DataPoints)
+                        dp.VisualParams = null;
+
                     funnelSeries.Faces = null;
                 }
                 else
@@ -121,6 +125,20 @@ namespace Visifire.Charts
 
                 // here
                 // funnelChartCanvas.Background = new SolidColorBrush(Colors.Red);
+
+                if (!chart.AnimationEnabled || chart.IsInDesignMode || !chart.ChartArea._isFirstTimeRender)
+                {
+                    foreach (DataPoint dp in funnelDataPoints)
+                    {
+                        if (dp.Faces != null)
+                        {
+                            foreach (Shape shape in dp.Faces.BorderElements)
+                            {
+                                InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dp.BorderStyle, dp.InternalBorderThickness.Left, dp.BorderColor);
+                            }
+                        }
+                    }
+                }
 
                 RectangleGeometry clipRectangle = new RectangleGeometry();
                 clipRectangle.Rect = new Rect(0, 0, width, height);
