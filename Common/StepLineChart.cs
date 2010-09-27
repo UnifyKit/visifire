@@ -58,6 +58,7 @@ namespace Visifire.Charts
         internal Boolean Lighting { get; set; }
         internal DoubleCollection LineStyle { get; set; }
         internal Boolean ShadowEnabled { get; set; }
+        internal Double Opacity { get; set; }
     }
 
     /// <summary>
@@ -1047,6 +1048,7 @@ namespace Visifire.Charts
             line.Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush(lineParams.LineColor, "Linear", new Double[] { 0.65, 0.55 }) : lineParams.LineColor;
             line.StrokeThickness = lineParams.LineThickness;
             line.StrokeDashArray = lineParams.LineStyle;
+            line.Opacity = lineParams.Opacity;
 
             line.Data = GetPathGeometry(null, pointCollectionList, false, width, height, line2dLabelCanvas);
 
@@ -2439,6 +2441,7 @@ namespace Visifire.Charts
             lineParams.LineStyle = ExtendedGraphics.GetDashArray(series.LineStyle);
             lineParams.Lighting = (Boolean)series.LightingEnabled;
             lineParams.ShadowEnabled = (Boolean)series.ShadowEnabled;
+            lineParams.Opacity = series.Opacity;
 
             if ((Boolean)series.ShadowEnabled)
                 lineParams.LineShadowGeometryGroup = new GeometryGroup();

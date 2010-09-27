@@ -2,8 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
-    Title="PerfMon">
-
+    Title="PerfMon"
+>
     <Grid x:Name="LayoutRoot" Background="White">
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
                   Width="490" Height="290" Theme="Theme1">
