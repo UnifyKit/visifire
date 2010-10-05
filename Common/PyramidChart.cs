@@ -166,7 +166,7 @@ namespace Visifire.Charts
 
             labelCanvas.Width += Chart.BEVEL_DEPTH;
 
-            pyramidCanvas.Width = pyramidChartCanvas.Width - labelCanvas.Width;
+            pyramidCanvas.Width = Math.Max(pyramidChartCanvas.Width - labelCanvas.Width, 0);
             labelCanvas.SetValue(Canvas.LeftProperty, pyramidCanvas.Width);
         }
 
@@ -240,10 +240,10 @@ namespace Visifire.Charts
                 Double yScaleTop = yScale * (pyramidSlices[index].TopRadius / topRadius);
                 Double yScaleBottom = yScale * (pyramidSlices[index].BottomRadius / topRadius);
 
-                if (Double.IsNaN(yScaleTop))
+                if (Double.IsNaN(yScaleTop) || Double.IsInfinity(yScaleTop))
                     yScaleTop = 0.0000001;
 
-                if (Double.IsNaN(yScaleBottom))
+                if (Double.IsNaN(yScaleBottom) || Double.IsInfinity(yScaleBottom))
                     yScaleBottom = 0.0000001;
 
                 Canvas sliceCanvas = GetPyramidSliceVisual(index, topRadius, is3D, pyramidSlices[index], yScaleTop, yScaleBottom, fillColor, animationEnabled);
@@ -507,6 +507,9 @@ namespace Visifire.Charts
             // Actual pyramid height
             // For 3d pyramid height will be reduced to maintain yScale
             Double pyramidHeight;
+
+            plotHeight = Math.Max(plotHeight, 0);
+            plotWidth = Math.Max(plotWidth, 0);
 
             if (dataSeries.Exploded)
             {

@@ -444,7 +444,7 @@ namespace Visifire.Charts
                         }
                     }
 
-                    var yValues = (from dp in dataPointsInViewPort1 select dp.YValue);
+                    var yValues = (from dp in dataPointsInViewPort1 where !Double.IsNaN(dp.YValue) select dp.YValue);
 
                     if (yValues.Count() > 0)
                         minimumY = Double.IsNaN(chartSpecificMinY) ? yValues.Min() : Math.Min(chartSpecificMinY, yValues.Min());
@@ -456,9 +456,9 @@ namespace Visifire.Charts
         }
 
         public void CalculateMaxYValueWithInAXValueRange(Double minXValue, Double maxXValue, out Double maximumY)
-        {
+        {   
             switch (RenderAs)
-            {
+            {   
                 case RenderAs.StackedArea:
                 case RenderAs.StackedBar:
                 case RenderAs.StackedColumn:
@@ -528,8 +528,8 @@ namespace Visifire.Charts
                             chartSpecificMaxY = Double.IsNaN(chartSpecificMaxY) ? maxY : Math.Min(chartSpecificMaxY, maxY);
                         }
                     }
-                                        
-                    var yValues = (from dp in dataPointsInViewPort1 select dp.YValue);
+
+                    var yValues = (from dp in dataPointsInViewPort1 where !Double.IsNaN(dp.YValue) select dp.YValue);
 
                     if (yValues.Count() > 0)
                         maximumY = Double.IsNaN(chartSpecificMaxY) ? yValues.Max() : Math.Max(chartSpecificMaxY,  yValues.Max());

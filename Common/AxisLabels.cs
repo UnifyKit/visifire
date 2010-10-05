@@ -2131,7 +2131,7 @@ namespace Visifire.Charts
 
             List<CircularAxisLabel> circularAxisLabels = new List<CircularAxisLabel>();
 
-            for (Int32 i = 0; i < AxisLabelList.Count; i++)
+            for (Int32 i = 0; i < AxisLabelList.Count; i += (ParentAxis.SkipOffset + 1))
             {
                 AxisLabel label = AxisLabelList[i];
 
@@ -2452,6 +2452,8 @@ namespace Visifire.Charts
         {
             Double maxRowHeight = 0;
             
+            
+
             // Calculate MaxHeight of AxisLabels
             for (Int32 labelIndex = 0; labelIndex < AxisLabelList.Count; labelIndex += (ParentAxis.SkipOffset + 1))
             {   

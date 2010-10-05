@@ -6,14 +6,14 @@
 >
     <Grid x:Name="LayoutRoot" Background="White">
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
-                  Width="490" Height="290" Theme="Theme1">
+                  Width="490" Height="290" Theme="Theme1" x:Name="MyChart">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Athens 2004 Olympics" />
             </vc:Chart.Titles>
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column">
+                <vc:DataSeries RenderAs="Line">
                     <vc:DataSeries.DataPoints>
                         <vc:DataPoint AxisXLabel="USA" YValue="50"/>
                         <vc:DataPoint AxisXLabel="China" YValue="35"/>

@@ -2839,7 +2839,7 @@ namespace Visifire.Charts
                 UpdateLayoutSettings(plotAreaSize);
 
                 Double totalHeightReduced1 = DrawAxesX(plotAreaSize, true);
-                plotAreaSize.Height -= totalHeightReduced1;
+                plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced1, 0);
 
                 plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
 
@@ -2888,12 +2888,12 @@ namespace Visifire.Charts
                 // Draw the y-axis for Horizontal chart
                 Double totalHeightReduced = DrawAxesX(plotAreaSize, true);
 
-                plotAreaSize.Height -= totalHeightReduced;
+                plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced, 0);
                 UpdateLayoutSettings(plotAreaSize);
 
                 Double totalWidthReduced = DrawAxesY(plotAreaSize, true);
 
-                plotAreaSize.Width -= totalWidthReduced;
+                plotAreaSize.Width = Math.Max(plotAreaSize.Width - totalWidthReduced, 0);
 
                 plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
 
@@ -2908,7 +2908,7 @@ namespace Visifire.Charts
                 if (totalHeightReduced2 != totalHeightReduced)
                 {
                     plotAreaSize.Height += totalHeightReduced;
-                    plotAreaSize.Height -= totalHeightReduced2;
+                    plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced2, 0);
                     UpdateLayoutSettings(plotAreaSize);
                     totalWidthReduced2 = DrawAxesY(plotAreaSize, false);
                 }
@@ -2919,7 +2919,7 @@ namespace Visifire.Charts
                 if (!Double.IsNaN(totalWidthReduced2) && totalWidthReduced2 != totalWidthReduced)
                 {
                     plotAreaSize.Width += totalWidthReduced;
-                    plotAreaSize.Width -= totalWidthReduced2;
+                    plotAreaSize.Width = Math.Max(plotAreaSize.Width - totalWidthReduced2, 0);
                     UpdateLayoutSettings(plotAreaSize);
                     DrawAxesX(plotAreaSize, false);
                 }
