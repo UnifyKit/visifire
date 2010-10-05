@@ -201,7 +201,7 @@ namespace Visifire.Charts
                 if (CircularPlotDetails.ListOfPoints4CircularAxis.Count == 0)
                     return;
 
-                Double height = CircularPlotDetails.Radius;
+                Double height = Math.Max(CircularPlotDetails.Radius, 0);
 
                 // Set the parameters for the axis labels
                 AxisLabels.Placement = PlacementTypes.Left;
@@ -305,7 +305,9 @@ namespace Visifire.Charts
                 if (AxisLabels.Visual != null)
                 {
                     AxisElementsContainer.Children.Add(AxisLabels.Visual);
-                    axisLabelsWidth = AxisLabels.Visual.Width;
+
+                    if(!Double.IsNaN(AxisLabels.Visual.Width))
+                        axisLabelsWidth = AxisLabels.Visual.Width;
                 }
             }
 
@@ -399,7 +401,8 @@ namespace Visifire.Charts
             {
                 if (AxisLabels.Visual != null)
                 {
-                    axisLabelsWidth = AxisLabels.Visual.Width;
+                    if(!Double.IsNaN(AxisLabels.Visual.Width))
+                        axisLabelsWidth = AxisLabels.Visual.Width;
                 }
             }
 

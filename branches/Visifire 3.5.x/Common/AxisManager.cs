@@ -663,6 +663,7 @@ namespace Visifire.Charts
             Decimal nextInterval = 1; // Next Calculated interval from the old interval.
             Decimal tempAxisMaximumValue;
             Decimal tempAxisMinimumValue;
+            Boolean isNegative = false;
 
             // If the max and min both are same and equals to zero then the best range is 0 to 1.
             if (_max == 0)
@@ -672,6 +673,12 @@ namespace Visifire.Charts
                 this._interval = 1;
 
                 return;
+            }
+
+            if (_max < 0)
+            {
+                isNegative = true;
+               _min = _max = -_max;
             }
 
             // Max is rounded to the nearest power of 10.
@@ -732,6 +739,17 @@ namespace Visifire.Charts
                 this._axisMaximumValue = tempAxisMaximumValue;
                 this._axisMinimumValue = tempAxisMinimumValue;
                 this._interval = nextInterval;
+            }
+
+            if (isNegative)
+            {
+                _max = _min = - _max;
+                _axisMaximumValue = -_axisMaximumValue;
+                _axisMinimumValue = -_axisMinimumValue;
+
+                Decimal temp = _axisMaximumValue;
+                _axisMaximumValue = _axisMinimumValue;
+                _axisMinimumValue = temp;
             }
         }
 

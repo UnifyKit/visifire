@@ -201,7 +201,7 @@ namespace Visifire.Charts
             //if (funnelCanvas.Height < totalLabelsHeight)
             //    funnelCanvas.Height -= (totalLabelsHeight - funnelCanvas.Height);
 
-            funnelCanvas.Width = funnelChartCanvas.Width - labelCanvas.Width;
+            funnelCanvas.Width = Math.Max(funnelChartCanvas.Width - labelCanvas.Width, 0);
             labelCanvas.SetValue(Canvas.LeftProperty, funnelCanvas.Width);
 
             if (isStreamLine)
@@ -302,10 +302,10 @@ namespace Visifire.Charts
                 Double yScaleTop = yScale * (funnelSlices[index].TopRadius / topRadius);
                 Double yScaleBottom = yScale * (funnelSlices[index].BottomRadius / topRadius);
 
-                if (Double.IsNaN(yScaleTop))
+                if (Double.IsNaN(yScaleTop) || Double.IsInfinity(yScaleTop))
                     yScaleTop = 0.0000001;
 
-                if (Double.IsNaN(yScaleBottom))
+                if (Double.IsNaN(yScaleBottom) || Double.IsInfinity(yScaleBottom))
                     yScaleBottom = 0.0000001;
 
                 Canvas sliceCanvas = GetFunnelSliceVisual(index, topRadius, is3D, funnelSlices[index], yScaleTop, yScaleBottom, fillColor, animationEnabled);
@@ -352,7 +352,7 @@ namespace Visifire.Charts
 
             //if (!dataSeries.Exploded)
             {
-                funnelCanvas.Height = totalFunnelActualHeight - _streamLineParentTitleSize.Height;
+                funnelCanvas.Height = Math.Max(totalFunnelActualHeight - _streamLineParentTitleSize.Height, 0);
             }
 
             ArrangeLabels(funnelSlices, Double.NaN, _funnelChartGrid.Height);
@@ -598,6 +598,9 @@ namespace Visifire.Charts
             // For 3d funnel height will be reduced to maintain yScale
             Double funnelHeight;
 
+            plotHeight = Math.Max(plotHeight, 0);
+            plotWidth = Math.Max(plotWidth, 0);
+
             if (dataSeries.Exploded)
             {
                 gapRatio = 0.02;
@@ -726,7 +729,7 @@ namespace Visifire.Charts
             {
                 #region StreamLineFunnel
 
-                funnelHeight -= _streamLineParentTitleSize.Height;
+                funnelHeight = Math.Max(funnelHeight - _streamLineParentTitleSize.Height, 0);
 
                 // Initialization of iOValuePairs
                 IOValuePair[] iOValuePairs = new IOValuePair[dataPoints.Count];

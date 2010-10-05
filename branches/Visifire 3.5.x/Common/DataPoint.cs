@@ -4130,56 +4130,59 @@ namespace Visifire.Charts
             {
                 if ((Boolean)(Chart as Chart).AnimatedUpdate)
                 {
-                    if (!_interativityAnimationState)
+                    if (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut)
                     {
-                        if (false == _interactiveExplodeState)
+                        if (!_interativityAnimationState)
                         {
-                            _interativityAnimationState = true;
-
-
-                            //System.Diagnostics.Debug.WriteLine("Intractivity-- Exploded");
-                            
-                            if (allowToChangePropertyValue)
+                            if (false == _interactiveExplodeState)
                             {
-                                IsNotificationEnable = false;
-                                Exploded = true;
-                                IsNotificationEnable = true;
-                            }
+                                _interativityAnimationState = true;
 
-                            if (this.ExplodeAnimation != null)
-                            {
+
+                                //System.Diagnostics.Debug.WriteLine("Intractivity-- Exploded");
+
+                                if (allowToChangePropertyValue)
+                                {
+                                    IsNotificationEnable = false;
+                                    Exploded = true;
+                                    IsNotificationEnable = true;
+                                }
+
+                                if (this.ExplodeAnimation != null)
+                                {
 #if WPF
                                 this.ExplodeAnimation.Begin(Chart._rootElement, true);
 #else
-                                this.ExplodeAnimation.Begin();
+                                    this.ExplodeAnimation.Begin();
 #endif
 
-                                _isAlreadyExploded = true;
-                            }
-                        }
-
-                        if (true == _interactiveExplodeState)
-                        {
-                            _interativityAnimationState = true;
-
-                            if (allowToChangePropertyValue)
-                            {
-                                IsNotificationEnable = false;
-                                Exploded = false;
-                                IsNotificationEnable = true;
+                                    _isAlreadyExploded = true;
+                                }
                             }
 
-                            UnExplodeFunnelSlices();
-
-                            //System.Diagnostics.Debug.WriteLine("Intractivity-- UnExploded");
-
-                            if (this.UnExplodeAnimation != null)
+                            if (true == _interactiveExplodeState)
                             {
+                                _interativityAnimationState = true;
+
+                                if (allowToChangePropertyValue)
+                                {
+                                    IsNotificationEnable = false;
+                                    Exploded = false;
+                                    IsNotificationEnable = true;
+                                }
+
+                                UnExplodeFunnelSlices();
+
+                                //System.Diagnostics.Debug.WriteLine("Intractivity-- UnExploded");
+
+                                if (this.UnExplodeAnimation != null)
+                                {
 #if WPF                 
                                 this.UnExplodeAnimation.Begin(Chart._rootElement, true);
 #else
-                                this.UnExplodeAnimation.Begin();
+                                    this.UnExplodeAnimation.Begin();
 #endif
+                                }
                             }
                         }
                     }
