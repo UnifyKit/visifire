@@ -2889,7 +2889,7 @@ namespace Visifire.Charts
                     dataPoint.XValueType = ChartValueTypes.Numeric;
                 }
                 // Double entered in XAML
-                else if (Double.TryParse((string)e.NewValue, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out doubleResult))
+                else if (Double.TryParse((string)e.NewValue, System.Globalization.NumberStyles.Number | System.Globalization.NumberStyles.AllowExponent, System.Globalization.CultureInfo.InvariantCulture, out doubleResult))
                 {
                     dataPoint.InternalXValue = doubleResult;
                     dataPoint.XValueType = ChartValueTypes.Numeric;

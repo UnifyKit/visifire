@@ -85,15 +85,23 @@ namespace Visifire.Charts
             if (!IsNullable(targetPropertyInfo.PropertyType, out innerTypeOfNullableProperty))
             {
                 // Convert 'the type of the property value of source' to 'the type of the property value of target'
-                if(!targetPropertyInfo.PropertyType.Equals(typeof(Brush)))
-                    propertyValue = Convert.ChangeType(propertyValue, targetPropertyInfo.PropertyType, 
-                        System.Globalization.CultureInfo.CurrentCulture);
+                if (!targetPropertyInfo.PropertyType.Equals(typeof(Brush)))
+                {
+                    if (propertyValue != null)
+                    {
+                        propertyValue = Convert.ChangeType(propertyValue, targetPropertyInfo.PropertyType,
+                            System.Globalization.CultureInfo.CurrentCulture);
+                    }
+                }
             }
             else if (innerTypeOfNullableProperty != null)
             {
                 // Convert 'the type of the property value of source' to 'the type of the property value of target'
-                propertyValue = Convert.ChangeType(propertyValue, innerTypeOfNullableProperty,
-                System.Globalization.CultureInfo.CurrentCulture);
+                if (propertyValue != null)
+                {
+                    propertyValue = Convert.ChangeType(propertyValue, innerTypeOfNullableProperty,
+                    System.Globalization.CultureInfo.CurrentCulture);
+                }
             }
 
             // Set value of the property of target

@@ -18,6 +18,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.IO;
 using Visifire.Commons.Controls;
+using System.Linq;
 
 namespace Visifire.Commons
 {
@@ -232,7 +233,7 @@ namespace Visifire.Commons
             _toolbarContainer.Margin = new Thickness(0, 3, 5, 0);
             _toolbarContainer.SetValue(Canvas.ZIndexProperty, 90000);
 
-            LoadWatermark();
+            LoadWm();
             LoadSaveIcon();
             
             _rootElement.Children.Add(_toolbarContainer);
@@ -603,33 +604,30 @@ namespace Visifire.Commons
                 _saveIconImage.Visibility = Visibility.Visible;
         }
 
-        /// <summary>
-        /// Load watermark for www.visifire.com, present at the right and top side corner of the chart.
-        /// </summary>
-        protected virtual void LoadWatermark()
-        {
-            CreateWatermarkElement("Visifire Community Edition", "http://www.visifire.com/license.php");
+        protected virtual void LoadWm()
+        {         
+            CreateWmElement(new String((from ch in wmRegVal select Convert.ToChar(ch)).ToArray()), new String((from ch in wmLinkVal select Convert.ToChar(ch)).ToArray()));
         }
 
-        protected void CreateWatermarkElement(String text, String href)
+        protected void CreateWmElement(String text, String href)
         {   
-            if (_waterMarkElement == null)
+            if (_wMElement == null)
             {   
-                _waterMarkElement = new TextBlock();
-                _waterMarkElement.HorizontalAlignment = HorizontalAlignment.Right;
-                _waterMarkElement.VerticalAlignment = VerticalAlignment.Center;
-                _waterMarkElement.Margin = new Thickness(0, 0, 0, 0);
-                _waterMarkElement.SetValue(Canvas.ZIndexProperty, 90000);
-                _waterMarkElement.Text = text;
+                _wMElement = new TextBlock();
+                _wMElement.HorizontalAlignment = HorizontalAlignment.Right;
+                _wMElement.VerticalAlignment = VerticalAlignment.Center;
+                _wMElement.Margin = new Thickness(0, 0, 0, 0);
+                _wMElement.SetValue(Canvas.ZIndexProperty, 90000);
+                _wMElement.Text = text;
 
                 if(!String.IsNullOrEmpty(href))
-                    _waterMarkElement.TextDecorations = TextDecorations.Underline;
+                    _wMElement.TextDecorations = TextDecorations.Underline;
                 
-                //_waterMarkElement.Foreground = new SolidColorBrush(Color.FromArgb((byte)255, (byte)220, (byte)220, (byte)220));
-                _waterMarkElement.Foreground = new SolidColorBrush(Colors.Gray);
-                _waterMarkElement.FontSize = 10;
-                AttachHref(this, _waterMarkElement, href, HrefTargets._blank);
-                _toolbarContainer.Children.Add(_waterMarkElement);
+                _wMElement.Foreground = new SolidColorBrush(Colors.Gray);
+
+                _wMElement.FontSize = 10;
+                AttachHref(this, _wMElement, href, HrefTargets._blank);
+                _toolbarContainer.Children.Add(_wMElement);
             }
         }
 
@@ -708,10 +706,7 @@ namespace Visifire.Commons
         /// </summary>
         internal Boolean _isTemplateApplied;
 
-        /// <summary>
-        /// WaterMark element
-        /// </summary>
-        internal TextBlock _waterMarkElement;
+        internal TextBlock _wMElement;
 
         #region Template Part
 
@@ -922,6 +917,9 @@ namespace Visifire.Commons
         internal TextBlock _zoomIconSeparater;
 
         internal StackPanel _zoomIconContainer;
+
+        private static Byte[] wmRegVal = new Byte[] { 0x56, 0x69, 0x73, 0x69, 0x66, 0x69, 0x72, 0x65, 0x20, 0x54, 0x72, 0x69, 0x61, 0x6C, 0x20, 0x45, 0x64, 0x69, 0x74, 0x69, 0x6F, 0x6E };
+        private static Byte[] wmLinkVal = new Byte[] { 0x68, 0x74, 0x74, 0x70, 0x3A, 0x2F, 0x2F, 0x77, 0x77, 0x77, 0x2E, 0x56, 0x69, 0x73, 0x69, 0x66, 0x69, 0x72, 0x65, 0x2E, 0x63, 0x6F, 0x6D, 0x2F, 0x6C, 0x69, 0x63, 0x65, 0x6E, 0x73, 0x65, 0x2E, 0x70, 0x68, 0x70 };
 
         #endregion
 

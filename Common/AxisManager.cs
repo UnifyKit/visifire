@@ -592,8 +592,16 @@ namespace Visifire.Charts
             mantissa = GetMantissaOrExponent(MantissaOrExponent.Mantissa, number);
             exponent = GetMantissaOrExponent(MantissaOrExponent.Exponent, number);
 
-            return mantissa.ToString(CultureInfo.InvariantCulture).Length + (Int32)(exponent - 1);
 
+            if (number > 0)
+            {
+                return mantissa.ToString(CultureInfo.InvariantCulture).Length + (Int32)(exponent - 1);
+            }
+            else
+            {
+                return (mantissa.ToString(CultureInfo.InvariantCulture).Length + (Int32)(exponent - 1)) - 1;
+            }
+            
         }
 
         /// <summary>
@@ -663,7 +671,8 @@ namespace Visifire.Charts
             Decimal nextInterval = 1; // Next Calculated interval from the old interval.
             Decimal tempAxisMaximumValue;
             Decimal tempAxisMinimumValue;
-            Boolean isNegative = false;
+            
+           // Boolean isNegative = false;
 
             // If the max and min both are same and equals to zero then the best range is 0 to 1.
             if (_max == 0)
@@ -675,22 +684,23 @@ namespace Visifire.Charts
                 return;
             }
 
-            if (_max < 0)
-            {
-                isNegative = true;
-               _min = _max = -_max;
-            }
+            //if (_max < 0)
+            //{
+            //    isNegative = true;
+            //    _min = _max = -_max;
+            //}
 
             // Max is rounded to the nearest power of 10.
             magnitude = OrderOfMagnitude(this._max);
 
             // Interval needs to be sinking towards the power of 10.
             // Initially maximum interval is chosen.
+
             if (this._overrideInterval)
                 nextInterval = this._interval;
             else
                 nextInterval = (Decimal)Math.Pow(10, magnitude);
-
+            
             if (this._overrideAxisMaximumValue)
                 tempAxisMaximumValue = this._axisMaximumValue;
             else
@@ -707,7 +717,8 @@ namespace Visifire.Charts
             this._axisMinimumValue = tempAxisMinimumValue;
 
             // Next intervals will be calculated inside loop in iterative way.
-            while (loop++ < 100)
+            //this loop is excuting infinite times when all are -ve and viewport is set to true
+            while (loop++ <100)
             {
                 Int32 nextNoOfInterval;
 
@@ -721,17 +732,19 @@ namespace Visifire.Charts
 
                 // Rounding down the axisMaximumValue if necessary.
                 if (!this._overrideAxisMaximumValue)
-                    tempAxisMaximumValue = RoundAxisMaximumValue(this._max, nextInterval);
+                   tempAxisMaximumValue = RoundAxisMaximumValue(this._max, nextInterval);
 
-                if (this._max < 0 && this._min < 0)
+
+                if (this._min < 0)
                 {
                     if (!this._overrideAxisMinimumValue)
-                        tempAxisMinimumValue = RoundAxisMinimumValue(this._min, nextInterval);
-                }
 
+                        tempAxisMinimumValue = RoundAxisMinimumValue(this._min, nextInterval);
+                    tempAxisMaximumValue = this._axisMaximumValue;
+
+                }
                 // Calculate number of interval.
                 nextNoOfInterval = (Int32)((tempAxisMaximumValue - tempAxisMinimumValue) / nextInterval);
-
                 // Number of interval cannot exceed the user expected no of interval.
                 if (nextNoOfInterval > _maxNoOfInterval)
                     break;
@@ -741,16 +754,16 @@ namespace Visifire.Charts
                 this._interval = nextInterval;
             }
 
-            if (isNegative)
-            {
-                _max = _min = - _max;
-                _axisMaximumValue = -_axisMaximumValue;
-                _axisMinimumValue = -_axisMinimumValue;
+            //if (isNegative)
+            //{
+            //    _max = _min = -_max;
+            //    _axisMaximumValue = -_axisMaximumValue;
+            //    _axisMinimumValue = -_axisMinimumValue;
 
-                Decimal temp = _axisMaximumValue;
-                _axisMaximumValue = _axisMinimumValue;
-                _axisMinimumValue = temp;
-            }
+            //    Decimal temp = _axisMaximumValue;
+            //    _axisMaximumValue = _axisMinimumValue;
+            //    _axisMinimumValue = temp;
+            //}
         }
 
         #endregion
