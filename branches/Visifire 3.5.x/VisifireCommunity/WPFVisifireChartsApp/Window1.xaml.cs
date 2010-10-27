@@ -32,36 +32,6 @@ namespace WPFVisifireChartsApp
         public Window1()
         {
             InitializeComponent();
-
-            //DataSeries ds = new DataSeries();
-            //ds.RenderAs = RenderAs.Line;
-            //ds.MarkerEnabled = false;
-            //ds.MovingMarkerEnabled = true;
-            //ds.LightingEnabled = false;
-            //ds.LineThickness = 1.5;
-            ////ds.XValueType = ChartValueTypes.DateTime;
-            //ds.LegendText = "Example Legend Text";
-            ////ds.Color = new SolidColorBrush(Colors.Red);
-
-            //for (Int32 i = 0; i < 5; i++)
-            //{
-            //    ds.DataPoints.Add(new DataPoint
-            //    {
-            //        //XValue = xDateTime, // a DateTime value
-            //        ToolTipText = "Example Tool Tip Text",
-            //        YValue = 12, // a double value
-            //        Color = new SolidColorBrush(Colors.Red)
-            //    });
-            //}
-            //MyChart.Series.Add(ds);
-
-            MyChart.MouseLeftButtonUp += new MouseButtonEventHandler(MyChart_MouseLeftButtonUp);
-        }
-
-        void MyChart_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            foreach (DataPoint dp in MyChart.Series[0].DataPoints)
-                dp.Color = new SolidColorBrush(Colors.Red);
         }
     }
 }

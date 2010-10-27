@@ -2871,7 +2871,7 @@ namespace Visifire.Charts
                     valueType = ChartValueTypes.Numeric;
                 }
                 // Double entered in XAML
-                else if (Double.TryParse((string)newValue, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out doubleResult))
+                else if (Double.TryParse((string)newValue, System.Globalization.NumberStyles.Number | System.Globalization.NumberStyles.AllowExponent, System.Globalization.CultureInfo.InvariantCulture, out doubleResult))
                 {
                     numericVal = doubleResult;
                     valueType = ChartValueTypes.Numeric;

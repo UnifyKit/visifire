@@ -2136,6 +2136,7 @@ namespace Visifire.Charts
 
         }
 
+
         /// <summary>
         /// This function calculates the XValue range
         /// </summary>
@@ -2147,10 +2148,11 @@ namespace Visifire.Charts
             Axis xAxis = AxisX; //PlotDetails.GetAxisXFromChart(Chart, AxisTypes.Primary);
             xAxis.CreateVisualObject(Chart);
 
-            axisMinimum = Math.Abs(xAxis.InternalAxisMinimum);
+            axisMinimum = xAxis.InternalAxisMinimum;
 
             return Math.Abs(xAxis.InternalAxisMaximum - xAxis.InternalAxisMinimum);
         }
+
         /// <summary>
         /// 
         /// </summary>

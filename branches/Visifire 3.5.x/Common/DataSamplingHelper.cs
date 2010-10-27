@@ -44,7 +44,7 @@ namespace Visifire.Commons
             
             return retPointList;
         }
-        
+
         /// <summary>
         /// Creates Point groups based on the groupSize value.MinxPosition,maxXPosition and groupSize is calculated for every iteration
         /// All the points which fall within the groupSize are grouped.Threshold area will be the distance from  minXPosition to maxXPosition
@@ -55,18 +55,19 @@ namespace Visifire.Commons
         /// <param name="groupSize">An area within which all the points falling are grouped</param>
         /// <returns></returns>
         private static List<PointGroup> CreatePointGroups(List<Point> actualList, Double minXPosition, Double plotXValueDistance, Double threshold)
-        {   
+        {
             List<PointGroup> PointGroups = new List<PointGroup>();
 
             Double maxXPosition = 0;
+            Double position = minXPosition;
 
-            for (; minXPosition <= plotXValueDistance; minXPosition = maxXPosition)
+            for (; position <= (minXPosition + plotXValueDistance); position = maxXPosition)
             {
-                maxXPosition = minXPosition + threshold;
+                maxXPosition = position + threshold;
 
                 PointGroup pointGroup = new PointGroup()
                 {
-                    dataPoints = (from point in actualList where point.XValue >= minXPosition && point.XValue <= maxXPosition select point).ToList()
+                    dataPoints = (from point in actualList where point.XValue >= position && point.XValue <= maxXPosition select point).ToList()
                 };
 
                 PointGroups.Add(pointGroup);
@@ -74,6 +75,9 @@ namespace Visifire.Commons
 
             return PointGroups;
         }
+
+
+
 
         /// <summary>
         /// This function will take actual list of points and creates a new list containing sampled points  based on the threshold(groupSize) value calculated.
