@@ -1557,20 +1557,26 @@ namespace Visifire.Commons
                 {
                     SolidColorBrush solidBrush = brush as SolidColorBrush;
 
-                    if(_3dLightingTopBrushs.ContainsKey(solidBrush.Color))
+                    if (_3dLightingTopBrushs.ContainsKey(solidBrush.Color))
+                    {
+#if WPF
+                        if (System.Threading.Thread.CurrentThread.IsBackground)
+                        {
+                            brush = GetTopFaceGradientBrush(solidBrush);
+
+                            if (_3dLightingTopBrushs.ContainsKey(solidBrush.Color))
+                                _3dLightingTopBrushs[solidBrush.Color] = brush;
+                            else
+                                _3dLightingTopBrushs.Add(solidBrush.Color, brush);
+
+                            return brush;
+                        }
+#endif
                         return _3dLightingTopBrushs[solidBrush.Color];
+                    }
                     else
-                    {   
-                        List<Color> colors = new List<Color>();
-                        List<Double> stops = new List<Double>();
-
-                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.85));
-                        stops.Add(0);
-
-                        colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.35));
-                        stops.Add(1);
-
-                        brush = Graphics.CreateLinearGradientBrush(-45, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                    {
+                        brush = GetTopFaceGradientBrush(solidBrush);
                         _3dLightingTopBrushs.Add(solidBrush.Color, brush);
 
                         return brush;
@@ -1603,6 +1609,23 @@ namespace Visifire.Commons
                 return null;
         }
 
+        private static Brush GetTopFaceGradientBrush(SolidColorBrush solidBrush)
+        {
+            Brush brush;
+            List<Color> colors = new List<Color>();
+            List<Double> stops = new List<Double>();
+
+            colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.85));
+            stops.Add(0);
+
+            colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.35));
+            stops.Add(1);
+
+            brush = Graphics.CreateLinearGradientBrush(-45, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+
+            return brush;
+        }
+
         private static Dictionary<Color, Brush> _3dLightingTopBrushs = new Dictionary<Color, Brush>();
         private static Dictionary<Color, Brush> _3dLightingRightBrushs = new Dictionary<Color, Brush>();
         private static Dictionary<Color, Brush> _3dLightingFrontBrushs = new Dictionary<Color, Brush>();
@@ -1621,20 +1644,26 @@ namespace Visifire.Commons
                     SolidColorBrush solidBrush = brush as SolidColorBrush;
 
                     if (_3dLightingRightBrushs.ContainsKey(solidBrush.Color))
+                    {
+#if WPF
+                        if (System.Threading.Thread.CurrentThread.IsBackground)
+                        {
+                            brush = GetRightFaceGradientBrush(solidBrush);
+
+                            if (_3dLightingRightBrushs.ContainsKey(solidBrush.Color))
+                                _3dLightingRightBrushs[solidBrush.Color] = brush;
+                            else
+                                _3dLightingRightBrushs.Add(solidBrush.Color, brush);
+
+                            return brush;
+                        }
+#endif
+
                         return _3dLightingRightBrushs[solidBrush.Color];
+                    }
                     else
                     {
-                        List<Color> colors = new List<Color>();
-                        List<Double> stops = new List<Double>();
-
-                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.35));
-                        stops.Add(0);
-
-                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.75));
-                        stops.Add(1);
-                        
-                        brush = Graphics.CreateLinearGradientBrush(-120, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
-
+                        brush = GetRightFaceGradientBrush(solidBrush);
                         _3dLightingRightBrushs.Add(solidBrush.Color, brush);
 
                         return brush;
@@ -1667,6 +1696,23 @@ namespace Visifire.Commons
                 return null;
         }
 
+        private static Brush GetRightFaceGradientBrush(SolidColorBrush solidBrush)
+        {
+            Brush brush;
+            List<Color> colors = new List<Color>();
+            List<Double> stops = new List<Double>();
+
+            colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.35));
+            stops.Add(0);
+
+            colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.75));
+            stops.Add(1);
+
+            brush = Graphics.CreateLinearGradientBrush(-120, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+
+            return brush;
+        }
+
         /// <summary>
         /// Creates and returns a Back face brush
         /// </summary>
@@ -1681,21 +1727,28 @@ namespace Visifire.Commons
                     SolidColorBrush solidBrush = brush as SolidColorBrush;
 
                     if (_3dLightingFrontBrushs.ContainsKey(solidBrush.Color))
+                    {
+#if WPF
+                        if (System.Threading.Thread.CurrentThread.IsBackground)
+                        {
+                            brush = GetFrontFaceGradientBrush(solidBrush);
+
+                            if (_3dLightingFrontBrushs.ContainsKey(solidBrush.Color))
+                                _3dLightingFrontBrushs[solidBrush.Color] = brush;
+                            else
+                                _3dLightingFrontBrushs.Add(solidBrush.Color, brush);
+
+                            return brush;
+                        }
+#endif
                         return _3dLightingFrontBrushs[solidBrush.Color];
+                    }
                     else
                     {
-                        List<Color> colors = new List<Color>();
-                        List<Double> stops = new List<Double>();
-
-                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
-                        stops.Add(0);
-
-                        colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
-                        stops.Add(1);
-                        
-                        brush = Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        brush = GetFrontFaceGradientBrush(solidBrush);
 
                         _3dLightingFrontBrushs.Add(solidBrush.Color, brush);
+
                         return brush;
                     }
                 }
@@ -1708,7 +1761,23 @@ namespace Visifire.Commons
                 return null;
         }
 
-        
+        private static Brush GetFrontFaceGradientBrush(SolidColorBrush solidBrush)
+        {
+            Brush brush;
+
+            List<Color> colors = new List<Color>();
+            List<Double> stops = new List<Double>();
+
+            colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
+            stops.Add(0);
+
+            colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
+            stops.Add(1);
+
+            brush = Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+
+            return brush;
+        }
 
         /// <summary>
         /// Creates and returns a left gradient brush

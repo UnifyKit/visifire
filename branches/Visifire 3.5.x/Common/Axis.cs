@@ -114,6 +114,8 @@ namespace Visifire.Charts
             if (AxisLabels != null)
             {
 
+                AxisLabels.IsNotificationEnable = false;
+
 #if WPF
                 if (IsInDesignMode)
                     ObservableObject.RemoveElementFromElementTree(AxisLabels);
@@ -121,10 +123,14 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(AxisLabels))
                     _rootElement.Children.Add(AxisLabels);
+
+                AxisLabels.IsNotificationEnable = true;
+                AxisLabels.IsTabStop = false;
             }
 
             foreach (CustomAxisLabels labels in CustomAxisLabels)
             {
+                labels.IsNotificationEnable = false;
 
 #if WPF
                 if (IsInDesignMode)
@@ -133,10 +139,15 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(labels))
                     _rootElement.Children.Add(labels);
+
+                labels.IsNotificationEnable = true;
+                labels.IsTabStop = false;
             }
 
             foreach (ChartGrid grid in Grids)
             {
+
+                grid.IsNotificationEnable = false;
 
 #if WPF
                 if (IsInDesignMode)
@@ -145,11 +156,15 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(grid))
                     _rootElement.Children.Add(grid);
+
+                grid.IsNotificationEnable = true;
+                grid.IsTabStop = false;
             }
 
             foreach (Ticks ticks in Ticks)
             {
 
+                ticks.IsNotificationEnable = false;
 #if WPF
                 if (IsInDesignMode)
                     ObservableObject.RemoveElementFromElementTree(ticks);
@@ -157,6 +172,9 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(ticks))
                     _rootElement.Children.Add(ticks);
+
+                ticks.IsNotificationEnable = true;
+                ticks.IsTabStop = false;
             }
         }
 

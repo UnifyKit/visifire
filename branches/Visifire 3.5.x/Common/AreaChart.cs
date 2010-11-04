@@ -934,9 +934,15 @@ namespace Visifire.Charts
                     if (frontFacePath != null)
                     {
                         if (chart.View3D)
-                            frontFacePath.Fill = (Boolean)dataPointList[0].Parent.LightingEnabled ? Graphics.GetFrontFaceBrush(dataPointList[0].Parent.Color) : dataPointList[0].Parent.Color;
+                        {
+                            Brush brush = Graphics.GetFrontFaceBrush(dataPointList[0].Parent.Color);
+                            frontFacePath.Fill = (Boolean)dataPointList[0].Parent.LightingEnabled ? brush : dataPointList[0].Parent.Color;
+                        }
                         else
-                            frontFacePath.Fill = (Boolean)dataPointList[0].Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dataPointList[0].Parent.Color, "Linear", null) : dataPointList[0].Parent.Color;
+                        {
+                            Brush brush = Graphics.GetLightingEnabledBrush(dataPointList[0].Parent.Color, "Linear", null);
+                            frontFacePath.Fill = (Boolean)dataPointList[0].Parent.LightingEnabled ? brush : dataPointList[0].Parent.Color;
+                        }
 
                         series.Faces.VisualComponents.Add(frontFacePath);
 
@@ -2585,9 +2591,14 @@ namespace Visifire.Charts
         /// <param name="areaParams">AreaParams</param>
         /// <returns>ZIndex</returns>
         internal static Int32 Draw3DArea(Canvas parentVisual, DataPoint previusDataPoint, DataPoint dataPoint, DataPoint nextDataPoint, ref Faces dataSeriesFaces, ref Faces dataPointFaces, DataSeries dataSeries, Double plankYPos)
-        {   
-            Brush sideBrush = (Boolean) dataSeries.LightingEnabled ? Graphics.GetRightFaceBrush(dataSeries.Color) : dataSeries.Color;
-            Brush topBrush = (Boolean)dataSeries.LightingEnabled ? Graphics.GetTopFaceBrush(dataSeries.Color) : dataSeries.Color;
+        {
+            Brush rBrush = Graphics.GetRightFaceBrush(dataSeries.Color);
+
+            Brush sideBrush = (Boolean)dataSeries.LightingEnabled ? rBrush : dataSeries.Color;
+
+            Brush tBrush = Graphics.GetTopFaceBrush(dataSeries.Color);
+
+            Brush topBrush = (Boolean)dataSeries.LightingEnabled ? tBrush : dataSeries.Color;
             
             // Int32 pointIndexLimit = dataSeries.IsPositive ? areaParams.Points.Count - 1 : areaParams.Points.Count;
 

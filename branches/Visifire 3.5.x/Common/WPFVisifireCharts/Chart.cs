@@ -180,7 +180,7 @@ namespace Visifire.Charts
         void Chart_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (!Double.IsNaN(e.NewSize.Width) && !Double.IsNaN(e.NewSize.Height) && e.NewSize.Width != 0 && e.NewSize.Height != 0)
-            {   
+            {
                 // Render the chart with new size
                 if (IsInDesignMode)
                     InvokeRender();
