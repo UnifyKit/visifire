@@ -238,6 +238,8 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(ds))
                     _rootElement.Children.Insert(0, ds);
+
+                ds.IsTabStop = false;
             }
 
             foreach (Title title in Titles)
@@ -251,7 +253,9 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(title))
                     _rootElement.Children.Add(title);
+
                 title.IsNotificationEnable = true;
+                title.IsTabStop = false;
             }
 
             foreach (Axis axis in AxesX)
@@ -265,7 +269,9 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(axis))
                     _rootElement.Children.Add(axis);
+
                 axis.IsNotificationEnable = true;
+                axis.IsTabStop = false;
             }
 
             foreach (Axis axis in AxesY)
@@ -279,7 +285,9 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(axis))
                     _rootElement.Children.Add(axis);
+
                 axis.IsNotificationEnable = true;
+                axis.IsTabStop = false;
             }
 
             foreach (TrendLine trendLine in TrendLines)
@@ -293,7 +301,9 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(trendLine))
                     _rootElement.Children.Add(trendLine);
+
                 trendLine.IsNotificationEnable = true;
+                trendLine.IsTabStop = false;
             }
 
             foreach (Legend legend in Legends)
@@ -307,7 +317,9 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(legend))
                     _rootElement.Children.Add(legend);
+
                 legend.IsNotificationEnable = true;
+                legend.IsTabStop = false;
             }
 
             if (PlotArea != null)
@@ -321,7 +333,9 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(PlotArea))
                     _rootElement.Children.Add(PlotArea);
+
                 PlotArea.IsNotificationEnable = true;
+                PlotArea.IsTabStop = false;
             }
         }
 

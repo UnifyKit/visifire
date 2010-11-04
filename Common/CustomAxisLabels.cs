@@ -89,6 +89,7 @@ namespace Visifire.Charts
 
             foreach (CustomAxisLabel label in Labels)
             {
+                label.IsNotificationEnable = false;
 #if WPF
                 if (IsInDesignMode)
                     ObservableObject.RemoveElementFromElementTree(label);
@@ -96,6 +97,9 @@ namespace Visifire.Charts
 
                 if (!_rootElement.Children.Contains(label))
                     _rootElement.Children.Add(label);
+
+                label.IsNotificationEnable = true;
+                label.IsTabStop = false;
             }
         }
 

@@ -205,13 +205,16 @@ namespace Visifire.Charts
 
             foreach (DataPoint dp in DataPoints)
             {
-
+                dp.IsNotificationEnable = false;
 #if WPF
                 if (IsInDesignMode)
                     ObservableObject.RemoveElementFromElementTree(dp);
 #endif
 
                 _rootElement.Children.Add(dp);
+
+                dp.IsNotificationEnable = true;
+                dp.IsTabStop = false;
             }
         }
 

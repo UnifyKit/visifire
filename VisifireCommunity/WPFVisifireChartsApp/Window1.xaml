@@ -5,8 +5,9 @@
     Title="PerfMon"
 >
     <Grid x:Name="LayoutRoot" Background="White">
-        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
-                  Width="490" Height="290" Theme="Theme1">
+       
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" Width="500" Height="300"
+                  Theme="Theme1" x:Name="MyChart">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Athens 2004 Olympics" />
