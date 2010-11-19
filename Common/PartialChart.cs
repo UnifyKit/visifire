@@ -1441,9 +1441,9 @@ namespace Visifire.Charts
                         if (String.IsNullOrEmpty((String)legend.GetValue(NameProperty)))
                         {
                             if(isAutoLegend)
-                                legend.SetValue(NameProperty, "Legend" + Legends.IndexOf(legend));
+                                legend.Name = "Legend" + Legends.IndexOf(legend);
                             else
-                                legend.SetValue(NameProperty, "Legend" + Legends.IndexOf(legend) + "_" + Guid.NewGuid().ToString().Replace('-', '_'));
+                                legend.Name = "Legend" + Legends.IndexOf(legend) + "_" + Guid.NewGuid().ToString().Replace('-', '_');
 
                             legend._isAutoName = true;
                         }
@@ -1530,7 +1530,7 @@ namespace Visifire.Charts
                         if (!String.IsNullOrEmpty(this.Theme))
                             ds.ApplyStyleFromTheme(this, "DataSeries");
 
-                        if (String.IsNullOrEmpty((String)ds.GetValue(NameProperty)))
+                        if (String.IsNullOrEmpty((String)ds.GetValue(DataSeries.NameProperty)))
                         {
                             ds.Name = "DataSeries" + (this.Series.Count - 1).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_');
 

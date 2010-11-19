@@ -7,7 +7,7 @@ mc:Ignorable="d" xmlns:my="clr-namespace:System.Windows.Controls;assembly=System
 >
     <Grid x:Name="LayoutRoot">
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-                  Width="490" Height="290" Theme="Theme1" x:Name="MyChart" >
+                  Width="490" Height="290" Theme="Theme1" x:Name="MyChart">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Athens 2004 Olympics" />

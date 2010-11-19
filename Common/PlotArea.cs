@@ -1352,7 +1352,18 @@ namespace Visifire.Charts
             xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lenthInPixel, (axisOrientation == AxisOrientation.Horizontal) ? pixelPosition : lenthInPixel - pixelPosition);
 
             if (chart.ChartArea.AxisX.IsDateTimeAxis)
-                eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
+            {    
+                /* The statement below can throw exception while calculating date corresponding XValue 
+                 * if there is not DataPoints MinDate will be 1/1/1 */
+                try
+                {
+                    eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
+                }
+                catch (Exception ex)
+                {
+                    eventArgs.XValue = chart.ChartArea.AxisX.MinDate;
+                }
+            }
             else
                 eventArgs.XValue = xValue;
         }
@@ -1367,7 +1378,19 @@ namespace Visifire.Charts
             xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lenthInPixel, (axisOrientation == AxisOrientation.Horizontal) ? pixelPosition : lenthInPixel - pixelPosition);
 
             if (chart.ChartArea.AxisX.IsDateTimeAxis)
-                eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
+            {
+                /* The statement below can throw exception while calculating date corresponding XValue 
+                 * if there is not DataPoints MinDate will be 1/1/1 */
+
+                try
+                {
+                    eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
+                }
+                catch (Exception ex) 
+                {
+                    eventArgs.XValue = chart.ChartArea.AxisX.MinDate;
+                }
+            }
             else
                 eventArgs.XValue = xValue;
         }

@@ -52,6 +52,10 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using Visifire.Commons.Controls;
 
+#if SL && !WP
+using System.Windows.Browser;
+#endif
+
 namespace Visifire.Charts
 {
     /// <summary>
@@ -323,6 +327,9 @@ namespace Visifire.Charts
                     DataPoints.Insert(e.NewStartingIndex, dp);
                 }
             }
+
+            if(Chart != null && Chart._toolTip != null)
+                Chart._toolTip.Hide();
         }
 
 
@@ -1094,7 +1101,37 @@ namespace Visifire.Charts
             typeof(Int32),
             typeof(DataSeries),
             new PropertyMetadata(OnZIndexPropertyChanged));
-        
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.VisifireElement.ToolTipText dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.VisifireElement.ToolTipText dependency property.
+        /// </returns>
+        public static new readonly DependencyProperty NameProperty = DependencyProperty.Register
+            ("Name",
+            typeof(String),
+            typeof(DataSeries),
+            new PropertyMetadata(String.Empty));
+
+        /// <summary>
+        /// Name of the object
+        /// </summary>
+#if (SL &&!WP)
+        [ScriptableMember]
+#endif
+        public new String Name
+        {
+            get
+            {
+                return (String)GetValue(NameProperty);
+            }
+            set
+            {
+                SetValue(NameProperty, value);
+            }
+        }
+
         /// <summary>
         /// FillType for funnel
         /// </summary>
@@ -3918,7 +3955,7 @@ namespace Visifire.Charts
                         //    dataPoint.InternalXValue = this.DataPoints.Count;
                         //}
                         
-                        if (String.IsNullOrEmpty((String)dataPoint.GetValue(NameProperty)))
+                        if (String.IsNullOrEmpty((String)dataPoint.GetValue(DataPoint.NameProperty)))
                         {
                             dataPoint.Name = "DataPoint" + (this.DataPoints.Count - 1).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_');
                             // dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint).ToString() + "_" + Guid.NewGuid().ToString().Replace('-','_'));
@@ -3962,20 +3999,16 @@ namespace Visifire.Charts
                 {
                     foreach (DataPoint dataPoint in e.OldItems)
                     {
-                        if (RenderHelper.IsLineCType(this) && dataPoint.Marker != null && dataPoint.Marker.Visual != null && dataPoint.Marker.Visual.Parent != null)
-                        {   
-                            Panel parent = dataPoint.Marker.Visual.Parent as Panel;
-                            parent.Children.Remove(dataPoint.Marker.Visual);
+                        //if (RenderHelper.IsLineCType(this) && dataPoint.Marker != null && dataPoint.Marker.Visual != null && dataPoint.Marker.Visual.Parent != null)
+                        //{   
+                        //    Panel parent = dataPoint.Marker.Visual.Parent as Panel;
+                        //    parent.Children.Remove(dataPoint.Marker.Visual);
 
-                            if (dataPoint.LabelVisual != null)
-                                parent.Children.Remove(dataPoint.LabelVisual);
+                        //    if (dataPoint.LabelVisual != null)
+                        //        parent.Children.Remove(dataPoint.LabelVisual);
 
-                            dataPoint.Faces = null;
-                            dataPoint.Marker = null;
-
-                            dataPoint.LabelVisual = null;
-                            dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
-                        }
+                        //    dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
+                        //}
 
                         if (dataPoint.Parent != null)
                         {
@@ -3983,7 +4016,10 @@ namespace Visifire.Charts
                             ds.InternalDataPoints.Remove(dataPoint);
                         }
 
+                        dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
                         dataPoint.DetachEventForSelection();
+
+                        RemoveVisualElementsFromTree(dataPoint);
                     }
                 }
             }
@@ -4000,6 +4036,33 @@ namespace Visifire.Charts
             // Validate whether partial is allowed
             if (ValidatePartialUpdate(RenderAs, VcProperties.DataPoints))
                 DataPointRenderManager(VcProperties.DataPoints, e.NewItems);
+        }
+
+        private void RemoveVisualElementsFromTree(DataPoint dataPoint)
+        {
+            if (dataPoint.Faces != null && dataPoint.Faces.Visual != null)
+                ObservableObject.RemoveElementFromElementTree(dataPoint.Faces.Visual);
+
+            if (dataPoint.LabelVisual != null)
+                ObservableObject.RemoveElementFromElementTree(dataPoint.LabelVisual);
+
+            if (dataPoint.Marker != null && dataPoint.Marker.Visual != null)
+                ObservableObject.RemoveElementFromElementTree(dataPoint.Marker.Visual);
+
+            if (dataPoint.Faces != null && dataPoint.Faces.VisualComponents != null)
+            {
+                foreach (FrameworkElement fe in dataPoint.Faces.VisualComponents)
+                {
+                    if(fe != null)
+                        ObservableObject.RemoveElementFromElementTree(fe);
+                }
+            }
+
+            dataPoint.Parent = null;
+            dataPoint.Faces = null;
+            dataPoint.Chart = null;
+            dataPoint.Marker = null;
+            dataPoint.LabelVisual = null;
         }
 
         private void DataPointRenderManager(VcProperties property, object newValue)

@@ -141,7 +141,7 @@ namespace Visifire.Charts
                 }
 
                 RectangleGeometry clipRectangle = new RectangleGeometry();
-                clipRectangle.Rect = new Rect(0, 0, width, height);
+                clipRectangle.Rect = new Rect(0, 0, width, chart.PlotArea.Visual.Height);
                 _funnelChartGrid.Clip = clipRectangle;
 
                 return _funnelChartGrid;
@@ -360,10 +360,63 @@ namespace Visifire.Charts
             return funnelCanvas;
         }
 
+
         /// <summary>
         /// Arrange labels to overcome overlaps
         /// </summary>
-        private static void ArrangeLabels(TriangularChartSliceParms[] funnelSlices, Double width, Double height)
+        internal static void ArrangeLabelsOnExpload(TriangularChartSliceParms[] funnelSlices, DataPoint dataPoint, Double width, Double height)
+        {
+            if (funnelSlices == null || funnelSlices.Length < 0)
+                return;
+
+            // Reset arrangements of labels
+            FunnelChart.ArrangeLabels(funnelSlices, Double.NaN, height);
+
+            TriangularChartSliceParms[] selectedfunnelSlices = (from fs in funnelSlices where fs.DataPoint.LabelStyle == LabelStyles.OutSide select fs).ToArray();
+
+            Rect baseArea = new Rect(0, 0, width, height);
+            Rect[] labelInfo = new Rect[selectedfunnelSlices.Length];
+            List<Point> exploadedPositions = (from ex in selectedfunnelSlices where ex.DataPoint == dataPoint select ex.ExplodedPoints).First();
+            Double gapAtBottomLineOfBaseArea = 0;
+            
+            for (Int32 index = 0; index < selectedfunnelSlices.Length; index++)
+            {
+                
+                Double left = (Double)selectedfunnelSlices[index].DataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
+                // Double top = (Double)selectedfunnelSlices[index].DataPoint.LabelVisual.GetValue(Canvas.TopProperty);
+                Double top = selectedfunnelSlices[index].OrginalLabelLineEndPoint.Y - selectedfunnelSlices[index].DataPoint.LabelVisual.Height / 2;
+
+                Double sliceCanvasTop = exploadedPositions[index].Y + top;
+
+                if (sliceCanvasTop + selectedfunnelSlices[index].DataPoint.LabelVisual.Height + gapAtBottomLineOfBaseArea > baseArea.Height)
+                {
+                    sliceCanvasTop -= (sliceCanvasTop + selectedfunnelSlices[index].DataPoint.LabelVisual.Height + gapAtBottomLineOfBaseArea) - baseArea.Height;
+                }
+
+                labelInfo[index] = new Rect
+                    (left, sliceCanvasTop,
+                    selectedfunnelSlices[index].DataPoint.LabelVisual.Width,
+                    selectedfunnelSlices[index].DataPoint.LabelVisual.Height);
+            }
+
+            Visifire.Commons.LabelPlacementHelper.VerticalLabelPlacement(baseArea, ref labelInfo);
+
+            for (Int32 index = 0; index < selectedfunnelSlices.Length; index++)
+            {
+                Double labelTop = labelInfo[index].Top - exploadedPositions[index].Y;
+
+                selectedfunnelSlices[index].DataPoint.LabelVisual.SetValue(Canvas.LeftProperty, labelInfo[index].Left);
+                selectedfunnelSlices[index].DataPoint.LabelVisual.SetValue(Canvas.TopProperty, labelTop);
+
+                selectedfunnelSlices[index].LabelLineEndPoint = new Point(selectedfunnelSlices[index].LabelLineEndPoint.X, labelTop + selectedfunnelSlices[index].DataPoint.LabelVisual.Height / 2);
+                UpdateLabelLineEndPoint(selectedfunnelSlices[index]);
+            }
+        }
+
+        /// <summary>
+        /// Arrange labels to overcome overlaps
+        /// </summary>
+        internal static void ArrangeLabels(TriangularChartSliceParms[] funnelSlices, Double width, Double height)
         {
             if (funnelSlices == null || funnelSlices.Length < 0)
                 return;
@@ -372,15 +425,25 @@ namespace Visifire.Charts
 
             Rect baseArea = new Rect(0, 0, width, height);
             Rect[] labelInfo = new Rect[selectedfunnelSlices.Length];
+            Double gapAtBottomLineOfBaseArea = 0;
 
             for (Int32 index = 0; index < selectedfunnelSlices.Length; index++)
             {
+                //selectedfunnelSlices[index].DataPoint.LabelVisual.SetValue(Canvas.TopProperty, selectedfunnelSlices[index].OrginalLabelLineEndPoint.Y - selectedfunnelSlices[index].DataPoint.LabelVisual.Height / 2);
+                
                 Double left = (Double)selectedfunnelSlices[index].DataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
                 Double top = (Double)selectedfunnelSlices[index].DataPoint.LabelVisual.GetValue(Canvas.TopProperty);
 
+                Double sliceCanvasTop = selectedfunnelSlices[index].Top + top;
+
+                if (sliceCanvasTop + selectedfunnelSlices[index].DataPoint.LabelVisual.Height + gapAtBottomLineOfBaseArea > baseArea.Height)
+                {
+                    sliceCanvasTop -= (sliceCanvasTop + selectedfunnelSlices[index].DataPoint.LabelVisual.Height + gapAtBottomLineOfBaseArea) - baseArea.Height;
+                }
+                
                 labelInfo[index] = new Rect
                     (left,
-                    selectedfunnelSlices[index].Top + top,
+                    sliceCanvasTop,
                     selectedfunnelSlices[index].DataPoint.LabelVisual.Width,
                     selectedfunnelSlices[index].DataPoint.LabelVisual.Height);
             }
@@ -1367,6 +1430,8 @@ namespace Visifire.Charts
             else
                 funnelSlice.LabelLineEndPoint = new Point(2 * topRadius, funnelSlice.RightMidPoint.Y);
 
+            funnelSlice.OrginalLabelLineEndPoint = funnelSlice.LabelLineEndPoint;
+
             if ((Boolean)funnelSlice.DataPoint.LabelLineEnabled && funnelSlice.DataPoint.LabelStyle == LabelStyles.OutSide)
             {
                 labelLineCanvas = new Canvas();
@@ -1650,6 +1715,11 @@ namespace Visifire.Charts
         /// End point of the label line
         /// </summary>
         public Point LabelLineEndPoint;
+
+        /// <summary>
+        /// End point of the label line
+        /// </summary>
+        public Point OrginalLabelLineEndPoint;
 
         /// <summary>
         /// Fill types

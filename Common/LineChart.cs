@@ -1347,6 +1347,9 @@ namespace Visifire.Charts
 
             Chart chart = dataSeries.Chart as Chart;
 
+            if (chart == null)
+                return;
+
             PlotGroup plotGroup = dataSeries.PlotGroup;
             Canvas line2dCanvas = null;
             Canvas label2dCanvas = null;
@@ -1473,10 +1476,11 @@ namespace Visifire.Charts
         internal static void UpdateSplineSeries(VcProperties property, DataSeries dataSeries, Double width, Double height, Canvas label2dCanvas)
         {   
             Chart chart = dataSeries.Chart as Chart;
-            Boolean isAnimatedUpdate = (Boolean) chart.AnimatedUpdate;
-
-            if (dataSeries.Enabled == false)
+           
+            if (dataSeries.Enabled == false || chart == null)
                 return;
+
+            Boolean isAnimatedUpdate = (Boolean) chart.AnimatedUpdate;
 
             Canvas chartsCanvas = dataSeries.Faces.Visual.Parent as Canvas;
             Canvas labelsCanvas = dataSeries.Faces.LabelCanvas.Parent as Canvas;
@@ -1897,7 +1901,7 @@ namespace Visifire.Charts
         {
             Chart chart = dataSeries.Chart as Chart;
 
-            if (dataSeries.Enabled == false)
+            if (dataSeries.Enabled == false || chart == null)
                 return;
 
             Canvas chartsCanvas = dataSeries.Faces.Visual.Parent as Canvas;
@@ -1973,6 +1977,10 @@ namespace Visifire.Charts
             }
 
             Chart chart = dataPoint.Chart as Chart;
+            
+            if (chart == null)
+                return;
+
             Marker marker = dataPoint.Marker;
             DataSeries dataSeries = dataPoint.Parent;
             PlotGroup plotGroup = dataSeries.PlotGroup;

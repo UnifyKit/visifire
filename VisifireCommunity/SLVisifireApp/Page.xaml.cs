@@ -17,6 +17,10 @@ using Visifire.Commons;
 using System.Windows.Data;
 using System.Windows.Printing;
 using System.Windows.Media.Imaging;
+using System.Windows.Markup;
+using System.Xml;
+using System.Windows.Resources;
+using System.IO;
 
 namespace SLVisifireApp
 {

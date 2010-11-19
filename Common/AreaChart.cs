@@ -2862,6 +2862,10 @@ namespace Visifire.Charts
         private static void UpdateDataPoint(DataPoint dataPoint, VcProperties property, object newValue, Boolean isAxisChanged)
         {
             Chart chart = dataPoint.Chart as Chart;
+
+            if (chart == null)
+                return;
+
             PlotDetails plotDetails = chart.PlotDetails;
 
             Marker marker = dataPoint.Marker;
@@ -3858,6 +3862,10 @@ namespace Visifire.Charts
         private static void UpdateDataSeries(DataSeries dataSeries, VcProperties property, object newValue)
         {
             Chart chart = dataSeries.Chart as Chart;
+
+            if (chart == null)
+                return;
+
             Boolean is3D = chart.View3D;
 
             switch (property)

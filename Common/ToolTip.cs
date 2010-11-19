@@ -82,7 +82,9 @@ namespace Visifire.Charts
             _borderElement = GetTemplateChild("ToolTipBorder") as Border;
             _toolTipTextBlock = GetTemplateChild("ToolTipTextBlock") as TextBlock;
             _callOutPath = GetTemplateChild("CallOut") as Path;
-            _toolTipTextBlock.LineHeight = (Int32)(_toolTipTextBlock.FontSize * 1.4); 
+
+            if(_toolTipTextBlock != null)
+                _toolTipTextBlock.LineHeight = (Int32)(_toolTipTextBlock.FontSize * 1.4); 
 
             this.Visibility = Visibility.Collapsed;
         }

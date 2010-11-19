@@ -88,6 +88,7 @@ namespace Visifire.Charts
             if ((elementType == ElementTypes.Chart && property == VcProperties.Series)
                 || (elementType == ElementTypes.DataSeries && property == VcProperties.RenderAs)
                 || (elementType == ElementTypes.DataPoint && property == VcProperties.XValue)
+                || (elementType == ElementTypes.Chart && property == VcProperties.None)
              )  
                 SetDataPointsNameAndValidateDataPointXValueType();
 

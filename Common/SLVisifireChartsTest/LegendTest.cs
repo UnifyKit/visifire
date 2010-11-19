@@ -845,7 +845,6 @@ namespace SLVisifireChartsTest
                 () => legend.Background = new SolidColorBrush(Colors.Red),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), legend.Background));
 
-            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
 

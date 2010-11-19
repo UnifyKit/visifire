@@ -116,6 +116,9 @@ namespace Visifire.Charts
 
             Chart chart = dataSeries.Chart as Chart;
 
+            if (chart == null)
+                return;
+
             PlotGroup plotGroup = dataSeries.PlotGroup;
             Canvas line2dCanvas = null;
             Canvas label2dCanvas = null;

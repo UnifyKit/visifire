@@ -2459,7 +2459,7 @@ namespace Visifire.Charts
             {   
                 AxisLabel label = AxisLabelList[labelIndex];
                 ApplyAxisLabelFontProperties(label);
-                label.CreateVisualObject(null);
+                label.CreateVisualObject(_tag);
 
                 maxRowHeight = Math.Max(maxRowHeight, label.ActualHeight);
 
