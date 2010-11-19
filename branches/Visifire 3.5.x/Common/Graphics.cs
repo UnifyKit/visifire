@@ -2439,6 +2439,7 @@ namespace Visifire.Commons
              }
         }
 
+#if SL
         private static Brush _AUTO_WHITE_FONT_BRUSH = new SolidColorBrush(Color.FromArgb(255, 239, 239, 239));
         private static Brush _AUTO_BLACK_FONT_BRUSH = new SolidColorBrush(Color.FromArgb(255, 72, 72, 72));
         private static Brush _GRAY_BRUSH = new SolidColorBrush(Colors.Gray);
@@ -2447,7 +2448,7 @@ namespace Visifire.Commons
         private static Brush _ORANGE_BRUSH = new SolidColorBrush(Colors.Orange);
         private static Brush _WHITE_BRUSH = new SolidColorBrush(Colors.White);
         private static Brush _TRANSPARENT_BRUSH = new SolidColorBrush(Colors.Transparent);
-        
+#endif
 
         /// <summary>
         /// Array of font sizes

@@ -2841,6 +2841,9 @@ namespace Visifire.Charts
                 UpdateLayoutSettings(plotAreaSize);
 
                 Double totalHeightReduced1 = DrawAxesX(plotAreaSize, true);
+
+                Double oldScrollableLength = ScrollableLength;
+
                 plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced1, 0);
 
                 plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
@@ -2859,7 +2862,12 @@ namespace Visifire.Charts
                 Double oldAxisXLabelLeftOverflow = AxisX.AxisLabels.LeftOverflow;
                 Double oldAxisYLabelRightOverflow = AxisX.AxisLabels.RightOverflow;
 
-                Double totalHeightReduced2 = DrawAxesX(plotAreaSize, false);
+                Double totalHeightReduced2;
+
+                if(oldScrollableLength != ScrollableLength)
+                    totalHeightReduced2 = DrawAxesX(plotAreaSize, true);
+                else
+                    totalHeightReduced2  = DrawAxesX(plotAreaSize, false);
 
                 // Check if current left and right Overflow of AxisXLabel have same value as it were before rendering the AxisX
                 //if ()
@@ -2895,6 +2903,8 @@ namespace Visifire.Charts
 
                 Double totalWidthReduced = DrawAxesY(plotAreaSize, true);
 
+                Double oldScrollableLength = ScrollableLength;
+
                 plotAreaSize.Width = Math.Max(plotAreaSize.Width - totalWidthReduced, 0);
 
                 plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
@@ -2912,11 +2922,20 @@ namespace Visifire.Charts
                     plotAreaSize.Height += totalHeightReduced;
                     plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced2, 0);
                     UpdateLayoutSettings(plotAreaSize);
-                    totalWidthReduced2 = DrawAxesY(plotAreaSize, false);
+
+                    if(oldScrollableLength != ScrollableLength)
+                        totalWidthReduced2 = DrawAxesY(plotAreaSize, true);
+                    else
+                        totalWidthReduced2 = DrawAxesY(plotAreaSize, false);
                 }
 
                 if (totalWidthReduced2 == 0)
-                    totalWidthReduced2 = DrawAxesY(plotAreaSize, false);
+                {
+                    if (oldScrollableLength != ScrollableLength)
+                        totalWidthReduced2 = DrawAxesY(plotAreaSize, true);
+                    else
+                        totalWidthReduced2 = DrawAxesY(plotAreaSize, false);
+                }
 
                 if (!Double.IsNaN(totalWidthReduced2) && totalWidthReduced2 != totalWidthReduced)
                 {
@@ -3242,15 +3261,21 @@ namespace Visifire.Charts
 
                 if ((Double.IsNaN(Chart.AxesX[0].ScrollBarScale)))
                 {
-                    Chart.AxesX[0].IsNotificationEnable = false;
-                    Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
-                    Chart.AxesX[0].IsNotificationEnable = true;
+                    if (currentSize != 0 && chartSize != 0)
+                    {
+                        Chart.AxesX[0].IsNotificationEnable = false;
+                        Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                        Chart.AxesX[0].IsNotificationEnable = true;
+                    }
                 }
                 else if (!Double.IsNaN(Chart.AxesX[0].ScrollBarScale) && IsAutoCalculatedScrollBarScale)
                 {
-                    Chart.AxesX[0].IsNotificationEnable = false;
-                    Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
-                    Chart.AxesX[0].IsNotificationEnable = true;
+                    if (currentSize != 0 && chartSize != 0)
+                    {
+                        Chart.AxesX[0].IsNotificationEnable = false;
+                        Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                        Chart.AxesX[0].IsNotificationEnable = true;
+                    }
                 }
 
             }

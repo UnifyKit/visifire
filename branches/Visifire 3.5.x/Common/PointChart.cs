@@ -366,6 +366,10 @@ namespace Visifire.Charts
         private static void UpdateDataSeries(DataSeries dataSeries, VcProperties property, object newValue, Boolean isAxisChanged)
         {
             Chart chart = dataSeries.Chart as Chart;
+
+            if (chart == null)
+                return;
+
             switch (property)
             {
                 case VcProperties.DataPoints:
@@ -461,6 +465,10 @@ namespace Visifire.Charts
         private static void UpdateDataPoint(DataPoint dataPoint, VcProperties property, object newValue, Boolean isAxisChanged)
         {
             Chart chart = dataPoint.Chart as Chart;
+
+            if (chart == null)
+                return;
+
             PlotDetails plotDetails = chart.PlotDetails;
             Marker marker = dataPoint.Marker;
             DataSeries dataSeries = dataPoint.Parent;

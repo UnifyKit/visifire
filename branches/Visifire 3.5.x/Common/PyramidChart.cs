@@ -122,7 +122,7 @@ namespace Visifire.Charts
                     pyramidCanvas.Margin = new Thickness(0, - yScale / 2, 0, 0);
 
                 RectangleGeometry clipRectangle = new RectangleGeometry();
-                clipRectangle.Rect = new Rect(0, 0, width, height);
+                clipRectangle.Rect = new Rect(0, 0, width, chart.PlotArea.Visual.Height);
                 _pyramidChartGrid.Clip = clipRectangle;
 
                 return _pyramidChartGrid;
@@ -285,15 +285,25 @@ namespace Visifire.Charts
 
             Rect baseArea = new Rect(0, 0, width, height);
             Rect[] labelInfo = new Rect[selectedPyramidSlices.Length];
+            Double gapAtBottomLineOfBaseArea = 0;
 
             for (Int32 index = 0; index < selectedPyramidSlices.Length; index++)
             {
+                // selectedPyramidSlices[index].DataPoint.LabelVisual.SetValue(Canvas.TopProperty, selectedPyramidSlices[index].OrginalLabelLineEndPoint.Y - selectedPyramidSlices[index].DataPoint.LabelVisual.Height / 2);
+                
                 Double left = (Double)selectedPyramidSlices[index].DataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
                 Double top = (Double)selectedPyramidSlices[index].DataPoint.LabelVisual.GetValue(Canvas.TopProperty);
 
+                Double sliceCanvasTop = selectedPyramidSlices[index].Top + top;
+
+                if (sliceCanvasTop + selectedPyramidSlices[index].DataPoint.LabelVisual.Height + gapAtBottomLineOfBaseArea > baseArea.Height)
+                {
+                    sliceCanvasTop -= (sliceCanvasTop + selectedPyramidSlices[index].DataPoint.LabelVisual.Height) + gapAtBottomLineOfBaseArea - baseArea.Height;
+                }
+
                 labelInfo[index] = new Rect
                     (left,
-                    selectedPyramidSlices[index].Top + top,
+                    sliceCanvasTop,
                     selectedPyramidSlices[index].DataPoint.LabelVisual.Width,
                     selectedPyramidSlices[index].DataPoint.LabelVisual.Height);
             }
@@ -1500,6 +1510,8 @@ namespace Visifire.Charts
             pyramidSlice.RightMidPoint = Graphics.MidPointOfALine(topRightPoint, bottomRightPoint);
 
             pyramidSlice.LabelLineEndPoint = new Point(2 * topRadius, pyramidSlice.RightMidPoint.Y);
+
+            pyramidSlice.OrginalLabelLineEndPoint = pyramidSlice.LabelLineEndPoint;
 
             if ((Boolean)pyramidSlice.DataPoint.LabelLineEnabled && pyramidSlice.DataPoint.LabelStyle == LabelStyles.OutSide)
             {

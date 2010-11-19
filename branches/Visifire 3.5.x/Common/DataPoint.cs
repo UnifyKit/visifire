@@ -49,6 +49,10 @@ using System.ComponentModel;
 using Visifire.Commons.Controls;
 using System.Collections.Specialized;
 
+#if SL && !WP
+using System.Windows.Browser;
+#endif
+
 namespace Visifire.Charts
 {
     /// <summary>
@@ -81,6 +85,7 @@ namespace Visifire.Charts
             
             DefaultStyleKey = typeof(DataPoint);
 #endif
+
         }
 
         public override void Bind()
@@ -855,6 +860,36 @@ namespace Visifire.Charts
             typeof(DataPoint),
             new PropertyMetadata(OnMarkerScalePropertychanged));
 
+        /// <summary>
+        /// Identifies the Visifire.Charts.VisifireElement.ToolTipText dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.VisifireElement.ToolTipText dependency property.
+        /// </returns>
+        public static new readonly DependencyProperty NameProperty = DependencyProperty.Register
+            ("Name",
+            typeof(String),
+            typeof(DataPoint),
+            new PropertyMetadata(String.Empty));
+
+        /// <summary>
+        /// Name of the object
+        /// </summary>
+#if (SL &&!WP)
+        [ScriptableMember]
+#endif
+        public new String Name
+        {
+            get
+            {
+                return (String)GetValue(NameProperty);
+            }
+            set
+            {
+                SetValue(NameProperty, value);
+            }
+        }
+       
         /// <summary>
         /// Get or set the HrefTarget property of DataPoint
         /// </summary>
@@ -1823,14 +1858,14 @@ namespace Visifire.Charts
                                 return this.TextParser("#AxisXLabel");
                         }
                         else
-                        {   
+                        {
                             if(_isAutoName)
                             {
-                                String[] s = this.Name.Split('_');
+                                String[] s = Name.Split('_');
                                 return s[0];
                             }
-                            else 
-                                return this.Name;
+                            else
+                                return Name;
                         }
                     else
                         return _parent.LegendText;
@@ -2158,11 +2193,19 @@ namespace Visifire.Charts
                IncludeYValueInLegend property are set to true Legends need to update according to new YValue. 
                So charts need to re-render. 
              */
-            if ((property == VcProperties.YValue || property == VcProperties.Enabled) && (Parent.IncludePercentageInLegend || Parent.IncludeYValueInLegend) && (Boolean)Parent.ShowInLegend)
-            {   
+
+            if (((property == VcProperties.YValue || property == VcProperties.Enabled) && (Parent.IncludePercentageInLegend || Parent.IncludeYValueInLegend) && (Boolean)Parent.ShowInLegend)
+            || (Parent != null && !Parent.InternalDataPoints.Contains(this)))
+            {
                 FirePropertyChanged(property);
                 return false;
             }
+
+            //if ((property == VcProperties.YValue || property == VcProperties.Enabled) && (Parent.IncludePercentageInLegend || Parent.IncludeYValueInLegend) && (Boolean)Parent.ShowInLegend)
+            //{   
+            //    FirePropertyChanged(property);
+            //    return false;
+            //}
 
             if (chart != null)
                 chart._internalPartialUpdateEnabled = true;
@@ -2338,6 +2381,14 @@ namespace Visifire.Charts
                 {
                     if (recursive && (!(Boolean)chart.AnimatedUpdate || chart.PlotDetails.ListOfAllDataPoints.Count > 1000))
                     {
+                        if (property == VcProperties.YValue)
+                        {
+                            if (Double.IsNaN((Double)newValue))
+                            {
+                                Faces = null;
+                            }
+                        }
+
                         return true;
                     }
                     else
@@ -3623,6 +3674,32 @@ namespace Visifire.Charts
             _interactiveExplodeState = true;
             _interativityAnimationState = false;
             Chart._rootElement.IsHitTestVisible = true;
+
+            if (Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel || Parent.RenderAs == RenderAs.Pyramid)
+            {
+                TriangularChartSliceParms[] funnelSlices = Parent.VisualParams as TriangularChartSliceParms[];
+
+                if (funnelSlices != null && this.Faces != null && Faces.Visual != null)
+                {   
+                    Double height = (Faces.Visual.Parent as FrameworkElement).Height;
+
+                    //Boolean allUnExploaded = true;
+
+                    //foreach (DataPoint dp in Parent.DataPoints)
+                    //{
+                    //    if (dp.Exploded == true)
+                    //    {
+                    //        allUnExploaded = false;
+                    //        break;
+                    //    }
+                    //}
+
+                    //if(allUnExploaded == true)
+                        FunnelChart.ArrangeLabels(funnelSlices, Double.NaN, height);
+                    //else
+                       // FunnelChart.ArrangeLabelsOnExpload(funnelSlices, this, Double.NaN, height);
+                }
+            }
         }
 
         /// </summary>

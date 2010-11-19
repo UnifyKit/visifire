@@ -900,8 +900,22 @@ namespace Visifire.Charts
 
                 if (ParentAxis.IsDateTimeAxis)
                 {
-                    Double numericFromValue = DateTimeHelper.DateDiff(Convert.ToDateTime(customAxisLabel.From), Parent.FirstLabelDate, ParentAxis.MinDateRange, ParentAxis.MaxDateRange, ParentAxis.InternalIntervalType, ParentAxis.XValueType);
-                    Double numericToValue = DateTimeHelper.DateDiff(Convert.ToDateTime(customAxisLabel.To), Parent.FirstLabelDate, ParentAxis.MinDateRange, ParentAxis.MaxDateRange, ParentAxis.InternalIntervalType, ParentAxis.XValueType);
+                    DateTime fromDateTime = Convert.ToDateTime(customAxisLabel.From);
+                    DateTime toDateTime = Convert.ToDateTime(customAxisLabel.To);
+
+                    if (ParentAxis.XValueType == ChartValueTypes.Auto || ParentAxis.XValueType == ChartValueTypes.Date)
+                    {
+                        fromDateTime = new DateTime(fromDateTime.Date.Year, fromDateTime.Date.Month, fromDateTime.Date.Day);
+                        toDateTime = new DateTime(toDateTime.Date.Year, toDateTime.Date.Month, toDateTime.Date.Day);
+                    }
+                    else if (ParentAxis.XValueType == ChartValueTypes.Time)
+                    {
+                        fromDateTime = DateTime.Parse("12/30/1899 " + fromDateTime.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                        toDateTime = DateTime.Parse("12/30/1899 " + toDateTime.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                    }
+
+                    Double numericFromValue = DateTimeHelper.DateDiff(fromDateTime, Parent.MinDate, ParentAxis.MinDateRange, ParentAxis.MaxDateRange, ParentAxis.InternalIntervalType, ParentAxis.XValueType);
+                    Double numericToValue = DateTimeHelper.DateDiff(toDateTime, Parent.MinDate, ParentAxis.MinDateRange, ParentAxis.MaxDateRange, ParentAxis.InternalIntervalType, ParentAxis.XValueType);
 
                     index = (numericFromValue + numericToValue) / 2;
 

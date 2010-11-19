@@ -1430,6 +1430,10 @@ namespace Visifire.Charts
         private static void UpdateDataSeries(DataSeries dataSeries, VcProperties property, object newValue)
         {
             Chart chart = dataSeries.Chart as Chart;
+
+            if (chart == null)
+                return;
+
             Boolean is3D = chart.View3D;
 
             switch (property)
@@ -1564,6 +1568,9 @@ namespace Visifire.Charts
 
             Chart chart = dataPoint.Chart as Chart;
 
+            if (chart == null)
+                return;
+
             PlotDetails plotDetails = chart.PlotDetails;
 
             Marker marker = dataPoint.Marker;
@@ -1580,9 +1587,9 @@ namespace Visifire.Charts
             if (dataPoint.Faces != null)
                 columnVisual = dataPoint.Faces.Visual as Canvas;
 
-            if ((dataPoint.Faces == null && property != VcProperties.Enabled
+            if (((dataPoint.Faces == null || columnVisual == null) && property != VcProperties.Enabled
                 && property != VcProperties.YValue && property != VcProperties.YValues
-                && property != VcProperties.XValue) || columnVisual == null)
+                && property != VcProperties.XValue))
                 return;
 
             //if (labelCanvas == null)

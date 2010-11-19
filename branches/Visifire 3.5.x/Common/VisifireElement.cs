@@ -92,36 +92,6 @@ namespace Visifire.Commons
         #region Public Properties
 
         /// <summary>
-        /// Name of the object
-        /// </summary>
-#if (SL &&!WP)
-        [ScriptableMember]
-#endif
-        public new String Name
-        {
-            get
-            {
-                return (String)GetValue(NameProperty);
-            }
-            set
-            {
-               SetValue(NameProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.VisifireElement.ToolTipText dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.VisifireElement.ToolTipText dependency property.
-        /// </returns>
-        public static new readonly DependencyProperty NameProperty = DependencyProperty.Register
-            ("Name",
-            typeof(String),
-            typeof(VisifireElement),
-            new PropertyMetadata(String.Empty));
-
-        /// <summary>
         /// ToolTipText Property
         /// </summary>
         public virtual String ToolTipText

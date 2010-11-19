@@ -467,7 +467,7 @@ namespace SLVisifireChartsTest
             EnqueueDelay(1000);
             EnqueueCallback(() => { chart.SamplingThreshold = 0; });
             EnqueueDelay(1000);
-            EnqueueCallback(() => { chart.SamplingThreshold = -10; });
+            EnqueueCallback(() => { chart.SamplingThreshold = 10; });
             EnqueueDelay(1000);
             EnqueueTestComplete();
 

@@ -21,6 +21,7 @@ using System.IO;
 using System.Xml;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
+using System.IO.Packaging;
 
 namespace WPFVisifireChartsApp
 {
