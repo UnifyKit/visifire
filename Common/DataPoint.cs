@@ -1063,7 +1063,16 @@ namespace Visifire.Charts
                 return ConvertYValue2LogarithmicValue(this);
             }
         }
-        
+
+        /// <summary>
+        /// This property is used to store the clipped width of a DataPoint in Pie and Doughnut charts.
+        /// </summary>
+        internal Double ClippedWidth4Pie
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Modify YValue for Logarithmic scale
         /// </summary>
@@ -1091,7 +1100,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the value that will appear on X-Axis for all charts. 
         /// </summary>
-        // [System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
+#if SL || WP
+        [System.ComponentModel.TypeConverter(typeof(Converters.ObjectConverter))]
+#endif
         public Object XValue
         {   
             get
@@ -3070,7 +3081,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    if (chart.AnimationEnabled && !chart.ChartArea._isAnimationFired)
+                    if (chart.InternalAnimationEnabled && !chart.ChartArea._isAnimationFired)
                         return;
 
                     dataPoint.ExplodeOrUnexplodeAnimation();
@@ -4267,7 +4278,9 @@ namespace Visifire.Charts
                 else
                 {
                     if (Parent.RenderAs != RenderAs.SectionFunnel && Parent.RenderAs != RenderAs.StreamLineFunnel && Parent.RenderAs != RenderAs.Pyramid)
+                    {
                         PieExplodeOrUnExplodeWithoutAnimation();
+                    }
                 }
             }
 
@@ -4286,6 +4299,13 @@ namespace Visifire.Charts
                     {
                         if (LabelStyle == LabelStyles.Inside)
                         {
+                            Double left = (Double)(LabelVisual as Canvas).GetValue(Canvas.LeftProperty);
+                            if (Chart != null && (Chart as Chart).ChartArea != null)
+                            {
+                                if (left + (VisualParams as SectorChartShapeParams).OffsetX < 0 || left + (LabelVisual as Canvas).Width + (VisualParams as SectorChartShapeParams).OffsetX > (Chart as Chart).ChartArea.ChartVisualCanvas.Width)
+                                    return;
+                            }
+
                             TranslateTransform translateTransform = new TranslateTransform();
                             (LabelVisual as Canvas).RenderTransform = translateTransform;
 
@@ -4321,6 +4341,13 @@ namespace Visifire.Charts
                     {
                         if (LabelStyle == LabelStyles.Inside)
                         {
+                            Double left = (Double)(LabelVisual as Canvas).GetValue(Canvas.LeftProperty);
+                            if (Chart != null && (Chart as Chart).ChartArea != null)
+                            {
+                                if (left + (VisualParams as SectorChartShapeParams).OffsetX < 0 || left + (LabelVisual as Canvas).Width + (VisualParams as SectorChartShapeParams).OffsetX > (Chart as Chart).ChartArea.ChartVisualCanvas.Width)
+                                    return;
+                            }
+
                             TranslateTransform translateTransform = new TranslateTransform();
                             (LabelVisual as Canvas).RenderTransform = translateTransform;
 
@@ -4431,7 +4458,11 @@ namespace Visifire.Charts
         }
 
         internal void PieExplodeOrUnExplodeWithoutAnimation()
-        {
+        {   
+            IsNotificationEnable = false;
+            Exploded = !Exploded;
+            IsNotificationEnable = true;
+
             if (Faces != null && Faces.Visual != null)
             {
                 if ((Boolean) Exploded)
@@ -4439,7 +4470,7 @@ namespace Visifire.Charts
                     PieDouExplodeWithoutAnimation();
                 }
                 else
-                {
+                {   
                     PieDouUnExplodeWithoutAnimation();
                 }
             }

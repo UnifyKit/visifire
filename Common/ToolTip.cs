@@ -333,7 +333,7 @@ namespace Visifire.Charts
                 tootlTip.MaxWidth = tootlTip.Chart.ActualWidth;
 
                 if (tootlTip._toolTipTextBlock != null)
-                    tootlTip._toolTipTextBlock.MaxWidth = tootlTip.Chart.ActualWidth - 4;
+                    tootlTip._toolTipTextBlock.MaxWidth = Math.Max(0, tootlTip.Chart.ActualWidth - 4);
             }
         }
 

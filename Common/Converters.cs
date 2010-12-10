@@ -34,6 +34,22 @@ namespace Visifire.Commons
     public class Converters
     {
         /// <summary>
+        /// Object converter
+        /// </summary>
+        public class ObjectConverter : TypeConverter
+        {
+            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                return true;
+            }
+
+            public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+            {
+                return value;
+            }
+        }
+
+        /// <summary>
         /// Value converter
         /// </summary>
         public class ValueConverter : TypeConverter

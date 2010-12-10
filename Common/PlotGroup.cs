@@ -443,6 +443,19 @@ namespace Visifire.Charts
                             chartSpecificMinY = Double.IsNaN(chartSpecificMinY) ? minY : Math.Min(chartSpecificMinY, minY);
                         }
                     }
+                    else if (RenderAs == RenderAs.Bubble)
+                    {
+                        List<DataPoint> dataPoints = new List<DataPoint>();
+
+                        Double minX = Double.NaN, maxX = Double.NaN, minY = Double.NaN, maxY = Double.NaN;
+
+                        foreach (DataSeries dataSeries in DataSeriesList)
+                            dataPoints.InsertRange(0, dataSeries.InternalDataPoints);
+
+                        CalculateMinMaxOfABubbleChart(this, dataPoints, ref minX, ref maxX, ref minY, ref maxY);
+
+                        chartSpecificMinY = Double.IsNaN(chartSpecificMinY) ? minY : Math.Min(chartSpecificMinY, minY);
+                    }
 
                     var yValues = (from dp in dataPointsInViewPort1 where !Double.IsNaN(dp.YValue) select dp.YValue);
 
@@ -528,6 +541,20 @@ namespace Visifire.Charts
                             chartSpecificMaxY = Double.IsNaN(chartSpecificMaxY) ? maxY : Math.Min(chartSpecificMaxY, maxY);
                         }
                     }
+                    else if (RenderAs == RenderAs.Bubble)
+                    {
+                        List<DataPoint> dataPoints = new List<DataPoint>();
+
+                        Double minX = Double.NaN, maxX = Double.NaN, minY = Double.NaN, maxY = Double.NaN;
+
+                        foreach (DataSeries dataSeries in DataSeriesList)
+                            dataPoints.InsertRange(0, dataSeries.InternalDataPoints);
+
+                        CalculateMinMaxOfABubbleChart(this, dataPoints, ref minX, ref maxX, ref minY, ref maxY);
+
+                        chartSpecificMaxY = Double.IsNaN(chartSpecificMaxY) ? maxY : Math.Min(chartSpecificMaxY, maxY);
+ 
+                    }
 
                     var yValues = (from dp in dataPointsInViewPort1 where !Double.IsNaN(dp.YValue) select dp.YValue);
 
@@ -584,14 +611,48 @@ namespace Visifire.Charts
             }
         }
 
-        private static void CalculateMinMaxOfASplineCurve(DataSeries dataSeries, ref Double chartSpecificMinX, ref Double chartSpecificMaxX, ref Double chartSpecificMinY, ref Double chartSpecificMaxY)
+        private static void CalculateMinMaxOfABubbleCurve(RenderAs renderAs, List<DataPoint> dataPoints, Chart chart, PlotGroup plotGroup, ref Double chartSpecificMinX, ref Double chartSpecificMaxX, ref Double chartSpecificMinY, ref Double chartSpecificMaxY)
         {
-            if (dataSeries.RenderAs == RenderAs.Spline)
+            if (plotGroup != null && chart != null && chart.PlotDetails != null && chart.PlotDetails.AutoFitToPlotArea)
             {
-                CalculateMinMaxOfASplineCurve(dataSeries.RenderAs, dataSeries.InternalDataPoints, ref chartSpecificMinX, ref chartSpecificMaxX, ref chartSpecificMinY, ref chartSpecificMaxY);
+                List<DataPoint> knotPoints = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalXValue) && !Double.IsNaN(dataPoint.YValue) && !Double.IsNaN(dataPoint.ZValue) select dataPoint).ToList();
+
+                if (knotPoints.Count() > 0)
+                {   
+                    // Get Bubble Control Points.
+                    Point[] controlPoints = BubbleChart.CalculateControlPointsOfADataSeries(chart, plotGroup, knotPoints);
+
+                    if (controlPoints != null)
+                    {   
+                        // Calculate Max and min value among control points of Bezier segment.
+                        if (controlPoints.Count() > 0)
+                        {
+                            chartSpecificMinX = Math.Min(Double.IsNaN(chartSpecificMinX) ? Double.MaxValue : chartSpecificMinX, (from point in controlPoints select point.X).Min());
+                            chartSpecificMinY = Math.Min(Double.IsNaN(chartSpecificMinY) ? Double.MaxValue : chartSpecificMinY, (from point in controlPoints select point.Y).Min());
+
+                            chartSpecificMaxX = Math.Max(Double.IsNaN(chartSpecificMaxX) ? Double.MinValue : chartSpecificMaxX, (from point in controlPoints select point.X).Max());
+                            chartSpecificMaxY = Math.Max(Double.IsNaN(chartSpecificMaxY) ? Double.MinValue : chartSpecificMaxY, (from point in controlPoints select point.Y).Max());
+                        }
+                    }
+                }
             }
             else
             {
+                chartSpecificMinX = Double.NaN; // Min XValue specific to chart type. 
+                chartSpecificMaxX = Double.NaN; // Min XValue specific to chart type. 
+                chartSpecificMinY = Double.NaN; // Min YValue specific to chart type. 
+                chartSpecificMaxY = Double.NaN; // Min YValue specific to chart type. 
+            }
+        }
+
+        private static void CalculateMinMaxOfABubbleChart(PlotGroup plotGroup, List<DataPoint> dataPoints, ref Double chartSpecificMinX, ref Double chartSpecificMaxX, ref Double chartSpecificMinY, ref Double chartSpecificMaxY)
+        {
+            if (plotGroup.RenderAs == RenderAs.Bubble && plotGroup.AxisX != null && plotGroup.AxisY != null && plotGroup.AxisY.Visual != null && plotGroup.AxisX.Visual != null)
+            {   
+                CalculateMinMaxOfABubbleCurve(plotGroup.RenderAs, dataPoints, (Chart)plotGroup.AxisX.Chart, plotGroup, ref chartSpecificMinX, ref chartSpecificMaxX, ref chartSpecificMinY, ref chartSpecificMaxY);
+            }
+            else
+            {   
                 chartSpecificMinX = Double.NaN; // Min XValue specific to chart type. 
                 chartSpecificMaxX = Double.NaN; // Min XValue specific to chart type. 
                 chartSpecificMinY = Double.NaN; // Min YValue specific to chart type. 
@@ -603,35 +664,54 @@ namespace Visifire.Charts
         /// Updates all properties of this class by calculating each property.
         /// </summary>
         public void Update(VcProperties property, object oldValue, object newValue)
-        {
+        {   
             Double chartSpecificMinX = Double.NaN; // Min XValue specific to chart type. 
             Double chartSpecificMaxX = Double.NaN; // Min XValue specific to chart type. 
             Double chartSpecificMinY = Double.NaN; // Min YValue specific to chart type. 
             Double chartSpecificMaxY = Double.NaN; // Min YValue specific to chart type. 
 
             // List to store a concatinated set of InternalDataPoints from all DataSeries in this group
-            
-
             // Populates the list with InternalDataPoints with all availabel InternalDataPoints from all DataSeries
             // Also set the plotGroup reference to the current plot group
             
-            //List<DataPoint> _dataPointsInCurrentPlotGroup = new List<DataPoint>();
+            // List<DataPoint> _dataPointsInCurrentPlotGroup = new List<DataPoint>();
             if (property == VcProperties.None || property == VcProperties.DataPoints)
-            {
+            {   
                 _dataPointsInCurrentPlotGroup = new List<DataPoint>();
 
-                foreach (DataSeries dataSeries in DataSeriesList)
+                if (RenderAs == RenderAs.Bubble)
                 {
-                    if (dataSeries.RenderAs == RenderAs.Spline)
-                        CalculateMinMaxOfASplineCurve(dataSeries, ref chartSpecificMinX, ref chartSpecificMaxX, ref chartSpecificMinY, ref chartSpecificMaxY);
+                    List<DataPoint> dataPoints = new List<DataPoint>();
+
+                    foreach (DataSeries dataSeries in DataSeriesList)
+                    {
+                        dataPoints.InsertRange(0, dataSeries.InternalDataPoints);
+
+                        // set the plot group reference
+                        dataSeries.PlotGroup = this;
+                    }
+
+                    CalculateMinMaxOfABubbleChart(this, dataPoints, ref chartSpecificMinX, ref chartSpecificMaxX, ref chartSpecificMinY, ref chartSpecificMaxY);
 
                     System.Diagnostics.Debug.WriteLine("MinY=" + chartSpecificMinY.ToString() + " ,MaxY=" + chartSpecificMaxY.ToString());
 
                     // Concatinate the lists of InternalDataPoints
-                    _dataPointsInCurrentPlotGroup.InsertRange(_dataPointsInCurrentPlotGroup.Count, dataSeries.InternalDataPoints);
-                    
-                    // set the plot group reference
-                    dataSeries.PlotGroup = this;
+                    _dataPointsInCurrentPlotGroup.InsertRange(_dataPointsInCurrentPlotGroup.Count, dataPoints);
+                }
+                else
+                {   
+                    foreach (DataSeries dataSeries in DataSeriesList)
+                    {
+                        CalculateMinMaxOfASplineCurve(RenderAs, dataSeries.InternalDataPoints, ref chartSpecificMinX, ref chartSpecificMaxX, ref chartSpecificMinY, ref chartSpecificMaxY);
+                        
+                        System.Diagnostics.Debug.WriteLine("MinY=" + chartSpecificMinY.ToString() + " ,MaxY=" + chartSpecificMaxY.ToString());
+
+                        // Concatinate the lists of InternalDataPoints
+                        _dataPointsInCurrentPlotGroup.InsertRange(_dataPointsInCurrentPlotGroup.Count, dataSeries.InternalDataPoints);
+
+                        // set the plot group reference
+                        dataSeries.PlotGroup = this;
+                    }
                 }
             }
 
@@ -654,7 +734,7 @@ namespace Visifire.Charts
                 MinimumX = (_xValues.Count() > 0) ? (_xValues).Min() : 0;
 
                 if (RenderAs == RenderAs.Polar)
-                {
+                {   
                     if (_xValues.Count > 0 && MaximumX < 360)
                         MaximumX = 360;
 
@@ -914,6 +994,44 @@ namespace Visifire.Charts
         Double[] _zValues;
         List<Double> _yValues;
         List<DataPoint> _dataPointsInCurrentPlotGroup;
+        Size _firstTimeRenderPlotAreaSize;
+
+        /// <summary>
+        /// Initial AxisX Width
+        /// Note: Currently used for Bubble Chart in AutoFitToPlotArea calculation
+        /// </summary>
+        internal Double _intialAxisXWidth;
+        
+        /// <summary>
+        /// Initial AxisY Width
+        /// Note: Currently used for Bubble Chart in AutoFitToPlotArea calculation
+        /// </summary>
+        internal Double _intialAxisYHeight;
+
+        /// <summary>
+        /// Initial AxisX Max value which was used in calculation for the first time render, 
+        /// Note: Currently used for Bubble Chart in AutoFitToPlotArea calculation
+        /// </summary>
+        internal Double _initialAxisXMin;
+
+        /// <summary>
+        /// Initial AxisX Max value which was used in calculation for the first time render
+        /// Note: Currently used for Bubble Chart in AutoFitToPlotArea calculation
+        /// </summary>
+        internal Double _initialAxisXMax;
+
+        /// <summary>
+        /// Initial AxisX Max value which was used in calculation for the first time render
+        /// Note: Currently used for Bubble Chart in AutoFitToPlotArea calculation
+        /// </summary>
+        internal Double _initialAxisYMin;
+
+        /// <summary>
+        /// Initial AxisX Max value which was used in calculation for the first time render
+        /// Note: Currently used for Bubble Chart in AutoFitToPlotArea calculation
+        /// </summary>
+        internal Double _initialAxisYMax;
+
     }
 
 }

@@ -385,7 +385,19 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
-        
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.AutoFitToPlotArea dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.AutoFitToPlotArea dependency property.
+        /// </returns>
+        public static readonly DependencyProperty AutoFitToPlotAreaProperty = DependencyProperty.Register
+            ("AutoFitToPlotArea",
+            typeof(Boolean),
+            typeof(DataSeries),
+            new PropertyMetadata(OnAutoFitToPlotAreaPropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.IncludeYValueInLegend dependency property.
         /// </summary>
@@ -1159,6 +1171,21 @@ namespace Visifire.Charts
             set
             {
                 SetValue(IncludePercentageInLegendProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// AutoFitToPlotArea property force the DataPoints present this DataSeries to fit inside PlotArea.
+        /// </summary>
+        public Boolean AutoFitToPlotArea
+        {   
+            get
+            {
+                return (Boolean)GetValue(AutoFitToPlotAreaProperty);
+            }
+            set
+            {
+                SetValue(AutoFitToPlotAreaProperty, value);
             }
         }
 
@@ -2642,8 +2669,7 @@ namespace Visifire.Charts
             this._nearestDataPoint = RenderHelper.GetNearestDataPoint(this, internalXValue, internalYValue);
             return this._nearestDataPoint;
         }
-
- 
+         
         internal DataPoint GetNearestDataPointAlongYPosition(MouseEventArgs e, List<DataPoint> listOfDataPoints)
         {   
             DataPoint nearestDataPoint = null;
@@ -3190,6 +3216,17 @@ namespace Visifire.Charts
 
             DataSeries dataSeries = d as DataSeries;
             dataSeries.FirePropertyChanged(VcProperties.MinPointHeight);
+        }
+
+        /// <summary>
+        /// AutoFitToPlotAreaProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnAutoFitToPlotAreaPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged(VcProperties.AutoFitToPlotArea);
         }
 
         /// <summary>
@@ -4132,8 +4169,7 @@ namespace Visifire.Charts
                     dp.OnToolTipTextPropertyChanged(dp.ToolTipText);
             }
         }
-
-
+        
         /// <summary>
         /// Attach events to each and every visual face in Faces
         /// </summary>
@@ -4409,7 +4445,5 @@ namespace Visifire.Charts
         private static Boolean _defaultStyleKeyApplied;
 #endif
         #endregion
-
     }
-
 }

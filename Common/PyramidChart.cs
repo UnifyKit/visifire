@@ -101,7 +101,7 @@ namespace Visifire.Charts
 
                 pyramidSeries.Storyboard = null;
 
-                if ((pyramidSeries.Chart as Chart).AnimationEnabled)
+                if ((pyramidSeries.Chart as Chart).InternalAnimationEnabled)
                     pyramidSeries.Storyboard = new Storyboard();
 
                 // Creating labels for 
@@ -215,7 +215,7 @@ namespace Visifire.Charts
         /// <returns>Canvas with pyramid</returns>
         private static Canvas CreatePyramidChart(Grid _pyramidChartGrid, DataSeries dataSeries, List<DataPoint> dataPoints, Canvas pyramidCanvas, Double minPointHeight, Boolean is3D, Double yScale, Double gapRatio, Boolean isSameSlantAngle, Double bottomRadius, Boolean animationEnabled)
         {
-            Boolean isAnimationEnabled = (dataSeries.Chart as Chart).AnimationEnabled;
+            Boolean isAnimationEnabled = (dataSeries.Chart as Chart).InternalAnimationEnabled;
             Double plotHeight = pyramidCanvas.Height;
             Double plotWidth = pyramidCanvas.Width;
 
@@ -762,7 +762,7 @@ namespace Visifire.Charts
                 pyramidSlice.DataPoint.Faces.VisualComponents.Add(leftBevelPath);
                 pyramidSlice.DataPoint.Faces.VisualComponents.Add(bottomBevelPath);
 
-                if ((pyramidSlice.DataPoint.Chart as Chart).AnimationEnabled)
+                if ((pyramidSlice.DataPoint.Chart as Chart).InternalAnimationEnabled)
                 {
                     pyramidSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(topBevelPath, pyramidSlice.DataPoint.Parent, pyramidSlice.DataPoint.Parent.Storyboard, 0, pyramidSlice.DataPoint.InternalOpacity, 0, 1);
                     pyramidSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(rightBevelPath, pyramidSlice.DataPoint.Parent, pyramidSlice.DataPoint.Parent.Storyboard, 0, pyramidSlice.DataPoint.InternalOpacity, 0, 1);

@@ -109,7 +109,7 @@ namespace Visifire.Charts
 
                 funnelSeries.Storyboard = null;
 
-                if ((funnelSeries.Chart as Chart).AnimationEnabled)
+                if ((funnelSeries.Chart as Chart).InternalAnimationEnabled)
                     funnelSeries.Storyboard = new Storyboard();
 
                 // Creating labels for 
@@ -126,7 +126,7 @@ namespace Visifire.Charts
                 // here
                 // funnelChartCanvas.Background = new SolidColorBrush(Colors.Red);
 
-                if (!chart.AnimationEnabled || chart.IsInDesignMode || !chart.ChartArea._isFirstTimeRender)
+                if (!chart.InternalAnimationEnabled || chart.IsInDesignMode || !chart.ChartArea._isFirstTimeRender)
                 {
                     foreach (DataPoint dp in funnelDataPoints)
                     {
@@ -219,7 +219,7 @@ namespace Visifire.Charts
                 funnelDataPoints[0].Faces.VisualComponents.Add(funnelDataPoints[0].LabelVisual);
                 funnelDataPoints[0].Faces.Visual = funnelDataPoints[0].LabelVisual;
 
-                if ((funnelDataPoints[0].Chart as Chart).AnimationEnabled)
+                if ((funnelDataPoints[0].Chart as Chart).InternalAnimationEnabled)
                 {
                     // funnelDataPoints[0].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(funnelDataPoints[0].LabelVisual, funnelDataPoints[0].Parent, funnelDataPoints[0].Parent.Storyboard, 1, funnelDataPoints[0].Opacity, 1);
                 }
@@ -277,7 +277,7 @@ namespace Visifire.Charts
         /// <returns>Canvas with funnel</returns>
         private static Canvas CreateFunnelChart(Grid _funnelChartGrid, DataSeries dataSeries, List<DataPoint> dataPoints, Boolean isStreamLine, Canvas funnelCanvas, Double minPointHeight, Boolean is3D, Double yScale, Double gapRatio, Boolean isSameSlantAngle, Double bottomRadius, Boolean animationEnabled)
         {
-            Boolean isAnimationEnabled = (dataSeries.Chart as Chart).AnimationEnabled;
+            Boolean isAnimationEnabled = (dataSeries.Chart as Chart).InternalAnimationEnabled;
             Double plotHeight = funnelCanvas.Height;
             Double plotWidth = funnelCanvas.Width;
             
@@ -1090,7 +1090,7 @@ namespace Visifire.Charts
                 funnelSlice.DataPoint.Faces.VisualComponents.Add(rightBevelPath);
                 funnelSlice.DataPoint.Faces.VisualComponents.Add(bottomBevelPath);
 
-                if ((funnelSlice.DataPoint.Chart as Chart).AnimationEnabled)
+                if ((funnelSlice.DataPoint.Chart as Chart).InternalAnimationEnabled)
                 {
                     funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(topBevelPath, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.InternalOpacity, 0, 1);
                     funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(leftBevelPath, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.InternalOpacity, 0, 1);
