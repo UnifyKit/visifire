@@ -67,8 +67,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Properties
-
-       
+               
         #endregion
 
         #region Private Delegates
@@ -86,7 +85,7 @@ namespace Visifire.Charts
         /// <param name="height">Height of the chart canvas</param>
         /// <returns>Storyboard</returns>
         private static Storyboard ApplyBubbleChartAnimation(DataSeries currentDataSeries, Panel bubbleGrid, Storyboard storyboard, Double width, Double height)
-        {
+        {   
             TranslateTransform translateTransform = new TranslateTransform() { X = 0, Y = -height };
             bubbleGrid.RenderTransform = translateTransform;
 
@@ -323,7 +322,7 @@ namespace Visifire.Charts
                 marker.CreateVisual();
 
                 if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
-                {
+                {   
                     if (yPosition - gap < 0 && (yPosition - marker.TextBlockSize.Height / 2) < 0)
                         marker.TextAlignmentY = AlignmentY.Bottom;
                     else if (yPosition + gap > plotHeight && (yPosition + marker.TextBlockSize.Height / 2) > plotHeight)
@@ -404,13 +403,12 @@ namespace Visifire.Charts
 
             if (dataPoint.Storyboard != null)
             {
-
-                //ClockState cs = dataPoint.Storyboard.GetCurrentState();
-                //if (cs == ClockState.Active)
-                //    dataPoint.Storyboard.SkipToFill();
-                //dataPoint.Storyboard.Stop();
+                // ClockState cs = dataPoint.Storyboard.GetCurrentState();
+                // if (cs == ClockState.Active)
+                //      dataPoint.Storyboard.SkipToFill();
+                // dataPoint.Storyboard.Stop();
                 dataPoint.Storyboard.Pause();
-                //ClockState cs = dataPoint.Storyboard.GetCurrentState();
+                // ClockState cs = dataPoint.Storyboard.GetCurrentState();
                 
                 oldMarkerLeft = (Double)marker.Visual.GetValue(Canvas.LeftProperty);
                 oldMarkerTop = (Double)marker.Visual.GetValue(Canvas.TopProperty);
@@ -418,14 +416,14 @@ namespace Visifire.Charts
 
 
                 dataPoint.Storyboard = null;
-                //dataPoint.Storyboard.Children.Clear();
+                // dataPoint.Storyboard.Children.Clear();
             }
             else
-            {
+            {   
                 oldMarkerLeft = (Double)marker.Visual.GetValue(Canvas.LeftProperty);
                 oldMarkerTop = (Double)marker.Visual.GetValue(Canvas.TopProperty);
             }
-               
+            
             Point oldPosition = new Point(oldMarkerLeft, oldMarkerTop);
 
             Storyboard storyboard = new Storyboard();
@@ -472,18 +470,16 @@ namespace Visifire.Charts
             Random rand = new Random(DateTime.Now.Millisecond);
             storyboard.SpeedRatio = 2 - rand.NextDouble();
             dataPoint.Storyboard = storyboard;
-
-
+            
 #if WPF
             storyboard.Begin(dataPoint.Chart._rootElement, true);
 #else
             storyboard.Begin();
 #endif
-
         }
 
         private static void CalculateMaxAndMinZValue(DataSeries series, out Double minimumZVal, out Double maximumZVal)
-        {
+        {   
             var dataPointsList = (from dp in series.InternalDataPoints where !Double.IsNaN(dp.ZValue) && dp.Enabled == true select dp.ZValue);
 
             minimumZVal = 0;
@@ -496,13 +492,168 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Calculate ControlPoints of a DataSeries
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        /// <param name="plotGroup">Corresponding plotGroup</param>
+        /// <param name="dataPoints">List of DataPoints</param>
+        /// <returns>ControlPoints</returns>
+        internal static Point[] CalculateControlPointsOfADataSeries(Chart chart, PlotGroup plotGroup, List<DataPoint> dataPoints)
+        {   
+            List<Point> tempCPoints = new List<Point>();
+
+            if (chart != null && chart.InternalSeries != null && plotGroup != null && dataPoints.Count > 0)
+            {   
+                Double minimumZVal, maximumZVal;
+
+                List<DataSeries> seriesList = chart.InternalSeries;
+                CalculateMaxAndMinZValueFromAllSeries(ref seriesList, out minimumZVal, out maximumZVal);
+
+                Double tempAxisMinimum = plotGroup._initialAxisXMin;
+                Double tempAxisMaximum = plotGroup._initialAxisXMax;
+
+                dataPoints = dataPoints.OrderBy(a => a.ZValue).ToList();
+                DataPoint dataPointHavingMaxZVal = dataPoints.Last();
+                Double maxBubbleRadius = CalculateBubbleSize(dataPointHavingMaxZVal, minimumZVal, maximumZVal);
+
+                foreach (DataPoint dataPoint in dataPoints)
+                {   
+                    // Double maxBubbleRadius = CalculateBubbleSize(dataPoint, minimumZVal, maximumZVal);
+                    List<Point> controlPointsOfDp = CalculateControlPointsOfDataPoint(dataPoint, plotGroup, maxBubbleRadius, minimumZVal, maximumZVal, plotGroup.AxisX, plotGroup.AxisY);
+                    tempCPoints.InsertRange(0, controlPointsOfDp);
+                }
+
+                if (tempCPoints.Count > 0)
+                {   
+                    tempCPoints = tempCPoints.OrderBy(x => x.X).ToList();
+                }
+
+                // tempCPoints.Clear();
+            }
+
+            return tempCPoints.ToArray();
+        }
+
+        /// <summary>
+        /// Calculate ControlPoints of a DataPoint
+        /// </summary>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="minimumZVal">Minimum ZValue</param>
+        /// <param name="maximumZVal">Maximum ZValue</param>
+        /// <param name="axisX">AxisX</param>
+        /// <param name="axisY">AxisY</param>
+        /// <returns></returns>
+        private static List<Point> CalculateControlPointsOfDataPoint(DataPoint dataPoint, PlotGroup plotGroup, Double maxBubbleRadius,  Double minimumZVal, Double maximumZVal, Axis axisX, Axis axisY)
+        {   
+            Chart chart = dataPoint.Chart as Chart;
+            List<Point> ctPoints = new List<Point>();
+
+            if (chart != null && axisX !=null && axisY != null)
+            {
+                Double leftRightOffset = 4; // One Pixel
+                Double topBottomOffset = 4; // One Pixel
+
+                Size initialPlotAreaSize = new Size(plotGroup._intialAxisXWidth, plotGroup._intialAxisYHeight);
+                
+                Double xPosition = Graphics.ValueToPixelPosition(0, initialPlotAreaSize.Width, (Double)plotGroup._initialAxisXMin, (Double)plotGroup._initialAxisXMax, dataPoint.InternalXValue);
+                Double yPosition = Graphics.ValueToPixelPosition(initialPlotAreaSize.Height, 0, (Double)plotGroup._initialAxisYMin, (Double)plotGroup._initialAxisYMax, dataPoint.InternalYValue);
+
+                if (axisY.Logarithmic)
+                {   
+                    Double yValueInLog = Graphics.PixelPositionToValue(initialPlotAreaSize.Height, 0, plotGroup._initialAxisYMin, plotGroup._initialAxisYMax, yPosition);
+                    Double actualYValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValueInLog, axisY.AxisType);
+
+                    Point pointLeft = new Point(
+                    Graphics.PixelPositionToValue(0, initialPlotAreaSize.Width, plotGroup._initialAxisXMin, plotGroup._initialAxisXMax, xPosition - (maxBubbleRadius + leftRightOffset))
+                    , actualYValue);
+
+                    // Calculate right point of bubble in terms of XValue and YValue 
+                    Point pointRight = new Point(
+                        Graphics.PixelPositionToValue(0, initialPlotAreaSize.Width, plotGroup._initialAxisXMin, plotGroup._initialAxisXMax, xPosition + (maxBubbleRadius + leftRightOffset))
+                        , actualYValue);
+
+                    yValueInLog = Graphics.PixelPositionToValue(initialPlotAreaSize.Height, 0, plotGroup._initialAxisYMin, plotGroup._initialAxisYMax, yPosition - (maxBubbleRadius + topBottomOffset));
+                    actualYValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValueInLog, axisY.AxisType);
+
+                    // Calculate top point of bubble in terms of XValue and YValue 
+                    Point pointTop = new Point(
+                        Graphics.PixelPositionToValue(0, initialPlotAreaSize.Width, plotGroup._initialAxisXMin, plotGroup._initialAxisXMax, xPosition)
+                        , actualYValue);
+
+                    yValueInLog = Graphics.PixelPositionToValue(initialPlotAreaSize.Height, 0, plotGroup._initialAxisYMin, plotGroup._initialAxisYMax, yPosition + (maxBubbleRadius + topBottomOffset));
+                    actualYValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValueInLog, axisY.AxisType);
+
+                       // Calculate bottom point of bubble in terms of XValue and YValue 
+                    Point pointBottom = new Point(
+                        Graphics.PixelPositionToValue(0, initialPlotAreaSize.Width, plotGroup._initialAxisXMin, plotGroup._initialAxisXMax, xPosition)
+                        , actualYValue);
+
+                    ctPoints.Add(pointLeft);
+                    ctPoints.Add(pointRight);
+                    ctPoints.Add(pointTop);
+                    ctPoints.Add(pointBottom);
+                }
+                else
+                {
+                    // Calculate left point of bubble in terms of XValue and YValue 
+                    Point pointLeft = new Point(
+                        Graphics.PixelPositionToValue(0, initialPlotAreaSize.Width, plotGroup._initialAxisXMin, plotGroup._initialAxisXMax, xPosition - (maxBubbleRadius + leftRightOffset))
+                        , Graphics.PixelPositionToValue(0, initialPlotAreaSize.Height, plotGroup._initialAxisYMin, plotGroup._initialAxisYMax, yPosition));
+
+                    // Calculate right point of bubble in terms of XValue and YValue 
+                    Point pointRight = new Point(
+                        Graphics.PixelPositionToValue(0, initialPlotAreaSize.Width, plotGroup._initialAxisXMin, plotGroup._initialAxisXMax, xPosition + (maxBubbleRadius + leftRightOffset))
+                        , Graphics.PixelPositionToValue(0, initialPlotAreaSize.Height, plotGroup._initialAxisYMin, plotGroup._initialAxisYMax, yPosition));
+
+                    // Calculate top point of bubble in terms of XValue and YValue 
+                    Point pointTop = new Point(
+                        Graphics.PixelPositionToValue(0, initialPlotAreaSize.Width, plotGroup._initialAxisXMin, plotGroup._initialAxisXMax, xPosition)
+                        , Graphics.PixelPositionToValue(initialPlotAreaSize.Height, 0, plotGroup._initialAxisYMin, plotGroup._initialAxisYMax, yPosition - (maxBubbleRadius + topBottomOffset)));
+
+                    // Calculate bottom point of bubble in terms of XValue and YValue 
+                    Point pointBottom = new Point(
+                        Graphics.PixelPositionToValue(0, initialPlotAreaSize.Width, plotGroup._initialAxisXMin, plotGroup._initialAxisXMax, xPosition)
+                        , Graphics.PixelPositionToValue(initialPlotAreaSize.Height, 0, plotGroup._initialAxisYMin, plotGroup._initialAxisYMax, yPosition + (maxBubbleRadius + topBottomOffset)));
+
+                    ctPoints.Add(pointLeft);
+                    ctPoints.Add(pointRight);
+                    ctPoints.Add(pointTop);
+                    ctPoints.Add(pointBottom);
+                
+                }
+
+
+            }
+
+            return ctPoints;
+        }
+        
+        /// <summary>
+        /// Calculate bubble size in pixel
+        /// </summary>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="minimumZVal">Minimum ZValue</param>
+        /// <param name="maximumZVal">Maximum ZValue</param>
+        /// <returns>Bubble Height and Width</returns>
+        private static Double CalculateBubbleSize(DataPoint dataPoint, Double minimumZVal, Double maximumZVal)
+        {
+            Double value = !Double.IsNaN(dataPoint.ZValue) ? dataPoint.ZValue : (minimumZVal + maximumZVal) / 2;
+            Double markerScale = Graphics.ConvertScale(minimumZVal, maximumZVal, value, 1, (Double)dataPoint.MarkerScale);
+            Size markerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
+
+            Double markerScaleFactor = markerScale * (Double)dataPoint.MarkerScale;
+            Double newSize = markerSize.Height * markerScaleFactor;
+            
+            return newSize;
+        }
+
         private static void ApplyZValue(DataPoint dataPoint, Double minimumZVal, Double maximumZVal, Double drawingAreaWidth, Double drawingAreaHeight)
         {   
             Boolean animatedUpdate = true;
 
             Double value = !Double.IsNaN(dataPoint.ZValue) ? dataPoint.ZValue : (minimumZVal + maximumZVal) / 2;
             Double markerScale = Graphics.ConvertScale(minimumZVal, maximumZVal, value, 1, (Double)dataPoint.MarkerScale);
-            Size markerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
             Marker marker = dataPoint.Marker;
             
             marker.ScaleFactor = markerScale * (Double)dataPoint.MarkerScale;
@@ -859,8 +1010,7 @@ namespace Visifire.Charts
 
                     break;
             }
-
-
+            
             if (bubleChartCanvas.Parent != null)
             {
                 RectangleGeometry clipRectangle = new RectangleGeometry();

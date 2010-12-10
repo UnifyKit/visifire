@@ -408,7 +408,8 @@ namespace Visifire.Commons
 
             if (chart == null || chart.ChartArea == null || chart.ChartArea._isFirstTimeRender)
                 return false;
-            else if (chart.SamplingThreshold != 0 && property != VcProperties.ScrollBarScale)
+            else if ((chart.SamplingThreshold != 0 && property != VcProperties.ScrollBarScale) 
+                || (chart.PlotDetails != null && chart.PlotDetails.AutoFitToPlotArea && property != VcProperties.ScrollBarScale))
             {   
                 FirePropertyChanged(property);
                 return false;

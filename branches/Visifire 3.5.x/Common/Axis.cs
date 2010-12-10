@@ -547,8 +547,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
-
-
+       
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.ViewportRangeEnabled dependency property.
         /// </summary>
@@ -1557,11 +1556,11 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the maximum value for the axis
         /// </summary>
-        //#if SL
-        //        [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
-        //#endif
+#if SL || WP
+        [System.ComponentModel.TypeConverter(typeof(Converters.ObjectConverter))]
+#endif
         public Object AxisMaximum
-        {
+        {   
             get
             {
                 return (Object)GetValue(AxisMaximumProperty);
@@ -1575,9 +1574,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the minimum value for the axis
         /// </summary>
-        //#if SL
-        // [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
-        //#endif
+#if SL || WP
+        [System.ComponentModel.TypeConverter(typeof(Converters.ObjectConverter))]
+#endif
         public Object AxisMinimum
         {
             get
@@ -2802,6 +2801,7 @@ namespace Visifire.Charts
                 {
                     if (axis.Chart != null && (axis.Chart as Chart).Series.Count > 0)
                         (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMaximum, null });
+                    
                 }
                 else
                     axis.FirePropertyChanged(VcProperties.AxisMaximum);
@@ -5188,6 +5188,8 @@ namespace Visifire.Charts
         {
             Double minimumDifference = PlotDetails.GetMaxOfMinDifferencesForXValue();
             Double minValue = minimumDifference;
+            Double tempAxisMin = AxisManager.AxisMinimumValue;
+            Double tempAxisMax = AxisManager.AxisMaximumValue;
 
             if (Double.IsInfinity(minValue))
             {
@@ -5261,8 +5263,7 @@ namespace Visifire.Charts
                 if (XValueType != ChartValueTypes.Numeric)
                     FirstLabelDate = DateTimeHelper.XValueToDateTime(MinDate, AxisManager.AxisMinimumValue, InternalIntervalType);
             }
-
-
+            
             if (Double.IsNaN((Double)AxisMaximumNumeric))
             {
                 if (PlotDetails.DrawingDivisionFactor != 0 && Double.IsNaN((Double)AxisMaximumNumeric))
@@ -5270,12 +5271,12 @@ namespace Visifire.Charts
                     AxisManager.AxisMaximumValue = AxisManager.MaximumValue + (minValue) / 2 * 1.1;
                 }
                 else
-                {
+                {   
                     AxisManager.AxisMaximumValue = AxisManager.MaximumValue + (minValue) / 2 * .4;
                 }
             }
             else
-            {
+            {   
                 AxisManager.AxisMaximumValue = (Double)AxisMaximumNumeric;
             }
 
@@ -5289,7 +5290,7 @@ namespace Visifire.Charts
         }
 
         internal DateTime FirstLabelDate
-        {
+        {   
             get;
             set;
         }
@@ -5302,9 +5303,9 @@ namespace Visifire.Charts
             Double minimumDifference = PlotDetails.GetMaxOfMinDifferencesForXValue();
 
             if (Double.IsNaN((Double)AxisMinimumNumeric))
-            {
+            {   
                 if (Double.IsNaN((Double)AxisMaximumNumeric))
-                {
+                {   
                     if ((AxisManager.AxisMaximumValue - Maximum) <= (Minimum - AxisManager.AxisMinimumValue))
                     {
                         // This part makes the gaps equal
@@ -5317,7 +5318,7 @@ namespace Visifire.Charts
                 }
             }
         }
-
+        
         /// <summary>
         /// Convert scaling sets from string to unit and value array
         /// </summary>
@@ -6367,6 +6368,7 @@ namespace Visifire.Charts
         /// MinimumZooming Scale
         /// </summary>
         internal static readonly Double INTERNAL_MINIMUM_ZOOMING_SCALE = 0.0000001;
+        
 
         Boolean _showAllState = false;
 

@@ -500,7 +500,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Whether shadow is enebled for the TrendLine
         /// </summary>
-        public bool ShadowEnabled
+        public Boolean ShadowEnabled
         {
             get 
             { 
@@ -515,6 +515,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the Value of the TrendLine
         /// </summary>
+#if SL || WP
+        [System.ComponentModel.TypeConverter(typeof(Converters.ObjectConverter))]
+#endif
         public Object Value
         {
             get
@@ -531,6 +534,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the start value of the TrendLine
         /// </summary>
+#if SL || WP
+        [System.ComponentModel.TypeConverter(typeof(Converters.ObjectConverter))]
+#endif
         public Object StartValue
         {
             get
@@ -546,6 +552,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the end value of the TrendLine
         /// </summary>
+#if SL || WP
+        [System.ComponentModel.TypeConverter(typeof(Converters.ObjectConverter))]
+#endif
         public Object EndValue
         {
             get

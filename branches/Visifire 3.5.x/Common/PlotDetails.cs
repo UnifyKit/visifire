@@ -111,7 +111,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
-
+        
         /// <summary>
         /// List of all DataPoints in chart related to Primary Axis
         /// </summary>
@@ -133,11 +133,11 @@ namespace Visifire.Charts
             }
         }
 
-
-        //{
-        //    get;
-        //    set;
-        //}
+        internal Boolean AutoFitToPlotArea
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// List of different types of plot groups based on RenderAs, AxisXType and AxisYType
@@ -275,6 +275,8 @@ namespace Visifire.Charts
         private void Calculate(VisifireElement element, ElementTypes elementType, VcProperties property, object oldValue, object newValue)
         {
             //Type elementType = element.GetType();
+
+            AutoFitToPlotArea = CalculateAutoFitToPlotArea(Chart);
 
             // Create Axis incase if it doesnt exist
             if (elementType == ElementTypes.Chart && property == VcProperties.Series)
@@ -420,6 +422,25 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Check whether AutoFitToPlotArea is enabled for Chart
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        /// <returns>Whether AutoFitToPlotArea is enabled for Chart</returns>
+        internal static Boolean CalculateAutoFitToPlotArea(Chart chart)
+        {
+            if (chart != null && chart.InternalSeries != null)
+            {   
+                foreach (DataSeries ds in chart.InternalSeries)
+                {
+                    if (ds.RenderAs == Charts.RenderAs.Bubble && ds.AutoFitToPlotArea)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         private void CalculateInternalXValue4NumericAxis(Chart chart)
         {
             foreach (DataSeries ds in chart.InternalSeries)
@@ -468,6 +489,8 @@ namespace Visifire.Charts
         
         public void Calculate(Boolean isUpdateAxisLabelsList)
         {
+            AutoFitToPlotArea = CalculateAutoFitToPlotArea(Chart);
+
             // Validate XValue type of the DataPoint and DataSeries
             SetDataPointsNameAndValidateDataPointXValueType();
             

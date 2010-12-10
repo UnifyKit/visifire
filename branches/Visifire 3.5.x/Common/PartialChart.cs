@@ -211,7 +211,7 @@ namespace Visifire.Charts
 
             BindProperties();
 
-            _internalAnimationEnabled = AnimationEnabled;
+            _internalAnimationEnabled = InternalAnimationEnabled;
 
             if (_internalAnimationEnabled)
                 _rootElement.IsHitTestVisible = false;
@@ -887,6 +887,21 @@ namespace Visifire.Charts
         /// <summary>
         /// Enable or disable animation
         /// </summary>
+        internal Boolean InternalAnimationEnabled
+        {
+            get
+            {
+                // INdesign mode animation is disabled
+                if (IsInDesignMode)
+                    return false;
+                else
+                    return AnimationEnabled;
+            }
+        }
+
+        /// <summary>
+        /// Enable or disable animation
+        /// </summary>
         public Boolean AnimationEnabled
         {
             get
@@ -901,10 +916,10 @@ namespace Visifire.Charts
                         return (Boolean)GetValue(AnimationEnabledProperty);
                 }
                 else
-                    return false;
+                    return (Boolean)GetValue(AnimationEnabledProperty);
             }
             set
-            {
+            {   
                 SetValue(AnimationEnabledProperty, value);
             }
         }
@@ -2537,11 +2552,33 @@ namespace Visifire.Charts
                 return null;
         }
         
+        internal void InvokeRender()
+        {
+#if WPF
+            InvokeRenderOfChart();
+#else
+            if (IsInDesignMode)
+            {   
+                // This need to be done do safe invoke in designer
+                try
+                {
+                    InvokeRenderOfChart();
+                }
+                catch
+                {   // ObservableCollection_CannotChangeObservableCollection
+                    return;
+                }
+            }
+            else
+                InvokeRenderOfChart();
+#endif
+        }
+
         /// <summary>
         /// Render is a delegate to a method that takes no arguments and does not return a value, 
         /// which is pushed onto the System.Windows.Threading.Dispatcher event queue.
         /// </summary>
-        internal void InvokeRender()
+        private void InvokeRenderOfChart()
         {
             if (_isTemplateApplied)
             {
@@ -2593,7 +2630,7 @@ namespace Visifire.Charts
                 RENDER_LOCK = true;
 
                 try
-                {
+                {   
                     System.Diagnostics.Debug.WriteLine("----Rendered");
                     PrepareChartAreaForDrawing();
 

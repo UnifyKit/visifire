@@ -351,6 +351,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Set the Start position of CustomAxisLabel
         /// </summary>
+#if SL || WP
+        [System.ComponentModel.TypeConverter(typeof(Converters.ObjectConverter))]
+#endif
         public Object From
         {
             get
@@ -366,6 +369,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Set the end position of CustomAxisLabel
         /// </summary>
+#if SL || WP
+        [System.ComponentModel.TypeConverter(typeof(Converters.ObjectConverter))]
+#endif
         public Object To
         {
             get

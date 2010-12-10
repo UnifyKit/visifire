@@ -207,7 +207,7 @@ namespace Visifire.Charts
 
             AttachOrDetachIntaractivity(chart.InternalSeries);
 
-            if (!_isFirstTimeRender || !chart.AnimationEnabled)
+            if (!_isFirstTimeRender || !chart.InternalAnimationEnabled)
             {
                 AttachScrollBarOffsetChangedEventWithAxes();
                 Visifire.Charts.Chart.SelectDataPoints(Chart);
@@ -807,7 +807,17 @@ namespace Visifire.Charts
 
                 CreateTrendLinesLabel();
 
+                /*
                 Size remainingSizeAfterDrawingAxes = RenderAxes(_plotAreaSize);
+                */
+
+                //----------
+
+                Size remainingSizeAfterDrawingAxes = RenderAxes(_plotAreaSize);
+
+                remainingSizeAfterDrawingAxes = RecalculateAxisAndRerenderBasedOnChartTypes(_plotAreaSize, remainingSizeAfterDrawingAxes);
+
+                //-----------
 
                 ResizePanels(remainingSizeAfterDrawingAxes, renderAxisType, isPartialUpdate);
 
@@ -2857,7 +2867,12 @@ namespace Visifire.Charts
                 Double newAxisXWidth = _plotAreaSize.Width - ((AxisY != null) ? AxisY.Width : 0) - ((AxisY2 != null) ? AxisY2.Width : 0);
 
                 if (oldAxisXWidth != newAxisXWidth)
+                {
                     plotAreaSize.Width = newAxisXWidth;
+
+                    if (ScrollableLength == oldAxisXWidth)
+                        ScrollableLength = newAxisXWidth;
+                }
 
                 Double oldAxisXLabelLeftOverflow = AxisX.AxisLabels.LeftOverflow;
                 Double oldAxisYLabelRightOverflow = AxisX.AxisLabels.RightOverflow;
@@ -2981,6 +2996,8 @@ namespace Visifire.Charts
 
             // Visifire.Profiler.Profiler.Start("RenderAxis");
             Size remainingSizeAfterDrawingAxes = RenderAxes(plotAreaSize);
+
+            remainingSizeAfterDrawingAxes = RecalculateAxisAndRerenderBasedOnChartTypes(plotAreaSize, remainingSizeAfterDrawingAxes);
             // Visifire.Profiler.Profiler.End("RenderAxis");
 
             // Visifire.Profiler.Profiler.Start("Render");
@@ -2992,11 +3009,53 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Recalculate Axes range and rerender based on chart Types.
+        /// Example: Axis is need to be rearranged so that bubbles does not go out of the PlotArea
+        /// </summary>
+        /// <param name="plotAreaSize">PlotArea size</param>
+        /// <param name="remainingSizeAfterDrawingAxes">Remaining size after drawing Axes</param>
+        /// <returns>Actual remaining size after drawing Axes</returns>
+        private Size RecalculateAxisAndRerenderBasedOnChartTypes(Size plotAreaSize, Size remainingSizeAfterDrawingAxes)
+        {
+            if (PlotDetails.AutoFitToPlotArea)
+            {
+                Boolean fourceUpdateOfAxis = false;
+                
+                foreach (PlotGroup plotGroup in PlotDetails.PlotGroups)
+                {
+                    if (plotGroup.RenderAs == RenderAs.Bubble)
+                    {
+                        plotGroup._initialAxisXMin = plotGroup.AxisX.InternalAxisMinimum;
+                        plotGroup._initialAxisXMax = plotGroup.AxisX.InternalAxisMaximum;
+                        plotGroup._intialAxisXWidth = plotGroup.AxisX.Width;
+
+                        plotGroup._initialAxisYMin = plotGroup.AxisY.InternalAxisMinimum;
+                        plotGroup._initialAxisYMax = plotGroup.AxisY.InternalAxisMaximum;
+                        plotGroup._intialAxisYHeight = plotGroup.AxisY.Height;
+                        
+                        plotGroup.Update(VcProperties.None, null, null);
+                        fourceUpdateOfAxis = true;
+                    }
+                }
+
+                if (fourceUpdateOfAxis)
+                {
+                    // Returns remaining size after drawing axes
+                    remainingSizeAfterDrawingAxes = RenderAxes(plotAreaSize);
+                }
+            }
+            else
+                return remainingSizeAfterDrawingAxes;
+
+            return remainingSizeAfterDrawingAxes;
+        }
+        
+        /// <summary>
         /// Update plotarea layout setting with new size
         /// </summary>
         /// <param name="newSize">New Size of the plotarea layout</param>
         private void UpdateLayoutSettings(Size newSize)
-        {
+        {   
             Chart.PlotArea.Height = newSize.Height;
             Chart.PlotArea.Width = newSize.Width;
 
@@ -6162,7 +6221,7 @@ namespace Visifire.Charts
                         {
                             if (dp.Faces != null)
                             {
-                                if (Chart.AnimationEnabled == false || (Chart.AnimationEnabled && !_isFirstTimeRender))
+                                if (Chart.InternalAnimationEnabled == false || (Chart.InternalAnimationEnabled && !_isFirstTimeRender))
                                 {
                                     if (dp.Faces.VisualComponents.Count != 0)
                                     {
@@ -6179,7 +6238,7 @@ namespace Visifire.Charts
                             }
 
 
-                            if (Chart.AnimationEnabled == false || (Chart.AnimationEnabled && !_isFirstTimeRender))
+                            if (Chart.InternalAnimationEnabled == false || (Chart.InternalAnimationEnabled && !_isFirstTimeRender))
                             {
                                 if (dp.Marker != null && dp.Marker.Visual != null)
                                     dp.Marker.Visual.Opacity = (Double)ds.Opacity * (Double)dp.Opacity;
@@ -6638,7 +6697,7 @@ namespace Visifire.Charts
         /// Size of the PlotArea is calculated in calculated in Draw() 
         /// </summary>
         internal Size _plotAreaSize;
-
+        
         /// <summary>
         /// Grid animation duration
         /// </summary>
