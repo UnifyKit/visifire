@@ -522,6 +522,18 @@ namespace Visifire.Charts
             new PropertyMetadata(OnTextAlignmentPropertyChanged));
 
         /// <summary>
+        /// Identifies the Visifire.Charts.Title.TextDecorations dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.TextDecorations dependency property.
+        /// </returns>
+        public static readonly DependencyProperty TextDecorationsProperty = DependencyProperty.Register
+           ("TextDecorations",
+           typeof(TextDecorationCollection),
+           typeof(Title),
+           new PropertyMetadata(OnTextDecorationsPropertyChanged));
+
+        /// <summary>
         /// Identifies the Visifire.Charts.Title.DockInsidePlotArea dependency property.
         /// </summary>
         /// <returns>
@@ -1191,6 +1203,23 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Get or Set the TextDecorations of the title
+        /// </summary>
+        public TextDecorationCollection TextDecorations
+        {
+            get
+            {
+
+                return (TextDecorationCollection)GetValue(TextDecorationsProperty);
+            }
+            set
+            {
+                SetValue(TextDecorationsProperty, value);
+            }
+
+        }
+
+        /// <summary>
         /// Get or set the DockInsidePlotArea property of title
         /// (Whether the title will be docked inside PlotArea)
         /// </summary>
@@ -1539,6 +1568,19 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// TextDecorationsProperty changed  call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnTextDecorationsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+           // title.FirePropertyChanged(VcProperties.TextDecorations);
+            title.UpdateVisual(VcProperties.TextDecorations, e.NewValue);
+
+        }
+
+        /// <summary>
         /// DockInsidePlotAreaProperty changed call back function
         /// </summary>
         /// <param name="d">DependencyObject</param>
@@ -1596,6 +1638,7 @@ namespace Visifire.Charts
                 title.TextElement.Text = GetFormattedMultilineText(title.Text);
                 title.TextElement.Foreground = Charts.Chart.CalculateFontColor((title.Chart as Chart), title.Background, title.InternalFontColor, title.DockInsidePlotArea);
                 title.TextElement.TextWrapping = TextWrapping.Wrap;
+                title.TextElement.TextDecorations = title.TextDecorations;
 
                 if (!VisifireControl.IsMediaEffectsEnabled)
                 {
@@ -1609,6 +1652,7 @@ namespace Visifire.Charts
                         title.ShadowTextElement.Foreground = new SolidColorBrush(Colors.Gray);
                         title.ShadowTextElement.Foreground.Opacity = 0.6;
                         title.ShadowTextElement.TextWrapping = TextWrapping.Wrap;
+                       
                     }
                 }
 

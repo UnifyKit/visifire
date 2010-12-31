@@ -595,6 +595,31 @@ namespace Visifire.Charts
             {
                 DataPoint dp = nearestDataPointList[index];
 
+                #region Get the text to be displayed in the Axis Indicator
+
+                dataPointInCurrentPlot = dp;
+
+                if (!AxisX.IsDateTimeAxis)
+                {
+                    if (AxisX.AxisLabels != null)
+                    {
+                        if (AxisX.AxisLabels.AxisLabelContentDictionary.ContainsKey(dp.InternalXValue))
+                            axisIndicatorText = ObservableObject.GetFormattedMultilineText(AxisX.AxisLabels.AxisLabelContentDictionary[dp.InternalXValue]);
+                        else
+                            axisIndicatorText = AxisX.AxisLabels.GetFormattedString(dp.InternalXValue);
+                    }
+                }
+                else
+                {
+                    String valueFormatString = AxisX.XValueType == ChartValueTypes.Date ? "d" : AxisX.XValueType == ChartValueTypes.Time ? "t" : "G";
+                    valueFormatString = (String.IsNullOrEmpty((String)AxisX.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : AxisX.ValueFormatString;
+
+                    DateTime dt = Convert.ToDateTime(dp.XValue, System.Globalization.CultureInfo.InvariantCulture);
+                    axisIndicatorText = dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture);
+                }
+
+                #endregion
+
                 if (dp.Parent.ToolTipElement._borderElement == null)
                     continue;
 
@@ -665,31 +690,6 @@ namespace Visifire.Charts
                         dp.Parent.ToolTipElement._borderElement.BorderThickness = new Thickness(0.25, 0.25, 0, 1);
                     }
                 }
-
-                #region Get the text to be displayed in the Axis Indicator
-
-                dataPointInCurrentPlot = dp;
-
-                if (!AxisX.IsDateTimeAxis)
-                {
-                    if (AxisX.AxisLabels != null)
-                    {
-                        if (AxisX.AxisLabels.AxisLabelContentDictionary.ContainsKey(dp.InternalXValue))
-                            axisIndicatorText = ObservableObject.GetFormattedMultilineText(AxisX.AxisLabels.AxisLabelContentDictionary[dp.InternalXValue]);
-                        else
-                            axisIndicatorText = AxisX.AxisLabels.GetFormattedString(dp.InternalXValue);
-                    }
-                }
-                else
-                {
-                    String valueFormatString = AxisX.XValueType == ChartValueTypes.Date ? "d" : AxisX.XValueType == ChartValueTypes.Time ? "t" : "G";
-                    valueFormatString = (String.IsNullOrEmpty((String)AxisX.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : AxisX.ValueFormatString;
-
-                    DateTime dt = Convert.ToDateTime(dp.XValue, System.Globalization.CultureInfo.InvariantCulture);
-                    axisIndicatorText = dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture);
-                }
-
-                #endregion
             }
 
             if (listOfActualPos.Count > 0)
@@ -1615,7 +1615,7 @@ namespace Visifire.Charts
                     {
                         dataSeries.SetToolTipProperties(nearestDataPoint);
 
-                        if (!String.IsNullOrEmpty(dataSeries.ToolTipElement.Text))
+                        //if (!String.IsNullOrEmpty(dataSeries.ToolTipElement.Text))
                         {
                             selectedNearestDataPoints.Add(nearestDataPoint);
                         }
@@ -2284,6 +2284,19 @@ namespace Visifire.Charts
 
                     PLANK_DEPTH = (Chart.ActualHeight > Chart.ActualWidth ? Chart.ActualWidth : Chart.ActualHeight) * (horizontalDepthFactor * (PlotDetails.Layer3DCount == 0 ? 1 : PlotDetails.Layer3DCount));
                     PLANK_THICKNESS = (Chart.ActualHeight > Chart.ActualWidth ? Chart.ActualWidth : Chart.ActualHeight) * (horizontalThicknessFactor);
+
+                    // Now check if PlankDepth is greater than the 40% of chart height. If yes then recalculate PlankDepth so that
+                    // maximum 3D layers can be occupied in the available PlotArea height.
+
+                    Double percentHeight = Chart.ActualHeight * 40 / 100;
+
+                    if (PLANK_DEPTH > percentHeight)
+                    {
+                        Double offset = Chart.ActualHeight / ((Chart.ActualWidth + Chart.ActualHeight) * (PlotDetails.Layer3DCount == 0 ? 1 : PlotDetails.Layer3DCount));
+                        horizontalDepthFactor = offset;
+
+                        PLANK_DEPTH = (Chart.ActualHeight > Chart.ActualWidth ? Chart.ActualWidth : Chart.ActualHeight) * (horizontalDepthFactor * (PlotDetails.Layer3DCount == 0 ? 1 : PlotDetails.Layer3DCount));
+                    }
                 }
                 else
                 {
@@ -2306,6 +2319,7 @@ namespace Visifire.Charts
                 PLANK_OFFSET = 0;
             }
         }
+
 
         /// <summary>
         /// Set scrollbar SmallChange and LargeChange value property and attach events to scroll event of axis for the first time render
@@ -4618,46 +4632,52 @@ namespace Visifire.Charts
                 {
                     if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
                     {
-                        foreach (DataPoint dataPoint in Chart.InternalSeries[0].InternalDataPoints)
+                        if (Chart.InternalSeries.Count > 0)
                         {
-                            if (dataPoint.Parent.RenderAs != RenderAs.SectionFunnel && dataPoint.Parent.RenderAs != RenderAs.StreamLineFunnel && dataPoint.Parent.RenderAs != RenderAs.Pyramid)
+                            foreach (DataPoint dataPoint in Chart.InternalSeries[0].InternalDataPoints)
                             {
-                                if ((Boolean)dataPoint.Exploded && dataPoint.InternalYValue != 0)
-                                    dataPoint.PieExplodeOrUnExplodeWithoutAnimation();
+                                if (dataPoint.Parent.RenderAs != RenderAs.SectionFunnel && dataPoint.Parent.RenderAs != RenderAs.StreamLineFunnel && dataPoint.Parent.RenderAs != RenderAs.Pyramid)
+                                {
+                                    if ((Boolean)dataPoint.Exploded && dataPoint.InternalYValue != 0)
+                                        dataPoint.PieExplodeOrUnExplodeWithoutAnimation();
+                                }
                             }
                         }
                     }
                 }
 
-                ExpoladFunnelChartWithOutAnimation();
+                ExplodFunnelChartWithOutAnimation();
             }
         }
 
-
-        private void ExpoladFunnelChartWithOutAnimation()
+        
+        private void ExplodFunnelChartWithOutAnimation()
         {
-            if (!Chart._internalAnimationEnabled && (Chart.InternalSeries[0].RenderAs == RenderAs.SectionFunnel || Chart.InternalSeries[0].RenderAs == RenderAs.StreamLineFunnel || Chart.InternalSeries[0].RenderAs == RenderAs.Pyramid))
+            if (Chart != null && Chart.InternalSeries.Count > 0)
             {
-                // Expload Funnel at 
-                if (Chart.InternalSeries[0].Exploded)
+                if (!Chart._internalAnimationEnabled && (Chart.InternalSeries[0].RenderAs == RenderAs.SectionFunnel || Chart.InternalSeries[0].RenderAs == RenderAs.StreamLineFunnel || Chart.InternalSeries[0].RenderAs == RenderAs.Pyramid))
                 {
-                    if (Chart.InternalSeries[0].Storyboard != null)
+                    // Expload Funnel at 
+                    if (Chart.InternalSeries[0].Exploded)
                     {
+                        if (Chart.InternalSeries[0].Storyboard != null)
+                        {
 #if WPF             
-                        Chart.InternalSeries[0].Storyboard.Begin(Chart._rootElement, true);
-                        Chart.InternalSeries[0].Storyboard.SkipToFill();
+                            Chart.InternalSeries[0].Storyboard.Begin(Chart._rootElement, true);
+                            Chart.InternalSeries[0].Storyboard.SkipToFill();
 #else
-                        // Expload Funnel without animation
-                        Chart.InternalSeries[0].Storyboard.Stop();
-                        Chart.InternalSeries[0].Storyboard.Begin();
-                        Chart.InternalSeries[0].Storyboard.SkipToFill();
+                            // Expload Funnel without animation
+                            Chart.InternalSeries[0].Storyboard.Stop();
+                            Chart.InternalSeries[0].Storyboard.Begin();
+                            Chart.InternalSeries[0].Storyboard.SkipToFill();
 #endif
+                        }
                     }
-                }
-                else
-                {
-                    foreach (DataPoint dataPoint in Chart.InternalSeries[0].InternalDataPoints)
-                        dataPoint.ExplodeOrUnexplodeAnimation();
+                    else
+                    {
+                        foreach (DataPoint dataPoint in Chart.InternalSeries[0].InternalDataPoints)
+                            dataPoint.ExplodeOrUnexplodeAnimation();
+                    }
                 }
             }
         }

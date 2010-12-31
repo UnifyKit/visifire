@@ -118,7 +118,7 @@ namespace Visifire.Commons
             ("ToolTipText",
             typeof(String),
             typeof(VisifireElement),
-            new PropertyMetadata(String.Empty, ToolTipTextPropertyChanged));
+            new PropertyMetadata("", ToolTipTextPropertyChanged));
 
         /// <summary>
         /// TextParser is used to parse text

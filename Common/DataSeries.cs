@@ -74,7 +74,7 @@ namespace Visifire.Charts
         /// </summary>
         public DataSeries()
         {
-            ToolTipText = "";
+            //ToolTipText = "";
             DataMappings = new DataMappingCollection();
             //IsZIndexSet = false;
 
@@ -2586,11 +2586,11 @@ namespace Visifire.Charts
         internal void SetToolTipProperties(DataPoint nearestDataPoint)
         {
             Chart chart = Chart as Chart;
-            if (nearestDataPoint.ToolTipText != null)
+            //if (nearestDataPoint.ToolTipText != null)
             {
                 String text = nearestDataPoint.ParseToolTipText(nearestDataPoint.ToolTipText);
 
-                if (!String.IsNullOrEmpty(text))
+                //if (!String.IsNullOrEmpty(text))
                 {
                     DataSeries ds = nearestDataPoint.Parent;
                     ds.ToolTipElement.Text = text;

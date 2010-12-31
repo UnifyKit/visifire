@@ -292,7 +292,12 @@ namespace Visifire.Commons
                 else
                     return false;
 #else
-                return !System.Windows.Browser.HtmlPage.IsEnabled;
+                if (Application.Current.IsRunningOutOfBrowser)
+                {
+                    return false;
+                }
+                else
+                    return !System.Windows.Browser.HtmlPage.IsEnabled;
 #endif
 
             }
