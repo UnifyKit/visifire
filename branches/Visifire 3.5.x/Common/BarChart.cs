@@ -692,6 +692,23 @@ namespace Visifire.Charts
                         
             Double columnWidth = Math.Abs(left - right);
 
+            if (columnWidth < dataPoint.Parent.MinPointHeight)
+            {
+                if (dataPoint.InternalYValue == 0)
+                {
+                    if (plotGroup.AxisY.InternalAxisMaximum <= 0)
+                        left -= (dataPoint.Parent.MinPointHeight - columnWidth);
+                    else
+                       right += (dataPoint.Parent.MinPointHeight - columnWidth);
+                }
+                else if (isPositive)
+                    right += (dataPoint.Parent.MinPointHeight - columnWidth);
+                else
+                    left -= (dataPoint.Parent.MinPointHeight - columnWidth);
+
+                columnWidth = dataPoint.Parent.MinPointHeight;
+            }
+
             Double columnHeight = CalculateHeightOfEachColumn(ref top, heightPerBar, height);
 
             if (columnHeight < 0)

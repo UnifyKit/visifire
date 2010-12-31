@@ -70,7 +70,7 @@ namespace Visifire.Charts
         /// </summary>
         public DataPoint()
         {   
-            ToolTipText = String.Empty;
+            //ToolTipText = String.Empty;
             InternalXValue = Double.NaN;
             XValueType = ChartValueTypes.Numeric;
             

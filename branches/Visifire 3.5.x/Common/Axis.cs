@@ -803,6 +803,19 @@ namespace Visifire.Charts
             typeof(Axis),
             new PropertyMetadata(OnTitleFontWeightPropertyChanged));
 
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.TitleDecorationsProperty dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.TitleDecorationsProperty dependency property.
+        /// </returns>
+        public static readonly DependencyProperty TitleTextDecorationsProperty = DependencyProperty.Register
+            ("TitleTextDecorations",
+           typeof(TextDecorationCollection),
+           typeof(Axis),
+           new PropertyMetadata(OnTitleTextDecorationsPropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.AxisType dependency property.
         /// </summary>
@@ -1535,6 +1548,21 @@ namespace Visifire.Charts
             set
             {
                 SetValue(TitleFontWeightProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the TitleTextDecorations for axis title
+        /// </summary>
+        public TextDecorationCollection TitleTextDecorations
+        {
+            get
+            {
+                return (TextDecorationCollection)GetValue(TitleTextDecorationsProperty);
+            }
+            set
+            {
+                SetValue(TitleTextDecorationsProperty, value);
             }
         }
 
@@ -2717,6 +2745,17 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Event handler manages TitleTextDecorations property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnTitleTextDecorationsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.FirePropertyChanged(VcProperties.TitleTextDecorations);
+        }
+        
+        /// <summary>
         /// Event handler manages axistype property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
@@ -3329,6 +3368,9 @@ namespace Visifire.Charts
 
                 if (this.TitleFontWeight != null)
                     AxisTitleElement.InternalFontWeight = this.TitleFontWeight;
+
+                if (this.TitleTextDecorations != null)
+                    AxisTitleElement.TextDecorations = this.TitleTextDecorations;
 
                 // if (!String.IsNullOrEmpty(this.Title) && String.IsNullOrEmpty(AxisTitleElement.Text))
                 AxisTitleElement.Text = GetFormattedMultilineText(this.Title);

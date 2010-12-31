@@ -366,7 +366,7 @@ namespace Visifire.Charts
                 Double angle = 0;
 
                 Title tb = new Title()
-                {
+                {   
                     Text = dataPoint.TextParser(dataPoint.LabelText),
                     InternalFontFamily = dataPoint.LabelFontFamily,
                     InternalFontSize = dataPoint.LabelFontSize.Value,
@@ -1053,6 +1053,23 @@ namespace Visifire.Charts
             }
 
             columnHeight = Math.Abs(top - bottom);
+
+            if(columnHeight < dataPoint.Parent.MinPointHeight)
+            {
+                if (dataPoint.InternalYValue == 0)
+                {   
+                    if (plotGroup.AxisY.InternalAxisMaximum <= 0)
+                        bottom += (dataPoint.Parent.MinPointHeight - columnHeight);
+                    else
+                        top -= (dataPoint.Parent.MinPointHeight - columnHeight);
+                }
+                else if (isPositive)
+                    top -= (dataPoint.Parent.MinPointHeight - columnHeight);
+                else
+                    bottom += (dataPoint.Parent.MinPointHeight - columnHeight);
+                    
+                columnHeight = dataPoint.Parent.MinPointHeight;
+            }
 
             columnVisualSize = new Size(widthOfAcolumn, columnHeight);
 
