@@ -683,6 +683,9 @@ namespace Visifire.Charts
             {
                 left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
                 right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, Double.IsNaN(dataPoint.InternalYValue) ? 0 : dataPoint.InternalYValue);
+               
+                if (right < left)
+                    right = left;
             }
             else
             {

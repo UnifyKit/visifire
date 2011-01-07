@@ -152,14 +152,7 @@ namespace SLVisifireChartsTest
         /// </summary>
         private bool _isLoaded = false;
 
-        /// <summary>
-        /// Html element reference
-        /// </summary>
-        private System.Windows.Browser.HtmlElement _htmlButton;
-
         private System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer();
-
-
 
         #endregion
     }

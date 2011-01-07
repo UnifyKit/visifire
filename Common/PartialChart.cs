@@ -223,15 +223,17 @@ namespace Visifire.Charts
 #if WPF
             NameScope.SetNameScope(this._rootElement, new NameScope());
 #endif
-
             AddChartElementsToRootElement();
         }
 
         private void AddChartElementsToRootElement()
         {
+            AddAxesXToChartRootElament();
+            AddAxesYToChartRootElament();
+
             foreach (DataSeries ds in Series)
             {
-#if WPF
+#if WPF         
                 if (IsInDesignMode)
                     ObservableObject.RemoveElementFromElementTree(ds);
 #endif
@@ -258,38 +260,6 @@ namespace Visifire.Charts
                 title.IsTabStop = false;
             }
 
-            foreach (Axis axis in AxesX)
-            {
-                axis.IsNotificationEnable = false;
-
-#if WPF
-                if (IsInDesignMode)
-                    ObservableObject.RemoveElementFromElementTree(axis);
-#endif
-
-                if (!_rootElement.Children.Contains(axis))
-                    _rootElement.Children.Add(axis);
-
-                axis.IsNotificationEnable = true;
-                axis.IsTabStop = false;
-            }
-
-            foreach (Axis axis in AxesY)
-            {
-                axis.IsNotificationEnable = false;
-
-#if WPF
-                if (IsInDesignMode)
-                    ObservableObject.RemoveElementFromElementTree(axis);
-#endif
-
-                if (!_rootElement.Children.Contains(axis))
-                    _rootElement.Children.Add(axis);
-
-                axis.IsNotificationEnable = true;
-                axis.IsTabStop = false;
-            }
-
             foreach (TrendLine trendLine in TrendLines)
             {
                 trendLine.IsNotificationEnable = false;
@@ -306,23 +276,71 @@ namespace Visifire.Charts
                 trendLine.IsTabStop = false;
             }
 
-            foreach (Legend legend in Legends)
+            AddLegendsToChartRootElament();
+
+            AddPlotAreaToChartRootElament();
+        }
+
+        internal void AddAxesYToChartRootElament()
+        {
+            foreach (Axis axis in AxesY)
             {
-                legend.IsNotificationEnable = false;
+                AddAxisToChartRootElament(axis);
+            }
+        }
+
+        internal void AddAxesXToChartRootElament()
+        {
+            foreach (Axis axis in AxesX)
+            {
+                AddAxisToChartRootElament(axis);
+            }
+        }
+
+        internal void AddAxisToChartRootElament(Axis axis)
+        {
+            if (_rootElement != null)
+            {
+                axis.IsNotificationEnable = false;
 
 #if WPF
                 if (IsInDesignMode)
-                    ObservableObject.RemoveElementFromElementTree(legend);
+                    ObservableObject.RemoveElementFromElementTree(axis);
 #endif
 
-                if (!_rootElement.Children.Contains(legend))
-                    _rootElement.Children.Add(legend);
+                if (!_rootElement.Children.Contains(axis))
+                    _rootElement.Children.Add(axis);
 
-                legend.IsNotificationEnable = true;
-                legend.IsTabStop = false;
+                axis.IsNotificationEnable = true;
+                axis.IsTabStop = false;
             }
+        }
+        
+        internal void AddLegendsToChartRootElament()
+        {
+            if (_rootElement != null)
+            {   
+                foreach (Legend legend in Legends)
+                {
+                    legend.IsNotificationEnable = false;
+#if WPF
+                    if (IsInDesignMode)
+                        ObservableObject.RemoveElementFromElementTree(legend);
+#endif
 
-            if (PlotArea != null)
+                    if (!_rootElement.Children.Contains(legend))
+                        _rootElement.Children.Add(legend);
+
+                    legend.IsNotificationEnable = true;
+                    legend.IsTabStop = false;
+                }
+            }
+        }
+
+        
+        internal void AddPlotAreaToChartRootElament()
+        {
+            if (PlotArea != null && _rootElement != null)
             {
                 PlotArea.IsNotificationEnable = false;
 
@@ -2650,10 +2668,6 @@ namespace Visifire.Charts
                         throw new Exception(e.Message, e);
                 }
             }
-            // else if (RENDER_LOCK)
-            // {
-            //     System.Diagnostics.Debug.WriteLine("----Rendered Locked in Render Function");
-            // }
         }
         
         /// <summary>

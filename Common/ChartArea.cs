@@ -1247,8 +1247,6 @@ namespace Visifire.Charts
             return boundingRec;
         }
 
-
-
         /// <summary>
         /// Create the center layout of the ChartArea
         /// </summary>
@@ -1258,6 +1256,7 @@ namespace Visifire.Charts
             if (Chart.PlotArea == null)
             {
                 Chart.PlotArea = new PlotArea() { IsDefault = true };
+                Chart.AddPlotAreaToChartRootElament();
             }
 
             Chart.PlotArea.Chart = Chart;
@@ -1268,7 +1267,7 @@ namespace Visifire.Charts
                 chart._showAllTextBlock.Foreground = DataSeries.CalculateFontColor(null, chart);
 
             if (Chart.PlotArea.Visual == null)
-            {
+            {   
                 if (!String.IsNullOrEmpty(Chart.Theme))
                     Chart.PlotArea.ApplyStyleFromTheme(Chart, "PlotArea");
 

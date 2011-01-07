@@ -994,7 +994,6 @@ namespace Visifire.Charts
         Double[] _zValues;
         List<Double> _yValues;
         List<DataPoint> _dataPointsInCurrentPlotGroup;
-        Size _firstTimeRenderPlotAreaSize;
 
         /// <summary>
         /// Initial AxisX Width

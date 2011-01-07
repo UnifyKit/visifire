@@ -111,31 +111,15 @@ namespace Visifire.Charts
 
             _rootElement = GetTemplateChild(RootElementName) as Canvas;
 
-            if (AxisLabels != null)
-            {
-
-                AxisLabels.IsNotificationEnable = false;
-
-#if WPF
-                if (IsInDesignMode)
-                    ObservableObject.RemoveElementFromElementTree(AxisLabels);
-#endif
-
-                if (!_rootElement.Children.Contains(AxisLabels))
-                    _rootElement.Children.Add(AxisLabels);
-
-                AxisLabels.IsNotificationEnable = true;
-                AxisLabels.IsTabStop = false;
-            }
+            AddAxisLabelsIntoRootElement();
 
             foreach (CustomAxisLabels labels in CustomAxisLabels)
             {
                 labels.IsNotificationEnable = false;
-
 #if WPF
                 if (IsInDesignMode)
                     ObservableObject.RemoveElementFromElementTree(labels);
-#endif
+#endif          
 
                 if (!_rootElement.Children.Contains(labels))
                     _rootElement.Children.Add(labels);
@@ -146,24 +130,19 @@ namespace Visifire.Charts
 
             foreach (ChartGrid grid in Grids)
             {
-
-                grid.IsNotificationEnable = false;
-
-#if WPF
-                if (IsInDesignMode)
-                    ObservableObject.RemoveElementFromElementTree(grid);
-#endif
-
-                if (!_rootElement.Children.Contains(grid))
-                    _rootElement.Children.Add(grid);
-
-                grid.IsNotificationEnable = true;
-                grid.IsTabStop = false;
+                AddGridsIntoRootElement(grid);
             }
 
             foreach (Ticks ticks in Ticks)
             {
+                AddTickElementIntoRootElement(ticks);
+            }
+        }
 
+        private void AddTickElementIntoRootElement(Ticks ticks)
+        {
+            if (_rootElement != null)
+            {
                 ticks.IsNotificationEnable = false;
 #if WPF
                 if (IsInDesignMode)
@@ -177,6 +156,45 @@ namespace Visifire.Charts
                 ticks.IsTabStop = false;
             }
         }
+
+        private void AddGridsIntoRootElement(ChartGrid grid)
+        {
+            if (_rootElement != null)
+            {
+                grid.IsNotificationEnable = false;
+
+#if WPF         
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(grid);
+#endif
+
+                if (!_rootElement.Children.Contains(grid))
+                    _rootElement.Children.Add(grid);
+
+                grid.IsNotificationEnable = true;
+                grid.IsTabStop = false;
+            }
+        }
+
+        private void AddAxisLabelsIntoRootElement()
+        {   
+            if (AxisLabels != null && _rootElement != null)
+            {   
+                AxisLabels.IsNotificationEnable = false;
+                
+#if WPF         
+                if (IsInDesignMode)
+                    ObservableObject.RemoveElementFromElementTree(AxisLabels);
+#endif
+
+                if (!_rootElement.Children.Contains(AxisLabels))
+                    _rootElement.Children.Add(AxisLabels);
+
+                AxisLabels.IsNotificationEnable = true;
+                AxisLabels.IsTabStop = false;
+            }
+        }
+                
 
         public override void Bind()
         {
@@ -3257,8 +3275,15 @@ namespace Visifire.Charts
             //          return;
 
             if (AxisRepresentation == AxisRepresentations.AxisX && AxisOrientation != AxisOrientation.Circular)
+            {
                 if (!SetAxesXLimits())
                     return;
+                
+                if (!Double.IsNaN((Double)Interval) && IsDateTimeAxis)
+                {
+                    AxisManager.Interval = (Double)Interval;
+                }
+            }
 
             // Settings specific to axis y
             if (this.AxisRepresentation == AxisRepresentations.AxisY && this.AxisType == AxisTypes.Primary)
@@ -3393,7 +3418,7 @@ namespace Visifire.Charts
         /// <param name="width">Axis width</param>
         /// <param name="height">Axis height</param>
         private void CreateAxisLine(Double y1, Double y2, Double x1, Double x2, Double width, Double height)
-        {
+        {   
             AxisLine = new Line() { Y1 = y1, Y2 = y2, X1 = x1, X2 = x2, Width = width, Height = height };
             AxisLine.StrokeThickness = (Double)LineThickness;
             AxisLine.Stroke = LineColor;
@@ -5303,7 +5328,12 @@ namespace Visifire.Charts
                 FirstLabelPosition = AxisManager.AxisMinimumValue;
 
                 if (XValueType != ChartValueTypes.Numeric)
-                    FirstLabelDate = DateTimeHelper.XValueToDateTime(MinDate, AxisManager.AxisMinimumValue, InternalIntervalType);
+                {
+                    if (AxisMinimum != null)
+                        FirstLabelDate = AxisMinimumDateTime;
+                    else
+                        FirstLabelDate = DateTimeHelper.XValueToDateTime(MinDate, AxisManager.AxisMinimumValue, InternalIntervalType);
+                }
             }
             
             if (Double.IsNaN((Double)AxisMaximumNumeric))
@@ -5612,7 +5642,11 @@ namespace Visifire.Charts
         private void SetUpTicks()
         {
             if (Ticks.Count == 0)
-                Ticks.Add(new Ticks() { _isAutoGenerated = true });
+            {
+                Ticks ticks = new Ticks() { _isAutoGenerated = true };
+                Ticks.Add(ticks);
+                //AddTickElementIntoRootElement(ticks);
+            }
 
             foreach (Ticks tick in Ticks)
             {
@@ -5643,9 +5677,13 @@ namespace Visifire.Charts
         /// Set up grids for axis
         /// </summary>
         private void SetUpGrids()
-        {
+        {   
             if (Grids.Count == 0 && AxisRepresentation.ToString() != "AxisX")
-                Grids.Add(new ChartGrid() { _isAutoGenerated = true });
+            {
+                ChartGrid chartGrid = new ChartGrid() { _isAutoGenerated = true };
+                Grids.Add(chartGrid);
+                AddGridsIntoRootElement(chartGrid);
+            }
 
             foreach (ChartGrid grid in Grids)
             {
@@ -5907,13 +5945,14 @@ namespace Visifire.Charts
 
             // Calculate View Minimum
             Double xValue = PixelPositionToXValue(lengthInPixel, offsetInPixel4MinValue);
+
             _numericViewMinimum = xValue;
 
             if (chart.ChartArea.AxisX.IsDateTimeAxis)
-            {   
-                if (chart.PlotDetails.ListOfAllDataPoints.Count != 0)
-                {   
-                    ViewMinimum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
+            {
+                if (chart.PlotDetails.ListOfAllDataPoints.Count != 0 && !Double.IsInfinity(xValue) && !Double.IsNaN(xValue))
+                {
+                    ViewMinimum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, 
                         xValue, chart.ChartArea.AxisX.InternalIntervalType);
                 }
                 else
@@ -5927,8 +5966,15 @@ namespace Visifire.Charts
             _numericViewMaximum = xValue;
 
             if (chart.ChartArea.AxisX.IsDateTimeAxis)
-                ViewMaximum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
+            {
+                if (chart.PlotDetails.ListOfAllDataPoints.Count != 0 && !Double.IsInfinity(xValue) && !Double.IsNaN(xValue))
+                {
+                    ViewMaximum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
                     xValue, chart.ChartArea.AxisX.InternalIntervalType);
+                }
+                else
+                    ViewMinimum = chart.ChartArea.AxisX.MaxDate;
+            }
             else
                 ViewMaximum = xValue;
         }
@@ -6003,9 +6049,12 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="Chart">Chart</param>
         internal void CreateVisualObject(Chart Chart)
-        {   
-            if(AxisLabels == null)
-                AxisLabels = new AxisLabels() {  IsDefault = true };
+        {
+            if (AxisLabels == null)
+            {   
+                AxisLabels = new AxisLabels() { IsDefault = true };
+                AddAxisLabelsIntoRootElement();
+            }
 
             IsNotificationEnable = false;
             AxisLabels.IsNotificationEnable = false;
@@ -6020,7 +6069,7 @@ namespace Visifire.Charts
                 AxisLabels.ApplyStyleFromTheme(Chart, "AxisYLabels");
 
             foreach (CustomAxisLabels customLabels in CustomAxisLabels)
-            {
+            {   
                 customLabels.Chart = Chart;
 
                 if (AxisRepresentation == AxisRepresentations.AxisX)
