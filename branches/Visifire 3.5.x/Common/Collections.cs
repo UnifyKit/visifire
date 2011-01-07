@@ -19,9 +19,15 @@
 */
 
 using System.Collections.ObjectModel;
+using System.Windows.Documents;
 
 namespace Visifire.Charts
-{   
+{
+    /// <summary>
+    /// Collection of Inline
+    /// </summary>
+    public class InlinesCollection : ObservableCollection<Inline> { }
+    
     /// <summary>
     /// Collection of DataSeries
     /// </summary>

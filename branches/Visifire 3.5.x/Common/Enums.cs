@@ -323,6 +323,7 @@ namespace Visifire.Charts
         HorizontalAlignment,
         Href,
         HrefTarget,
+        Inlines,
         IncludeZero,
         InterlacedColor,
         Interval,

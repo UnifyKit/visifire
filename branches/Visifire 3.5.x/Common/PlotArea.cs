@@ -1386,7 +1386,7 @@ namespace Visifire.Charts
                 {
                     eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
                 }
-                catch (Exception ex) 
+                catch 
                 {
                     eventArgs.XValue = chart.ChartArea.AxisX.MinDate;
                 }

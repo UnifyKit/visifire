@@ -104,6 +104,11 @@ namespace Visifire.Charts
                 }
             }
 
+            if(targetPropertyInfo.PropertyType == typeof(Double) && propertyValue == null)
+            {
+                propertyValue = Double.NaN;
+            }
+
             // Set value of the property of target
             target.GetType().GetProperty(MemberName).SetValue(target, propertyValue, null);
         }

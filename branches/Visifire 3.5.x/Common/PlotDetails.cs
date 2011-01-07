@@ -870,12 +870,12 @@ namespace Visifire.Charts
                                         minDate = minDate.AddMinutes(-1);
                                     }
                                     else if (minDateDifference.TotalSeconds > 0)
-                                    {   
+                                    {
                                         autoIntervalType = IntervalTypes.Seconds;
                                         minDate = minDate.AddSeconds(-1);
                                     }
                                     else if (minDateDifference.TotalMilliseconds > 0)
-                                    {   
+                                    {
                                         autoIntervalType = IntervalTypes.Milliseconds;
                                         minDate = minDate.AddMilliseconds(-1);
                                     }
@@ -1102,10 +1102,10 @@ namespace Visifire.Charts
                                     if (ds.RenderAs == RenderAs.Polar)
                                     {
                                         minDate = DateTime.Parse("12/30/1899", System.Globalization.CultureInfo.InvariantCulture);
-                                        
+
                                         dp.InternalXValue = DateTimeHelper.DateDiff((DateTime)dp.InternalXValueAsDateTime, minDate, minDateRange, maxDateRange, axisX.InternalIntervalType, axisX.XValueType);
 
-                                        
+
                                     }
                                     else
                                         dp.InternalXValue = DateTimeHelper.DateDiff((DateTime)dp.InternalXValueAsDateTime, minDate, minDateRange, maxDateRange, axisX.InternalIntervalType, axisX.XValueType);
@@ -1130,6 +1130,14 @@ namespace Visifire.Charts
                                 }
                             }
                         }
+                    }
+                    else
+                    {
+                        if (axisX.AxisMinimum != null)
+                            axisX.MinDate = DateTime.Parse(axisX.AxisMinimum.ToString());
+
+                        if (axisX.AxisMaximum != null)
+                            axisX.MaxDate = DateTime.Parse(axisX.AxisMaximum.ToString());
                     }
                 }
             }
@@ -1288,6 +1296,7 @@ namespace Visifire.Charts
                     axisX.AxisRepresentation = AxisRepresentations.AxisX;
                     Chart.InternalAxesX.Add(axisX);
                     Chart.AxesX.Add(axisX);
+                    Chart.AddAxisToChartRootElament(axisX);
                 }
                 else
                 {
@@ -1327,6 +1336,7 @@ namespace Visifire.Charts
                     axisX.AxisRepresentation = AxisRepresentations.AxisX;
                     Chart.InternalAxesX.Add(axisX);
                     Chart.AxesX.Add(axisX);
+                    Chart.AddAxisToChartRootElament(axisX);
                 }
                 else
                 {
@@ -1365,6 +1375,7 @@ namespace Visifire.Charts
                     axisY.AxisRepresentation = AxisRepresentations.AxisY;
                     Chart.InternalAxesY.Add(axisY);
                     Chart.AxesY.Add(axisY);
+                    Chart.AddAxisToChartRootElament(axisY);
                 }
                 else
                 {
@@ -1402,6 +1413,7 @@ namespace Visifire.Charts
                     axisY.AxisRepresentation = AxisRepresentations.AxisY;
                     Chart.InternalAxesY.Add(axisY);
                     Chart.AxesY.Add(axisY);
+                    Chart.AddAxisToChartRootElament(axisY);
                 }
                 else
                 {
@@ -1465,6 +1477,9 @@ namespace Visifire.Charts
 
                 if (SeriesWithReferingLegend.Count > 0)
                 {
+#if WPF
+                    Boolean defaultLegendsAdded = false;
+#endif
                     foreach (DataSeries series in SeriesWithReferingLegend)
                     {
                         var legends = (from entry in Chart.Legends where entry.GetLegendName() == entry.GetLegendName4Series(series.Legend) select entry);
@@ -1475,8 +1490,16 @@ namespace Visifire.Charts
                             legend.Chart = Chart;
                             legend.SetValue(FrameworkElement.NameProperty, series.Legend);
                             Chart.Legends.Add(legend);
+#if WPF
+                            defaultLegendsAdded = true;
+#endif
                         }
                     }
+
+#if WPF
+                    if(defaultLegendsAdded)
+                        Chart.AddLegendsToChartRootElament();
+#endif              
                 }
             }
         }

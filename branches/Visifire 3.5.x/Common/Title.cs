@@ -24,12 +24,9 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Visifire.Commons;
 using System.ComponentModel;
-
 #else
 using System;
 using System.Windows;
@@ -41,6 +38,9 @@ using System.Windows.Data;
 #endif
 
 using System.Windows.Media.Effects;
+using System.Windows.Documents;
+using Visifire.Commons;
+using System.Linq;
 
 namespace Visifire.Charts
 {
@@ -61,7 +61,16 @@ namespace Visifire.Charts
         {
             SetDefaultStyle();
 
-            //Bind();
+            if (Inlines != null)
+            {
+                Inlines.CollectionChanged += delegate
+                {
+                    if (Parent != null && String.IsNullOrEmpty(Text))
+                        FirePropertyChanged(VcProperties.Inlines);
+                };
+            }
+
+            // Bind();
         }
 
         /// <summary>
@@ -128,6 +137,18 @@ namespace Visifire.Charts
 
         #region Public Properties
 
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.Inlines dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Inlines dependency property.
+        /// </returns>
+        public static readonly DependencyProperty InlinesProperty = DependencyProperty.Register
+            ("Inlines",
+            typeof(InlinesCollection),
+            typeof(Title),
+            new PropertyMetadata(new InlinesCollection(), OnInlinesPropertyChanged));
+        
         /// <summary>
         /// Identifies the Visifire.Charts.Title.Enabled dependency property.
         /// </summary>
@@ -545,6 +566,25 @@ namespace Visifire.Charts
             typeof(Title),
             new PropertyMetadata(OnDockInsidePlotAreaPropertyChanged));
 
+        /// <summary>
+        /// Gets the collection of inline text elements within a Visifire.Charts.Title.
+        /// <returns>
+        ///  A collection that holds all inline text elements from the Visifire.Charts.Title.
+        ///  default is an empty collection.
+        /// </returns>
+        /// </summary>
+        public InlinesCollection Inlines
+        {
+            get
+            {
+                return (InlinesCollection)GetValue(InlinesProperty);
+            }
+            set
+            {
+                SetValue(InlinesProperty, value);
+            }
+        }
+        
         /// <summary>
         /// Get or set the Enabled property of title
         /// </summary>
@@ -1337,6 +1377,27 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnInlinesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+
+            if (e.NewValue != null)
+            {
+                (e.NewValue as InlinesCollection).CollectionChanged += delegate
+                {
+                    if (title.Parent != null && String.IsNullOrEmpty(title.Text))
+                        title.FirePropertyChanged(VcProperties.Inlines);
+                };
+            }
+
+            title.FirePropertyChanged(VcProperties.Enabled);
+        }
+        
+        /// <summary>
+        /// EnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
@@ -1364,8 +1425,7 @@ namespace Visifire.Charts
             Title title = d as Title;
             title.FirePropertyChanged(VcProperties.Href);
         }
-
-
+        
         /// <summary>
         /// FontFamilyProperty changed call back function
         /// </summary>
@@ -1609,7 +1669,24 @@ namespace Visifire.Charts
 #endif
         }
 
+        /// <summary>
+        /// Update TextBlock's Inlines collection
+        /// </summary>
+        private void UpdateInlines()
+        {   
+            if (TextElement != null)
+            {
+                TextElement.Inlines.Clear();
 
+                if (Inlines != null)
+                {
+                    foreach (Inline inline in Inlines)
+                    {   
+                       TextElement.Inlines.Add(inline);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Apply all style properties of the Title
@@ -1627,15 +1704,20 @@ namespace Visifire.Charts
                 title.TextElement.FontFamily = title.InternalFontFamily;
 
                 title.TextElement.FontSize = title.InternalFontSize;
-
-                //Binding fbinding = new Binding("FontSize");
-                //fbinding.Source = title;
-                //fbinding.Mode = BindingMode.TwoWay;
-                //title.TextElement.SetBinding(TextBlock.FontSizeProperty, fbinding);
-
                 title.TextElement.FontStyle = title.InternalFontStyle;
                 title.TextElement.FontWeight = title.InternalFontWeight;
+                
                 title.TextElement.Text = GetFormattedMultilineText(title.Text);
+
+                if (String.IsNullOrEmpty(title.Text))
+                    UpdateInlines();
+                else
+                {
+                    Inline defaultInline = title.TextElement.Inlines.First() as Inline;
+                    title.TextElement.Inlines.Clear();
+                    title.TextElement.Inlines.Add(defaultInline);
+                }
+                
                 title.TextElement.Foreground = Charts.Chart.CalculateFontColor((title.Chart as Chart), title.Background, title.InternalFontColor, title.DockInsidePlotArea);
                 title.TextElement.TextWrapping = TextWrapping.Wrap;
                 title.TextElement.TextDecorations = title.TextDecorations;
@@ -1652,20 +1734,12 @@ namespace Visifire.Charts
                         title.ShadowTextElement.Foreground = new SolidColorBrush(Colors.Gray);
                         title.ShadowTextElement.Foreground.Opacity = 0.6;
                         title.ShadowTextElement.TextWrapping = TextWrapping.Wrap;
-                       
                     }
                 }
 
                 // Set Border Properties 
                 title.Visual.BorderBrush = title.BorderColor;
-
-                //Binding binding = new Binding("Background");
-                //binding.Source = title;
-                //binding.Mode = BindingMode.TwoWay;
-                //title.Visual.SetBinding(Border.BackgroundProperty, binding);
-
                 title.Visual.Background = title.InternalBackground;
-
                 title.Visual.VerticalAlignment = title.InternalVerticalAlignment;
                 title.Visual.HorizontalAlignment = title.InternalHorizontalAlignment;
                 title.Visual.BorderThickness = title.InternalBorderThickness;
@@ -1909,6 +1983,10 @@ namespace Visifire.Charts
 
             // Creating Title Visual Object
             Visual = new Border();
+
+            if (TextElement != null)
+                TextElement.Inlines.Clear();
+
             TextElement = new TextBlock() { Tag = tag };
             InnerCanvas = new Canvas() { Tag = tag };
             InnerCanvas.Children.Add(TextElement);
