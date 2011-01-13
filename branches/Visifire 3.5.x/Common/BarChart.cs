@@ -674,25 +674,41 @@ namespace Visifire.Charts
             List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromDataPoint(dataPoint);
             Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
 
+            Double zeroBaseLine = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
+
             Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue);
             top = top + ((Double)drawingIndex - (Double)indexSeriesList.Count() / (Double)2) * heightPerBar;
 
             Double left, right;
 
             if (isPositive)
-            {
+            {   
                 left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
                 right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, Double.IsNaN(dataPoint.InternalYValue) ? 0 : dataPoint.InternalYValue);
-               
-                if (right < left)
-                    right = left;
+
+                if (plotGroup.AxisY.AxisMinimum != null && dataPoint.InternalYValue < limitingYValue)
+                {
+                    //if (right < left)
+                    //{
+                    //    Double temp = left;
+                    //    left = right;
+                    //    right = left;
+                    //}
+
+                    left = right = zeroBaseLine;
+                }
             }
             else
-            {
+            {   
                 left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, Double.IsNaN(dataPoint.InternalYValue) ? 0 : dataPoint.InternalYValue);
                 right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
+
+                if (plotGroup.AxisY.AxisMinimum != null && limitingYValue > 0 && dataPoint.InternalYValue < limitingYValue && chart.View3D)
+                {
+                    right = left = zeroBaseLine - 100; 
+                }
             }
-                        
+            
             Double columnWidth = Math.Abs(left - right);
 
             if (columnWidth < dataPoint.Parent.MinPointHeight)
@@ -1133,71 +1149,6 @@ namespace Visifire.Charts
             dataPoint.SetCursor2DataPointVisualFaces();
         }
         
-        /// <summary>
-        /// Create 3D bar for a DataPoint
-        /// </summary>
-        /// <param name="barParams">Bar parameters</param>
-        /// <returns>Faces for bar</returns>
-        internal static Faces Get3DBar(RectangularChartShapeParams barParams)
-        {
-            Faces faces = new Faces();
-
-            Canvas barVisual = new Canvas();
-
-            barVisual.Width = barParams.Size.Width;
-            barVisual.Height = barParams.Size.Height;
-
-            Brush frontBrush = barParams.Lighting ? Graphics.GetFrontFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
-            Brush topBrush = barParams.Lighting ? Graphics.GetTopFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
-            Brush rightBrush = barParams.Lighting ? Graphics.GetRightFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
-
-            Path front = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
-                barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
-                frontBrush, new CornerRadius(0), new CornerRadius(0), false);
-
-            faces.Parts.Add(front);
-            faces.BorderElements.Add(front);
-
-            Path top = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Depth,
-                barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
-                topBrush, new CornerRadius(0), new CornerRadius(0), false);
-
-            faces.Parts.Add(top);
-            faces.BorderElements.Add(top);
-
-            top.RenderTransformOrigin = new Point(0, 1);
-            SkewTransform skewTransTop = new SkewTransform();
-            skewTransTop.AngleX = -45;
-            top.RenderTransform = skewTransTop;
-
-            Path right = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Depth, barParams.Size.Height,
-                barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
-                rightBrush, new CornerRadius(0), new CornerRadius(0), false);
-
-            faces.Parts.Add(right);
-            faces.BorderElements.Add(right);
-
-            right.RenderTransformOrigin = new Point(0, 0);
-            SkewTransform skewTransRight = new SkewTransform();
-            skewTransRight.AngleY = -45;
-            right.RenderTransform = skewTransRight;
-
-            barVisual.Children.Add(front);
-            barVisual.Children.Add(top);
-            barVisual.Children.Add(right);
-
-            top.SetValue(Canvas.TopProperty, -barParams.Depth);
-            right.SetValue(Canvas.LeftProperty, barParams.Size.Width);
-
-            faces.Visual = barVisual;
-
-            faces.VisualComponents.Add(front);
-            faces.VisualComponents.Add(top);
-            faces.VisualComponents.Add(right);
-
-            return faces;
-        }
-
         #endregion
 
         #region Internal Events And Delegates
@@ -1212,140 +1163,5 @@ namespace Visifire.Charts
         internal static Double BAR_GAP_RATIO = 0.2;
 
         #endregion
-
-
-        //--------------del
-
-        /// <summary>
-        /// Create 2D bar for a DataPoint
-        /// </summary>
-        /// <param name="barParams">Bar parameters</param>
-        /// <returns>Faces for bar</returns>
-        internal static Faces Get2DBar(RectangularChartShapeParams barParams)
-        {
-            Faces faces = new Faces();
-
-            Grid barVisual = new Grid();
-
-            barVisual.Width = barParams.Size.Width;
-            barVisual.Height = barParams.Size.Height;
-
-            Brush background = (barParams.Lighting ? Graphics.GetLightingEnabledBrush(barParams.BackgroundBrush, "Linear", null) : barParams.BackgroundBrush);
-
-            Path barBase = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
-                barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
-                background, barParams.XRadius, barParams.YRadius, true);
-
-            (barBase.Tag as ElementData).VisualElementName = "ColumnBase";
-
-            //faces.Parts.Add(barBase.Children[0] as FrameworkElement);
-            //faces.BorderElements.Add(barBase.Children[0] as Path);
-
-            faces.Parts.Add(barBase);
-            faces.BorderElements.Add(barBase);
-
-            barVisual.Children.Add(barBase);
-
-            if (barParams.Size.Height > 7 && barParams.Size.Width > 14 && barParams.Bevel)
-            {
-                Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(barParams.TagReference, barParams.Size.Width - barParams.BorderThickness - barParams.BorderThickness, barParams.Size.Height - barParams.BorderThickness - barParams.BorderThickness, 6, 6,
-                    Graphics.GetBevelTopBrush(barParams.BackgroundBrush),
-                    Graphics.GetBevelSideBrush((barParams.Lighting ? -70 : 0), barParams.BackgroundBrush),
-                    Graphics.GetBevelSideBrush((barParams.Lighting ? -110 : 180), barParams.BackgroundBrush),
-                    null);
-
-                foreach (FrameworkElement fe in bevelCanvas.Children)
-                    faces.Parts.Add(fe);
-
-                bevelCanvas.SetValue(Canvas.LeftProperty, barParams.BorderThickness);
-                bevelCanvas.SetValue(Canvas.TopProperty, barParams.BorderThickness);
-                barVisual.Children.Add(bevelCanvas);
-            }
-            else
-            {
-                faces.Parts.Add(null);
-                faces.Parts.Add(null);
-                faces.Parts.Add(null);
-                faces.Parts.Add(null);
-            }
-
-            if (barParams.Lighting && barParams.Bevel)
-            {
-                Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(barParams.Size.Width, barParams.Size.Height,
-                    Graphics.GetLeftGradianceBrush(63),
-                    Graphics.GetLeftGradianceBrush(63),
-                    Orientation.Horizontal);
-
-                foreach (FrameworkElement fe in gradienceCanvas.Children)
-                    faces.Parts.Add(fe);
-
-                barVisual.Children.Add(gradienceCanvas);
-            }
-            else
-            {   
-                faces.Parts.Add(null);
-                faces.Parts.Add(null);
-            }
-
-            if (barParams.Shadow)
-            {
-                Double shadowVerticalOffsetGap = 1;
-                Double shadowVerticalOffset = barParams.ShadowOffset - shadowVerticalOffsetGap;
-                Double shadowHeight = barParams.Size.Height;
-                CornerRadius xRadius = barParams.XRadius;
-                CornerRadius yRadius = barParams.YRadius;
-                if (barParams.IsStacked)
-                {
-                    if (barParams.IsPositive)
-                    {
-                        if (barParams.IsTopOfStack)
-                        {
-                            shadowHeight = barParams.Size.Height - barParams.ShadowOffset;
-                            shadowVerticalOffset = barParams.ShadowOffset - shadowVerticalOffsetGap - shadowVerticalOffsetGap;
-                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                            yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
-                        }
-                        else
-                        {
-                            shadowHeight = barParams.Size.Height + 6;
-                            shadowVerticalOffset = -2;
-                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                            yRadius = new CornerRadius(0, 0, 0, 0);
-                        }
-                    }
-                    else
-                    {
-                        if (barParams.IsTopOfStack)
-                        {
-                            shadowHeight = barParams.Size.Height - barParams.ShadowOffset;
-                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                            yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
-                        }
-                        else
-                        {
-                            shadowHeight = barParams.Size.Height + barParams.ShadowOffset + 2;
-                            shadowVerticalOffset = -2;
-                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                            yRadius = new CornerRadius(0, 0, 0, 0);
-                        }
-                    }
-                }
-
-                Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(barParams.TagReference, barParams.Size.Width, shadowHeight, xRadius, yRadius, barParams.IsStacked ? 3 : 5);
-                TranslateTransform tt = new TranslateTransform() { X = barParams.ShadowOffset, Y = shadowVerticalOffset };
-                shadowGrid.Opacity = 0.7;
-                shadowGrid.SetValue(Canvas.ZIndexProperty, -1);
-                shadowGrid.RenderTransform = tt;
-                barVisual.Children.Add(shadowGrid);
-            }
-
-            faces.VisualComponents.Add(barVisual);
-
-            faces.Visual = barVisual;
-
-            return faces;
-        }
-
     }
 }
-

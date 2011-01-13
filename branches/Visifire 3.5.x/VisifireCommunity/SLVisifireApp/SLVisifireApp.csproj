@@ -409,13 +409,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\Common\SLVisifireApp\MyTheme.xaml">
+    <Content Include="..\..\Common\SLVisifireApp\MyTheme.xaml">
       <Link>MyTheme.xaml</Link>
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
+    </Content>
     <Page Include="..\..\Common\SLVisifireApp\Area\Area2D1.xaml">
       <Link>Area\Area2D1.xaml</Link>
       <Generator>MSBuild:MarkupCompilePass1</Generator>

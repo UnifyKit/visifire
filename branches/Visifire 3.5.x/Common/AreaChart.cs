@@ -2883,7 +2883,7 @@ namespace Visifire.Charts
             if (areaVisual == null)
                 return;
 
-            Canvas labelCanvas = ((areaVisual as FrameworkElement).Parent as Panel).Children[0] as Canvas;
+            Canvas labelCanvas = ((areaVisual.Parent as Canvas).Parent as Canvas).Children[0] as Canvas;
             Double height = chart.ChartArea.ChartVisualCanvas.Height;
             Double width = chart.ChartArea.ChartVisualCanvas.Width;
             Double xPosition, yPosition;

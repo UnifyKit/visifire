@@ -34,5 +34,6 @@ namespace WPFVisifireChartsApp
         {
             InitializeComponent();
         }
+
     }
 }

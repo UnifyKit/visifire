@@ -1955,6 +1955,8 @@ namespace Visifire.Charts
             }
 
             DisableIndicators();
+
+            _zoomStart = false;
         }
 
         /// <summary>
