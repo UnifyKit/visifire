@@ -1039,17 +1039,29 @@ namespace Visifire.Charts
             left = Graphics.ValueToPixelPosition(0, parentCanvas.Width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
             left = left + ((Double)drawingIndex - (Double)indexSeriesList.Count() / (Double)2) * widthOfAcolumn;
 
-//            Double midPosition = Graphics.ValueToPixelPosition(0, parentCanvas.Width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+//          Double midPosition = Graphics.ValueToPixelPosition(0, parentCanvas.Width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+
+            Double zeroBaseLinePos = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
 
             if (isPositive)
             {   
                 bottom = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
                 top = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, Double.IsNaN(dataPoint.InternalYValue) ? 0 : dataPoint.InternalYValue);
+                
+                if (plotGroup.AxisY.AxisMinimum != null && dataPoint.InternalYValue < limitingYValue && chart.View3D)
+                {
+                    bottom = top = zeroBaseLinePos;
+                }
             }
             else
-            {
+            {   
                 bottom = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, Double.IsNaN(dataPoint.InternalYValue) ? 0 : dataPoint.InternalYValue);
                 top = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
+
+                if (plotGroup.AxisY.AxisMinimum != null && limitingYValue>0 && dataPoint.InternalYValue < limitingYValue && chart.View3D)
+                {
+                    top = bottom = bottom + 100;
+                }
             }
 
             columnHeight = Math.Abs(top - bottom);
@@ -1491,7 +1503,9 @@ namespace Visifire.Charts
 
         private static void Update2DAnd3DColumnColor(DataPoint dataPoint, Brush newValue)
         {
-            Brush colorNewValue = (newValue != null) ? newValue : dataPoint.Color;
+            Brush colorNewValue = (dataPoint.GetValue(DataPoint.ColorProperty) != null) ? (Brush)dataPoint.GetValue(DataPoint.ColorProperty) : ((newValue != null) ? newValue : dataPoint.Color); 
+
+            //Brush colorNewValue = (newValue != null) ? newValue : dataPoint.Color;
 
             Faces faces = dataPoint.Faces;
 
@@ -1643,66 +1657,144 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.LabelBackground:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else if ((Boolean)dataPoint.LabelEnabled)
-                        marker.TextBackground = dataPoint.LabelBackground;
+                    //if (marker == null)
+                    //    CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    //else if ((Boolean)dataPoint.LabelEnabled)
+                    //    marker.TextBackground = dataPoint.LabelBackground;
+                    //else
+                    //    marker.TextBackground = Graphics.TRANSPARENT_BRUSH;
+
+                    if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                        CreateOrUpdateMarker4VerticalChart(dataPoint, labelCanvas, new Size(columnVisual.Width, columnVisual.Height),
+                            (Double)columnVisual.GetValue(Canvas.LeftProperty), (Double)columnVisual.GetValue(Canvas.TopProperty));
                     else
-                        marker.TextBackground = Graphics.TRANSPARENT_BRUSH;
+                        BarChart.CreateOrUpdateMarker4HorizontalChart(chart, labelCanvas, dataPoint,
+                            (Double)columnVisual.GetValue(Canvas.LeftProperty), (Double)columnVisual.GetValue(Canvas.TopProperty),
+                            dataPoint.InternalYValue >= 0, chart.ChartArea.PLANK_DEPTH / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0));
+
                     break;
 
-                case VcProperties.LabelEnabled:              
+                case VcProperties.LabelEnabled:
                     //if(marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    //CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
                     //else
                     //    marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
+
+                    if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                        CreateOrUpdateMarker4VerticalChart(dataPoint, labelCanvas, new Size(columnVisual.Width, columnVisual.Height),
+                            (Double)columnVisual.GetValue(Canvas.LeftProperty), (Double)columnVisual.GetValue(Canvas.TopProperty));
+                    else
+                        BarChart.CreateOrUpdateMarker4HorizontalChart(chart, labelCanvas, dataPoint,
+                            (Double)columnVisual.GetValue(Canvas.LeftProperty), (Double)columnVisual.GetValue(Canvas.TopProperty),
+                            dataPoint.InternalYValue >= 0, chart.ChartArea.PLANK_DEPTH / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0));
 
                     break;
 
                 case VcProperties.LabelFontColor:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else
-                        marker.FontColor = dataPoint.LabelFontColor;
+                    //if (marker == null)
+                    //    CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    //else
+                    //    marker.FontColor = dataPoint.LabelFontColor;
+
+                    if ((Boolean)dataPoint.LabelEnabled)
+                    {
+                        if (dataPoint.LabelVisual != null && ((dataPoint.LabelVisual as Border).Child as Canvas).Children[0] != null)
+                        {
+                            (((dataPoint.LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Foreground = dataPoint.LabelFontColor;
+                        }
+                    }
 
                     break;
 
                 case VcProperties.LabelFontFamily:
                     //if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    //CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
                     //else
                     //    marker.FontFamily = dataPoint.LabelFontFamily;
+
+                    if ((Boolean)dataPoint.LabelEnabled)
+                    {
+                        if (dataPoint.LabelVisual != null && ((dataPoint.LabelVisual as Border).Child as Canvas).Children[0] != null)
+                        {
+                            (((dataPoint.LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).FontFamily = dataPoint.LabelFontFamily;
+                        }
+                    }
+
                     break;
 
                 case VcProperties.LabelFontStyle:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else
-                        marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                    //if (marker == null)
+                    //    CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    //else
+                    //    marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+
+                    if ((Boolean)dataPoint.LabelEnabled)
+                    {
+                        if (dataPoint.LabelVisual != null && ((dataPoint.LabelVisual as Border).Child as Canvas).Children[0] != null)
+                        {
+                            (((dataPoint.LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                        }
+                    }
+
                     break;
 
                 case VcProperties.LabelFontSize:
                     //if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    //CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
                     //else
                     //    marker.FontSize = (Double)dataPoint.LabelFontSize;
+
+                    if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                        CreateOrUpdateMarker4VerticalChart(dataPoint, labelCanvas, new Size(columnVisual.Width, columnVisual.Height),
+                            (Double)columnVisual.GetValue(Canvas.LeftProperty), (Double)columnVisual.GetValue(Canvas.TopProperty));
+                    else
+                        BarChart.CreateOrUpdateMarker4HorizontalChart(chart, labelCanvas, dataPoint,
+                            (Double)columnVisual.GetValue(Canvas.LeftProperty), (Double)columnVisual.GetValue(Canvas.TopProperty),
+                            dataPoint.InternalYValue >= 0, chart.ChartArea.PLANK_DEPTH / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0));
+
                     break;
 
                 case VcProperties.LabelFontWeight:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else
-                        marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                    //if (marker == null)
+                    //    CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    //else
+                    //    marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+
+                    if ((Boolean)dataPoint.LabelEnabled)
+                    {
+                        if (dataPoint.LabelVisual != null && ((dataPoint.LabelVisual as Border).Child as Canvas).Children[0] != null)
+                        {
+                            (((dataPoint.LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                        }
+                    }
+
                     break;
 
                 case VcProperties.LabelStyle:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    //if (marker == null)
+                    //CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+
+                    if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                        CreateOrUpdateMarker4VerticalChart(dataPoint, labelCanvas, new Size(columnVisual.Width, columnVisual.Height),
+                            (Double)columnVisual.GetValue(Canvas.LeftProperty), (Double)columnVisual.GetValue(Canvas.TopProperty));
+                    else
+                        BarChart.CreateOrUpdateMarker4HorizontalChart(chart, labelCanvas, dataPoint,
+                            (Double)columnVisual.GetValue(Canvas.LeftProperty), (Double)columnVisual.GetValue(Canvas.TopProperty),
+                            dataPoint.InternalYValue >= 0, chart.ChartArea.PLANK_DEPTH / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0));
+
                     break;
 
                 case VcProperties.LabelAngle:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    //if (marker == null)
+                    //CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                        CreateOrUpdateMarker4VerticalChart(dataPoint, labelCanvas, new Size(columnVisual.Width, columnVisual.Height),
+                            (Double)columnVisual.GetValue(Canvas.LeftProperty), (Double)columnVisual.GetValue(Canvas.TopProperty));
+                    else
+                        BarChart.CreateOrUpdateMarker4HorizontalChart(chart, labelCanvas, dataPoint,
+                            (Double)columnVisual.GetValue(Canvas.LeftProperty), (Double)columnVisual.GetValue(Canvas.TopProperty),
+                            dataPoint.InternalYValue >= 0, chart.ChartArea.PLANK_DEPTH / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0));
+
                     break;
 
                 case VcProperties.LabelText:

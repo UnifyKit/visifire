@@ -34,7 +34,7 @@ namespace Visifire.Commons
         /// </summary>
         public VisifireControl()
         {
-            ToolTipEnabled = true;
+            //ToolTipEnabled = true;
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Visifire.Commons
             ("ToolTipEnabled",
             typeof(Boolean),
             typeof(VisifireControl),
-            null);
+            new PropertyMetadata(true, null));
 
 #if SL &&!WP
 

@@ -5,17 +5,34 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 mc:Ignorable="d" xmlns:my="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
 >
-    
+
     <Grid x:Name="LayoutRoot">
-        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-                  Width="490" Height="290" Theme="Theme1" x:Name="MyChart" View3D="false"  >
+
+        <vc:Chart  xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" 
+    Width="490" Height="290" Theme="Theme1" ShadowEnabled="True" CornerRadius="7,7,0,0" BorderThickness="0.5" BorderBrush="Gray" AnimatedUpdate="true" >
 
             <vc:Chart.Titles>
-                <vc:Title Text="Athens 2004 Olympics " />
+                <vc:Title Text="Athens 2004 Olympics" FontFamily="Arial" FontSize="14"/>
             </vc:Chart.Titles>
 
+            <vc:Chart.PlotArea>
+                <vc:PlotArea CornerRadius="0,14,0,0" BorderThickness="0,1,1,0" BorderColor="LightGray" />
+            </vc:Chart.PlotArea>
+
+            <vc:Chart.AxesX>
+                <vc:Axis Title="Country">
+                    <vc:Axis.AxisLabels>
+                        <vc:AxisLabels Interval="1"/>
+                    </vc:Axis.AxisLabels>
+                </vc:Axis>
+            </vc:Chart.AxesX>
+
+            <vc:Chart.AxesY>
+                <vc:Axis AxisMinimum="0" AxisMaximum="60" Title="Gold Medals Won"/>
+            </vc:Chart.AxesY>
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column" >
+                <vc:DataSeries RenderAs="Column" LabelEnabled="True">
                     <vc:DataSeries.DataPoints>
                         <vc:DataPoint AxisXLabel="USA" YValue="50"/>
                         <vc:DataPoint AxisXLabel="China" YValue="35"/>
@@ -25,7 +42,6 @@ mc:Ignorable="d" xmlns:my="clr-namespace:System.Windows.Controls;assembly=System
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
-
         </vc:Chart>
     </Grid>
 </UserControl>
