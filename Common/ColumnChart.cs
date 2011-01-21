@@ -477,6 +477,21 @@ namespace Visifire.Charts
                             Angle = angle
                         };
                     }
+
+                    if (chart.SmartLabelEnabled)
+                    {
+                        if (dataPoint.Parent.RenderAs == RenderAs.StackedColumn || dataPoint.Parent.RenderAs == RenderAs.StackedColumn100)
+                        {
+                            if (isVertical)
+                            {
+                                if (autoLabelStyle == LabelStyles.Inside)
+                                {
+                                    if (columnVisualSize.Height < tb.Visual.Width)
+                                        return;
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                 {

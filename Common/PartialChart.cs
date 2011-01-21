@@ -415,8 +415,25 @@ namespace Visifire.Charts
 
         #endregion
 
-        #region Public Properties      
-        
+        #region Public Properties
+
+        /// <summary>
+        /// Get or Set ThemeEnabled property
+        /// Whether to apply default Theme (Theme1) if Theme property is not set in chart
+        /// </summary>
+        public Boolean ThemeEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(ThemeEnabledProperty);
+            }
+            set
+            {
+                SetValue(ThemeEnabledProperty, value);
+            }
+        }
+
+
         /// <summary>
         /// Get or Set SamplingThreshold property
         /// Limits the number of points to be displayed on the chart.
@@ -428,7 +445,7 @@ namespace Visifire.Charts
                 return (Int32)GetValue(SamplingThresholdProperty);
             }
             set
-            {
+            {   
                 SetValue(SamplingThresholdProperty, value);
             }
         }
@@ -464,6 +481,18 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Identifies the Visifire.Charts.Axis.ThemeEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.ThemeEnabled dependency property.
+        /// </returns>
+        public static DependencyProperty ThemeEnabledProperty = DependencyProperty.Register
+            ("ThemeEnabled",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(true, OnThemeEnabledPropertyChanged));
+
+        /// <summary>
         /// Identifies the Visifire.Charts.Axis.ZoomingEnabled dependency property.
         /// </summary>
         /// <returns>
@@ -493,6 +522,17 @@ namespace Visifire.Charts
             }
 
             c._clearAndResetZoomState = true;
+            c.InvokeRender();
+        }
+                
+        /// <summary>
+        /// Event handler manages ThemeEnabled property change event of Chart
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnThemeEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
             c.InvokeRender();
         }
 
@@ -2499,7 +2539,9 @@ namespace Visifire.Charts
             || e.Message == "Height must be non-negative." 
             || e.Message == "Width must be non-negative." 
             || e.Message == "Size must be non-negative." 
-            || e.Message == "Internal Size Error")
+            || e.Message == "Internal Size Error"
+            || e.Message.ToLower().Contains("width")
+            || e.Message.ToLower().Contains("height"))
             {
 #if DEBUG
                 System.Diagnostics.Debug.WriteLine("------------------------------------------");

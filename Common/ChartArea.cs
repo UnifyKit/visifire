@@ -2855,147 +2855,155 @@ namespace Visifire.Charts
 
             Double top = 0, left = 0, right = 0, bottom = 0;
 
-            if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
-            {
-                #region For vertical chart
-
-                Double totalWidthReduced1 = DrawAxesY(plotAreaSize, true);
-                //plotAreaSize.Width -= totalWidthReduced1;
-                plotAreaSize.Width = Math.Max(plotAreaSize.Width - totalWidthReduced1, 0);
-
-                UpdateLayoutSettings(plotAreaSize);
-
-                Double totalHeightReduced1 = DrawAxesX(plotAreaSize, true);
-
-                Double oldScrollableLength = ScrollableLength;
-
-                plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced1, 0);
-
-                plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
-
-                UpdateLayoutSettings(plotAreaSize);
-
-                Double oldAxisXWidth = _plotAreaSize.Width - ((AxisY != null) ? AxisY.Width : 0) - ((AxisY2 != null) ? AxisY2.Width : 0);
-
-                DrawAxesY(plotAreaSize, true);
-
-                Double newAxisXWidth = _plotAreaSize.Width - ((AxisY != null) ? AxisY.Width : 0) - ((AxisY2 != null) ? AxisY2.Width : 0);
-
-                if (oldAxisXWidth != newAxisXWidth)
+            try
+            {   
+                if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                 {
-                    plotAreaSize.Width = newAxisXWidth;
+                    #region For vertical chart
 
-                    if (ScrollableLength == oldAxisXWidth)
-                        ScrollableLength = newAxisXWidth;
-                }
+                    Double totalWidthReduced1 = DrawAxesY(plotAreaSize, true);
+                    //plotAreaSize.Width -= totalWidthReduced1;
+                    plotAreaSize.Width = Math.Max(plotAreaSize.Width - totalWidthReduced1, 0);
 
-                Double oldAxisXLabelLeftOverflow = AxisX.AxisLabels.LeftOverflow;
-                Double oldAxisYLabelRightOverflow = AxisX.AxisLabels.RightOverflow;
+                    UpdateLayoutSettings(plotAreaSize);
 
-                Double totalHeightReduced2;
+                    Double totalHeightReduced1 = DrawAxesX(plotAreaSize, true);
 
-                if(oldScrollableLength != ScrollableLength)
-                    totalHeightReduced2 = DrawAxesX(plotAreaSize, true);
-                else
-                    totalHeightReduced2  = DrawAxesX(plotAreaSize, false);
+                    Double oldScrollableLength = ScrollableLength;
 
-                // Check if current left and right Overflow of AxisXLabel have same value as it were before rendering the AxisX
-                //if ()
-                //{   
-                //    totalHeightReduced2 = DrawAxesX(plotAreaSize, false);
-                //    plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
-                //}
+                    plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced1, 0);
 
-                if (!Double.IsNaN(totalHeightReduced2) && totalHeightReduced2 != totalHeightReduced1
-                    || (oldAxisXLabelLeftOverflow != AxisX.AxisLabels.LeftOverflow || oldAxisYLabelRightOverflow != AxisX.AxisLabels.RightOverflow)
-                    )
-                {
                     plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
-                    plotAreaSize.Height += totalHeightReduced1;
-                    //plotAreaSize.Height -= totalHeightReduced2;
-                    plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced2, 0);
-                    UpdateLayoutSettings(plotAreaSize);
-                    DrawAxesY(plotAreaSize, false);
-                    DrawAxesX(plotAreaSize, false);
-                }
 
-                #endregion
-            }
-            else if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
-            {
-                #region For horizontal chart
-
-                // Draw the y-axis for Horizontal chart
-                Double totalHeightReduced = DrawAxesX(plotAreaSize, true);
-
-                plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced, 0);
-                UpdateLayoutSettings(plotAreaSize);
-
-                Double totalWidthReduced = DrawAxesY(plotAreaSize, true);
-
-                Double oldScrollableLength = ScrollableLength;
-
-                plotAreaSize.Width = Math.Max(plotAreaSize.Width - totalWidthReduced, 0);
-
-                plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
-
-                UpdateLayoutSettings(plotAreaSize);
-
-                plotAreaSize.Width -= SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
-                Double totalHeightReduced2 = DrawAxesX(plotAreaSize, true);
-                plotAreaSize.Width += SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
-
-                Double totalWidthReduced2 = 0;
-
-                if (totalHeightReduced2 != totalHeightReduced)
-                {
-                    plotAreaSize.Height += totalHeightReduced;
-                    plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced2, 0);
                     UpdateLayoutSettings(plotAreaSize);
 
-                    if(oldScrollableLength != ScrollableLength)
-                        totalWidthReduced2 = DrawAxesY(plotAreaSize, true);
-                    else
-                        totalWidthReduced2 = DrawAxesY(plotAreaSize, false);
-                }
+                    Double oldAxisXWidth = _plotAreaSize.Width - ((AxisY != null) ? AxisY.Width : 0) - ((AxisY2 != null) ? AxisY2.Width : 0);
 
-                if (totalWidthReduced2 == 0)
-                {
+                    DrawAxesY(plotAreaSize, true);
+
+                    Double newAxisXWidth = _plotAreaSize.Width - ((AxisY != null) ? AxisY.Width : 0) - ((AxisY2 != null) ? AxisY2.Width : 0);
+
+                    if (oldAxisXWidth != newAxisXWidth)
+                    {
+                        plotAreaSize.Width = newAxisXWidth;
+
+                        if (ScrollableLength == oldAxisXWidth)
+                            ScrollableLength = newAxisXWidth;
+                    }
+
+                    Double oldAxisXLabelLeftOverflow = AxisX.AxisLabels.LeftOverflow;
+                    Double oldAxisYLabelRightOverflow = AxisX.AxisLabels.RightOverflow;
+
+                    Double totalHeightReduced2;
+
                     if (oldScrollableLength != ScrollableLength)
-                        totalWidthReduced2 = DrawAxesY(plotAreaSize, true);
+                        totalHeightReduced2 = DrawAxesX(plotAreaSize, true);
                     else
-                        totalWidthReduced2 = DrawAxesY(plotAreaSize, false);
-                }
+                        totalHeightReduced2 = DrawAxesX(plotAreaSize, false);
 
-                if (!Double.IsNaN(totalWidthReduced2) && totalWidthReduced2 != totalWidthReduced)
-                {
-                    plotAreaSize.Width += totalWidthReduced;
-                    plotAreaSize.Width = Math.Max(plotAreaSize.Width - totalWidthReduced2, 0);
-                    UpdateLayoutSettings(plotAreaSize);
-                    DrawAxesX(plotAreaSize, false);
-                }
+                    // Check if current left and right Overflow of AxisXLabel have same value as it were before rendering the AxisX
+                    //if ()
+                    //{   
+                    //    totalHeightReduced2 = DrawAxesX(plotAreaSize, false);
+                    //    plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
+                    //}
 
-                /*
-                if (totalHeightReduced2 != totalHeightReduced)
+                    if (!Double.IsNaN(totalHeightReduced2) && totalHeightReduced2 != totalHeightReduced1
+                        || (oldAxisXLabelLeftOverflow != AxisX.AxisLabels.LeftOverflow || oldAxisYLabelRightOverflow != AxisX.AxisLabels.RightOverflow)
+                        )
+                    {
+                        plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
+                        plotAreaSize.Height += totalHeightReduced1;
+                        //plotAreaSize.Height -= totalHeightReduced2;
+                        plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced2, 0);
+                        UpdateLayoutSettings(plotAreaSize);
+                        DrawAxesY(plotAreaSize, false);
+                        DrawAxesX(plotAreaSize, false);
+                    }
+
+                    #endregion
+                }
+                else if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                 {
-                    plotAreaSize.Height += totalHeightReduced;
-                    plotAreaSize.Height -= totalHeightReduced2;
+                    #region For horizontal chart
+
+                    // Draw the y-axis for Horizontal chart
+                    Double totalHeightReduced = DrawAxesX(plotAreaSize, true);
+
+                    plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced, 0);
                     UpdateLayoutSettings(plotAreaSize);
-                    DrawAxesY(plotAreaSize);
+
+                    Double totalWidthReduced = DrawAxesY(plotAreaSize, true);
+
+                    Double oldScrollableLength = ScrollableLength;
+
+                    plotAreaSize.Width = Math.Max(plotAreaSize.Width - totalWidthReduced, 0);
+
+                    plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
+
+                    UpdateLayoutSettings(plotAreaSize);
+
+                    plotAreaSize.Width -= SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
+                    Double totalHeightReduced2 = DrawAxesX(plotAreaSize, true);
+                    plotAreaSize.Width += SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
+
+                    Double totalWidthReduced2 = 0;
+
+                    if (totalHeightReduced2 != totalHeightReduced)
+                    {
+                        plotAreaSize.Height += totalHeightReduced;
+                        plotAreaSize.Height = Math.Max(plotAreaSize.Height - totalHeightReduced2, 0);
+                        UpdateLayoutSettings(plotAreaSize);
+
+                        if (oldScrollableLength != ScrollableLength)
+                            totalWidthReduced2 = DrawAxesY(plotAreaSize, true);
+                        else
+                            totalWidthReduced2 = DrawAxesY(plotAreaSize, false);
+                    }
+
+                    if (totalWidthReduced2 == 0)
+                    {
+                        if (oldScrollableLength != ScrollableLength)
+                            totalWidthReduced2 = DrawAxesY(plotAreaSize, true);
+                        else
+                            totalWidthReduced2 = DrawAxesY(plotAreaSize, false);
+                    }
+
+                    if (!Double.IsNaN(totalWidthReduced2) && totalWidthReduced2 != totalWidthReduced)
+                    {
+                        plotAreaSize.Width += totalWidthReduced;
+                        plotAreaSize.Width = Math.Max(plotAreaSize.Width - totalWidthReduced2, 0);
+                        UpdateLayoutSettings(plotAreaSize);
+                        DrawAxesX(plotAreaSize, false);
+                    }
+
+                    /*
+                    if (totalHeightReduced2 != totalHeightReduced)
+                    {
+                        plotAreaSize.Height += totalHeightReduced;
+                        plotAreaSize.Height -= totalHeightReduced2;
+                        UpdateLayoutSettings(plotAreaSize);
+                        DrawAxesY(plotAreaSize);
+                    }
+                    else
+                        DrawAxesY(plotAreaSize);
+                    */
+
+                    #endregion Horizontal Render
                 }
                 else
-                    DrawAxesY(plotAreaSize);
-                */
+                {
+                    UpdateLayoutSettings(plotAreaSize);
+                }
 
-                #endregion Horizontal Render
+                // Calculates the top and left position of PlotArea
+                Chart.PlotArea.GetPlotAreaStartPosition();
+
             }
-            else
+            catch
             {
-                UpdateLayoutSettings(plotAreaSize);
+                throw new ArgumentException("Internal Size Error");
             }
-
-            // Calculates the top and left position of PlotArea
-            Chart.PlotArea.GetPlotAreaStartPosition();
 
             return plotAreaSize;
         }
@@ -6222,9 +6230,9 @@ namespace Visifire.Charts
         private void ApplyOpacity()
         {
             foreach (DataSeries ds in Chart.InternalSeries)
-            {
+            {                   
                 switch (ds.RenderAs)
-                {
+                {   
                     case RenderAs.StackedArea:
                     case RenderAs.StackedArea100:
                     case RenderAs.Pie:
