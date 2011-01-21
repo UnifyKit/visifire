@@ -61,14 +61,14 @@ namespace Visifire.Charts
         {
             SetDefaultStyle();
 
-            if (Inlines != null)
+            Inlines = new InlinesCollection();
+                       
+            Inlines.CollectionChanged += delegate
             {
-                Inlines.CollectionChanged += delegate
-                {
-                    if (Parent != null && String.IsNullOrEmpty(Text))
-                        FirePropertyChanged(VcProperties.Inlines);
-                };
-            }
+                if (Parent != null && String.IsNullOrEmpty(Text))
+                    FirePropertyChanged(VcProperties.Inlines);
+            };
+
 
             // Bind();
         }
@@ -137,17 +137,17 @@ namespace Visifire.Charts
 
         #region Public Properties
 
-        /// <summary>
-        /// Identifies the Visifire.Charts.Title.Inlines dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Title.Inlines dependency property.
-        /// </returns>
-        public static readonly DependencyProperty InlinesProperty = DependencyProperty.Register
-            ("Inlines",
-            typeof(InlinesCollection),
-            typeof(Title),
-            new PropertyMetadata(new InlinesCollection(), OnInlinesPropertyChanged));
+        ///// <summary>
+        ///// Identifies the Visifire.Charts.Title.Inlines dependency property.
+        ///// </summary>
+        ///// <returns>
+        ///// The identifier for the Visifire.Charts.Title.Inlines dependency property.
+        ///// </returns>
+        //public readonly DependencyProperty InlinesProperty = DependencyProperty.Register
+        //    ("Inlines",
+        //    typeof(InlinesCollection),
+        //    typeof(Title),
+        //    new PropertyMetadata(new InlinesCollection(), OnInlinesPropertyChanged));
         
         /// <summary>
         /// Identifies the Visifire.Charts.Title.Enabled dependency property.
@@ -575,14 +575,8 @@ namespace Visifire.Charts
         /// </summary>
         public InlinesCollection Inlines
         {
-            get
-            {
-                return (InlinesCollection)GetValue(InlinesProperty);
-            }
-            set
-            {
-                SetValue(InlinesProperty, value);
-            }
+            get;
+            set;
         }
         
         /// <summary>
@@ -1372,26 +1366,26 @@ namespace Visifire.Charts
 
         #region Private Methods
 
-        /// <summary>
-        /// EnabledProperty changed call back function
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnInlinesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
+        ///// <summary>
+        ///// EnabledProperty changed call back function
+        ///// </summary>
+        ///// <param name="d">DependencyObject</param>
+        ///// <param name="e">DependencyPropertyChangedEventArgs</param>
+        //private static void OnInlinesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        //{
+        //    Title title = d as Title;
 
-            if (e.NewValue != null)
-            {
-                (e.NewValue as InlinesCollection).CollectionChanged += delegate
-                {
-                    if (title.Parent != null && String.IsNullOrEmpty(title.Text))
-                        title.FirePropertyChanged(VcProperties.Inlines);
-                };
-            }
+        //    if (e.NewValue != null)
+        //    {
+        //        (e.NewValue as InlinesCollection).CollectionChanged += delegate
+        //        {
+        //            if (title.Parent != null && String.IsNullOrEmpty(title.Text))
+        //                title.FirePropertyChanged(VcProperties.Inlines);
+        //        };
+        //    }
 
-            title.FirePropertyChanged(VcProperties.Enabled);
-        }
+        //    title.FirePropertyChanged(VcProperties.Enabled);
+        //}
         
         /// <summary>
         /// EnabledProperty changed call back function

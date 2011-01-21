@@ -679,8 +679,9 @@ namespace Visifire.Charts
             {
                 this._axisMaximumValue = 1;
                 this._axisMinimumValue = 0;
-                this._interval = 1;
 
+                if (!this._overrideInterval)
+                    this._interval = 1;              
                 return;
             }
 

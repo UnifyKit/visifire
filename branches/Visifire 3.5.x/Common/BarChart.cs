@@ -245,6 +245,21 @@ namespace Visifire.Charts
                         tb.Visual.SetValue(Canvas.LeftProperty, labelLeft);
                         tb.Visual.SetValue(Canvas.TopProperty, labelTop);
                     }
+
+                    if (chart.SmartLabelEnabled)
+                    {
+                        if (dataPoint.Parent.RenderAs == RenderAs.StackedBar || dataPoint.Parent.RenderAs == RenderAs.StackedBar100)
+                        {
+                            if (!isVertical)
+                            {
+                                if (autoLabelStyle == LabelStyles.Inside)
+                                {
+                                    if (barVisualSize.Width < tb.Visual.Width)
+                                        return;
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                 {

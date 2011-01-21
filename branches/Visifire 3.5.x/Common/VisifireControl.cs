@@ -19,6 +19,7 @@ using System.Windows.Input;
 using System.IO;
 using Visifire.Commons.Controls;
 using System.Linq;
+using System.Windows.Data;
 
 namespace Visifire.Commons
 {
@@ -131,6 +132,88 @@ namespace Visifire.Commons
                 SetValue(ToolTipEnabledProperty, value);
             }
         }
+
+        private String SeparaterText
+        {
+            get
+            {
+                return (String)GetValue(SeparaterTextProperty);
+            }
+            set
+            {
+                SetValue(SeparaterTextProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Identifies the Visifire.Commons.SeparaterText dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Commons.SeparaterText dependency property.
+        /// </returns>
+        private static readonly DependencyProperty SeparaterTextProperty = DependencyProperty.Register
+            ("SeparaterText",
+            typeof(String),
+            typeof(VisifireControl),
+            new PropertyMetadata("|", null));
+
+        public String ZoomOutText
+        {
+            get
+            {
+                return (String)GetValue(ZoomOutTextProperty);
+            }
+            set
+            {
+                if (String.IsNullOrEmpty(value))
+                    SeparaterText = "";
+                else
+                    SeparaterText = "|";
+
+                SetValue(ZoomOutTextProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Identifies the Visifire.Commons.ZoomOutText dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Commons.ZoomOutText dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ZoomOutTextProperty = DependencyProperty.Register
+            ("ZoomOutText",
+            typeof(String),
+            typeof(VisifireControl),
+            new PropertyMetadata("Zoom Out", null));
+
+        public String ShowAllText
+        {
+            get
+            {
+                return (String)GetValue(ShowAllTextProperty);
+            }
+            set
+            {
+                if (String.IsNullOrEmpty(value))
+                    SeparaterText = "";
+                else
+                    SeparaterText = "|";
+
+                SetValue(ShowAllTextProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Identifies the Visifire.Commons.ShowAllText dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Commons.ShowAllText dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ShowAllTextProperty = DependencyProperty.Register
+            ("ShowAllText",
+            typeof(String),
+            typeof(VisifireControl),
+            new PropertyMetadata("Show All", null));
 
         /// <summary>
         /// Whether the chart is in design mode or application mode
@@ -264,7 +347,13 @@ namespace Visifire.Commons
         private void LoadSeparater()
         {
             _zoomIconSeparater = new TextBlock();
-            _zoomIconSeparater.Text = "|";
+
+            Binding binding = new Binding("SeparaterText");
+            binding.Source = this;
+            _zoomIconSeparater.SetBinding(TextBlock.TextProperty, binding);
+
+            //_zoomIconSeparater.Text = "|";
+            
             _zoomIconSeparater.FontSize = 9;
             _zoomIconSeparater.Foreground = new SolidColorBrush(Colors.Gray);
             _zoomIconSeparater.HorizontalAlignment = HorizontalAlignment.Right;
@@ -284,7 +373,13 @@ namespace Visifire.Commons
             _showAllTextBlock.VerticalAlignment = VerticalAlignment.Center;
             _showAllTextBlock.Margin = new Thickness(2, 0, 0, 0);
             _showAllTextBlock.Cursor = Cursors.Hand;
-            _showAllTextBlock.Text = "Show All";
+
+            Binding binding = new Binding("ShowAllText");
+            binding.Source = this;
+            _showAllTextBlock.SetBinding(TextBlock.TextProperty, binding);
+
+            //_showAllTextBlock.Text = "Show All";
+
             _showAllTextBlock.FontSize = 9;
 
             _showAllTextBlock.MouseMove += delegate(Object sender, MouseEventArgs e)
@@ -311,7 +406,13 @@ namespace Visifire.Commons
             _zoomOutTextBlock.VerticalAlignment = VerticalAlignment.Center;
             _zoomOutTextBlock.Margin = new Thickness(2, 0, 0, 0);
             _zoomOutTextBlock.Cursor = Cursors.Hand;
-            _zoomOutTextBlock.Text = "Zoom Out";
+
+            Binding binding = new Binding("ZoomOutText");
+            binding.Source = this;
+            _zoomOutTextBlock.SetBinding(TextBlock.TextProperty, binding);
+
+            //_zoomOutTextBlock.Text = "Zoom Out";
+
             _zoomOutTextBlock.FontSize = 9;
 
             _zoomOutTextBlock.MouseMove += delegate(Object sender, MouseEventArgs e)

@@ -75,10 +75,14 @@ namespace Visifire.Commons
         /// <param name="KeyName">Style key name</param>
         public void ApplyStyleFromTheme(VisifireControl control, String keyName)
         {
+            Chart chart = control as Chart;
+
+            if (chart != null && !chart.ThemeEnabled)
+                return;
+
             bool oldIsNotificationEnable = IsNotificationEnable;
             IsNotificationEnable = false;
-
-            Chart chart = control as Chart;
+                        
             if (chart.StyleDictionary != null)
             {
                 //#if SL

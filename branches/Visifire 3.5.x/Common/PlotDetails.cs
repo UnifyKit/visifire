@@ -477,7 +477,7 @@ namespace Visifire.Charts
         }
 
         internal void CalculateInternalXValuesOfDataPoints()
-        {
+        {   
             _axisXPrimary = GetAxisXFromChart(Chart, AxisTypes.Primary);
 
             CalculateInternalXValue4NumericAxis(Chart);
@@ -2291,6 +2291,9 @@ namespace Visifire.Charts
             Double max = Double.NegativeInfinity;
             foreach (PlotGroup plotGroup in PlotGroups)
             {
+                if (plotGroup.MinimumX == plotGroup.MaximumX)
+                    continue;
+
                 var dsList = (from dataSeries in plotGroup.DataSeriesList
                               where dataSeries.DataPoints.Count > 0
                               select dataSeries);
@@ -2300,7 +2303,7 @@ namespace Visifire.Charts
                     var plotGroups = (from d in dsList select d.PlotGroup);
 
                     if (plotGroups != null && plotGroups.Count() > 0)
-                    {
+                    {   
                         Double tempMax = (from plotData in plotGroups
                                           where !Double.IsNaN(plotData.MinDifferenceX)
                                           select plotData.MinDifferenceX).Max();

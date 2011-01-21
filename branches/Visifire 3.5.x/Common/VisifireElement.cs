@@ -327,10 +327,10 @@ namespace Visifire.Commons
                 return;
             }
             else
-            {
+            {   
                 String text = _element.ParseToolTipText(_element.ToolTipText);
 
-                if (!String.IsNullOrEmpty(text))
+                if (!String.IsNullOrEmpty(text) && _control._toolTip != null)
                 {
                     _control._toolTip.Text = text;
 
