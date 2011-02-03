@@ -1,0 +1,58 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" View3D="True" BorderBrush="Gray" Width="500" Height="300">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Multiseries 3D Column Chart" FontColor="#3e6768"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesX>
+    <vc:Axis>
+      <vc:Axis.AxisLabels>
+        <vc:AxisLabels FontColor="#3e6768"/>
+      </vc:Axis.AxisLabels>
+    </vc:Axis>
+  </vc:Chart.AxesX>
+
+  <vc:Chart.AxesY>
+    <vc:Axis>
+      <vc:Axis.AxisLabels>
+        <vc:AxisLabels FontColor="#3e6768"/>
+      </vc:Axis.AxisLabels>
+    </vc:Axis>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Column" Bevel="False" Cursor="Hand" ShowInLegend="True">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="2/9/2007" YValue="60"/>
+        <vc:DataPoint AxisXLabel="2/10/2007" YValue="30"/>
+        <vc:DataPoint AxisXLabel="2/11/2007" YValue="68"/>
+        <vc:DataPoint AxisXLabel="2/12/2008" YValue="75"/>
+        <vc:DataPoint AxisXLabel="2/1/2008" YValue="90"/>
+        <vc:DataPoint AxisXLabel="2/2/2008" YValue="50"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries RenderAs="Column" Bevel="False" Cursor="Hand" ShowInLegend="True">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="45"/>
+        <vc:DataPoint YValue="40"/>
+        <vc:DataPoint YValue="50"/>
+        <vc:DataPoint YValue="90"/>
+        <vc:DataPoint YValue="70"/>
+        <vc:DataPoint YValue="80"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries RenderAs="Column" Bevel="False" Cursor="Hand" ShowInLegend="True">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="40"/>
+        <vc:DataPoint YValue="55"/>
+        <vc:DataPoint YValue="80"/>
+        <vc:DataPoint YValue="50"/>
+        <vc:DataPoint YValue="50"/>
+        <vc:DataPoint YValue="66"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

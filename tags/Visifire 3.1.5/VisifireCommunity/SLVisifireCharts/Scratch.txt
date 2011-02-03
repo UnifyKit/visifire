@@ -1,0 +1,815 @@
+﻿
+        private Boolean CheckIfLegendAvailable(PlacementTypes placementType)
+        {
+            foreach (Legend legend in Chart.Legends)
+            {
+                if (!legend.DockInsidePlotArea)
+                {
+                    switch (placementType)
+                    {
+                        case PlacementTypes.Bottom:
+                            if (legend.VerticalAlignment == System.Windows.VerticalAlignment.Bottom &&
+                                (legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Center
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Left
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Right
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Stretch))
+
+                                return true;
+                            break;
+                        case PlacementTypes.Top:
+                            if (legend.VerticalAlignment == System.Windows.VerticalAlignment.Top &&
+                                (legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Center
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Left
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Right
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Stretch))
+
+                                return true;
+                            break;
+                        case PlacementTypes.Left:
+                            if (legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Left &&
+                                (legend.VerticalAlignment == System.Windows.VerticalAlignment.Center
+                                || legend.VerticalAlignment == System.Windows.VerticalAlignment.Stretch))
+
+                                return true;
+                            break;
+                        case PlacementTypes.Right:
+                            if (legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Right &&
+                                (legend.VerticalAlignment == System.Windows.VerticalAlignment.Center
+                                || legend.VerticalAlignment == System.Windows.VerticalAlignment.Stretch))
+
+                                return true;
+                            break;
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Auto formats the AxisLabel text if bigger for Vertical charts
+        /// </summary>
+        /// <param name="text">Text as String</param>
+        /// <returns>Formatted text as String</returns>
+        private String AutoFormatMultilineText(String text, Boolean autoIncrementWrapAt)
+        {
+            String multiLineText = "";
+
+            if (!Double.IsNaN(TextWrap))
+            {
+                AxisLabel label = CreateLabel(text);
+                ApplyAxisLabelFontProperties(label);
+                label.CreateVisualObject(null);
+
+                Double MaxLabelWidth = (ParentAxis.PlotDetails.ChartOrientation == ChartOrientationType.Vertical) ? Chart.ActualHeight : Chart.ActualWidth;
+                MaxLabelWidth *= TextWrap;
+
+                Int32 wrapAt = (Int32)(MaxLabelWidth / WidthOfACharacter);
+
+                if ((ParentAxis.PlotDetails.ChartOrientation == ChartOrientationType.Vertical && label.ActualHeight > MaxLabelWidth)
+                    || (label.ActualWidth > MaxLabelWidth))
+                {
+                    Int32 charCount = 0;
+                    foreach (Char c in text)
+                    {
+                        if (c != ' ')
+                        {
+                            charCount++;
+                            multiLineText += c;
+                        }
+                        else if (charCount >= wrapAt)
+                        {
+                            multiLineText += "\n";
+                            charCount = 0;
+
+                            if (autoIncrementWrapAt)
+                                wrapAt += 2;
+                        }
+                        else
+                            multiLineText += c;
+                    }
+                }
+                else
+                    multiLineText = text;
+            }
+            else
+                multiLineText = text;
+
+            multiLineText = GetFormattedMultilineText(multiLineText);
+
+            return multiLineText;
+        }
+        ...............................
+
+
+                // List of nearest DataPoint from mouse pointer position
+                List<DataPoint> listOfNearestDataPoints = new List<DataPoint>();
+
+                // Find and set reference of the nearest DataPoint from mouse pointer position
+                foreach (DataSeries dataSeries in chart.InternalSeries)
+                {   
+                    if(RenderHelper.IsAxisIndependentCType(dataSeries))
+                        continue;
+
+                    Axis xAxis = dataSeries.PlotGroup.AxisX;
+                    Axis yAxis = dataSeries.PlotGroup.AxisY;
+
+                    if (e != null)
+                    {
+                        internalXValue = RenderHelper.CalculateInternalXValueFromPixelPos(Chart as Chart, xAxis, e);
+                        internalYValue = RenderHelper.CalculateInternalYValueFromPixelPos(Chart as Chart, yAxis, e);
+                    }
+
+                    dataSeries.FindNearestDataPointFromValues(internalXValue, internalYValue);
+
+                    if (dataSeries._nearestDataPoint != null)
+                        listOfNearestDataPoints.Add(dataSeries._nearestDataPoint);
+                }
+
+//////////////// Code for Plank Color
+//System.Windows.Shapes.Path path = null;
+            //if (Chart.PlotArea.Background != null && !Graphics.AreBrushesEqual(Chart.PlotArea.Background, new SolidColorBrush(Colors.Transparent)))
+            //{
+            //    path = new System.Windows.Shapes.Path();
+            //    path.Fill = Chart.PlotArea.Background;
+            //    path.Stroke = new SolidColorBrush(Colors.LightGray);
+            //    path.StrokeThickness = 0.1;
+            //    path.Opacity = 0.7;
+
+            //    PathGeometry geometry = new PathGeometry();
+            //    PathFigure pathFigure = new PathFigure();
+
+            //    PointCollection collection = new PointCollection();
+            //    UIElementCollection listOfRect = (_horizontalPlank.Visual as Canvas).Children;
+
+            //    (listOfRect[0] as Rectangle).Opacity = 0.9;
+            //    (listOfRect[1] as Rectangle).Opacity = 0.9;
+            //    (listOfRect[2] as Rectangle).Opacity = 0.9;
+
+            //    (listOfRect[0] as Rectangle).StrokeThickness = 0.5;
+            //    (listOfRect[1] as Rectangle).StrokeThickness = 0.5;
+            //    (listOfRect[2] as Rectangle).StrokeThickness = 0.5;
+
+            //    (listOfRect[0] as Rectangle).Stroke = new SolidColorBrush(Colors.Black);
+            //    (listOfRect[1] as Rectangle).Stroke = new SolidColorBrush(Colors.Black);
+            //    (listOfRect[2] as Rectangle).Stroke = new SolidColorBrush(Colors.Black);
+
+            //    collection.Add(new Point(plankDepth, -plankDepth));
+            //    collection.Add(new Point((listOfRect[1] as Rectangle).Width + plankDepth, -plankDepth));
+            //    collection.Add(new Point((listOfRect[1] as Rectangle).Width + plankThickness, PLANK_OFFSET - plankDepth - plankThickness));
+            //    collection.Add(new Point((listOfRect[1] as Rectangle).Width, (listOfRect[0] as Rectangle).Height));
+            //    collection.Add(new Point(0, (listOfRect[0] as Rectangle).Height));
+            //    collection.Add(new Point(0, -plankDepth + plankThickness));
+
+            //    foreach (Point point in collection)
+            //    {
+            //        LineSegment segment = new LineSegment();
+            //        segment.Point = point;
+            //        pathFigure.Segments.Add(segment);
+            //    }
+
+            //    geometry.Figures.Add(pathFigure);
+            //    path.Data = geometry;
+
+            //}
+            //else
+            //    _horizontalPlank.Visual.Opacity = 0.9;
+            
+            //////////////////////Code for Plank Color ends//////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Double intensity;
+            //Brush newBrush;
+
+            //if (brush.GetType().Name == "LinearGradientBrush" || brush.GetType().Name == "RadialGradientBrush")
+            //{
+            //    List<KeyValuePair<KeyValuePair<Color, Double>, Double>> listOfKeyPairs = new List<KeyValuePair<KeyValuePair<Color, double>, double>>();
+
+            //    foreach (GradientStop stop in (brush as GradientBrush).GradientStops)
+            //    {
+            //        KeyValuePair<Color, Double> pair = Graphics.GetColorIntensity(stop.Color);
+            //        listOfKeyPairs.Add(new KeyValuePair<KeyValuePair<Color, Double>, Double>(pair, stop.Offset));
+            //    }
+
+            //    var orderedListOfKeyPairs = (from pair in listOfKeyPairs orderby pair.Key.Value ascending select pair);
+
+            //    Color colorAtEndPoint = Colors.Transparent;
+            //    if (brush.GetType().Name == "LinearGradientBrush")
+            //    {
+            //        if ((brush as LinearGradientBrush).StartPoint.X < (brush as LinearGradientBrush).EndPoint.X)
+            //        {
+            //            if ((brush as LinearGradientBrush).EndPoint.X > 0.8)
+            //            {
+            //                foreach (KeyValuePair<KeyValuePair<Color, Double>, Double> pair in orderedListOfKeyPairs)
+            //                {
+            //                    if (pair.Key.Value > 0.8 && pair.Value > 0.8)
+            //                    {
+            //                        colorAtEndPoint = pair.Key.Key;
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+
+            //    intensity = orderedListOfKeyPairs.First().Key.Value;
+
+            //    if (intensity < 0.50)
+            //        intensity = intensity + 0.33;
+
+            //    Color newColor;
+            //    if (colorAtEndPoint != null && colorAtEndPoint != Colors.Transparent)
+            //    {
+            //        KeyValuePair<Color, Double> pairAtEndPoint = Graphics.GetColorIntensity(colorAtEndPoint);
+            //        if (intensity < pairAtEndPoint.Value && pairAtEndPoint.Value != 1)
+            //            intensity = pairAtEndPoint.Value;
+            //        else if (pairAtEndPoint.Value == 0)
+            //            intensity = 0.50;
+
+            //        newColor = Graphics.GetDarkerColor(orderedListOfKeyPairs.First().Key.Key, intensity);
+            //        newBrush = Graphics.CreateSolidColorBrush(newColor);
+                 
+            //        if (pairAtEndPoint.Value != 1)
+            //            newBrush.Opacity = 0.75;
+            //        else
+            //            newBrush.Opacity = 0.45;
+            //    }
+            //    else
+            //    {
+            //        newColor = Graphics.GetDarkerColor(orderedListOfKeyPairs.First().Key.Key, intensity);
+            //        newBrush = Graphics.CreateSolidColorBrush(newColor);
+
+            //        if (brush.GetType().Name == "RadialGradientBrush")
+            //            newBrush.Opacity = 0.45;
+            //    }
+            //}
+            //else
+            //{
+            //    intensity = Graphics.GetBrushIntensity(brush);
+            //    if (intensity < 0.50)
+            //        intensity = intensity + 0.33;
+            //    else if (intensity > 0.90)
+            //        intensity = 0.90;
+
+            //    Color newColor = Graphics.GetDarkerColor((brush as SolidColorBrush).Color, intensity);
+            //    newBrush = Graphics.CreateSolidColorBrush(newColor);
+            //}
+
+            //if (newBrush == null || Graphics.AreBrushesEqual(newBrush, new SolidColorBrush(Colors.Transparent)))
+            //{
+            //    newBrush = new SolidColorBrush(Colors.LightGray);
+            //}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+        //private Double GetPixelDistanceBetweenTwoNearestXValues(PlotDetails plotDetails, Chart chart, Double plotAreaSize)
+        //{
+        //    List<KeyValuePair<Double[], Double>> listOfKeyValuePair = new List<KeyValuePair<double[],double>>();
+
+        //    foreach (PlotGroup plotGroup in plotDetails.PlotGroups)
+        //    {
+        //        Double[] _xValues = (from dataPoint in plotGroup.DataPointsInPlotGroup where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct().ToArray();
+                
+        //        Double minDiff = Double.MaxValue;
+                
+        //        Double[] closetsXValuesInPlotGroup = GetClosestDataPoints(_xValues, ref minDiff);
+        //        listOfKeyValuePair.Add(new KeyValuePair<double[], double>(closetsXValuesInPlotGroup, minDiff));
+
+        //    }
+
+        //    Double minValue = Double.MaxValue;
+
+        //    foreach (KeyValuePair<Double[], Double> keyValuePair in listOfKeyValuePair)
+        //    {
+        //        minValue = Math.Min(minValue, keyValuePair.Value);    
+        //    }
+
+        //    Double[] closestXValues = new double[2];
+
+        //    foreach (KeyValuePair<Double[], Double> keyValuePair in listOfKeyValuePair)
+        //    {
+        //        if (minValue == keyValuePair.Value)
+        //            closestXValues = keyValuePair.Key;
+        //    }
+
+        //     // Get the minimum and maximum value dependeing on the axis representation value
+        //    Double minimum = plotDetails.GetAxisXMinimumDataValue(AxisX);
+        //    Double maximum = plotDetails.GetAxisXMaximumDataValue(AxisX);
+
+        //    Double minPixelValue = Graphics.ValueToPixelPosition(0, plotAreaSize, minimum, maximum, closestXValues[0]);
+        //    Double maxPixelValue = Graphics.ValueToPixelPosition(0, plotAreaSize, minimum, maximum, closestXValues[1]);
+
+        //    Double minPixelDiff = maxPixelValue - minPixelValue;
+
+        //    return minPixelDiff;
+        //}
+
+        //private Double[] GetClosestDataPoints(Double[] values, ref Double minDiff)
+        //{
+        //    Double[] distinctValues = values.Distinct().ToArray();
+
+        //    Double[] nearestXValues = new double[2];
+
+        //    // get unique values and then sort it
+        //    Array.Sort(distinctValues);
+
+        //    Double oldMinDiff = Double.MaxValue;
+
+        //    for (Int32 i = 0; i < distinctValues.Length - 1; i++)
+        //    {
+        //        // get the smallest difference between two successive elements
+        //        minDiff = Math.Abs(distinctValues[i] - distinctValues[i + 1]);
+
+        //        if (minDiff < oldMinDiff)
+        //        {
+        //            nearestXValues = new double[] { distinctValues[i], distinctValues[i + 1] };
+        //            oldMinDiff = minDiff;
+        //        }
+        //    }
+
+        //    return nearestXValues;
+        //}
+
+
+
+
+
+
+
+
+
+
+private void OnDataSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+{
+    // Remove handler for oldValue.CollectionChanged (if present)
+    INotifyCollectionChanged oldValueINotifyCollectionChanged = oldValue as INotifyCollectionChanged;
+    INotifyCollectionChanged newValueINotifyCollectionChanged = newValue as INotifyCollectionChanged;
+
+    if (oldValueINotifyCollectionChanged != null)
+    {
+        oldValueINotifyCollectionChanged.CollectionChanged -= new NotifyCollectionChangedEventHandler(DataSource_CollectionChanged);
+    }
+
+    if (newValueINotifyCollectionChanged != null)
+    {
+        newValueINotifyCollectionChanged.CollectionChanged += new NotifyCollectionChangedEventHandler(DataSource_CollectionChanged);
+    }
+}
+
+
+
+Changed in the folloing functions
+Check4DefaultInteractivity in ChartArea
+
+
+//--------------Pie Chart Fix--------------------
+
+minLength = Math.Min(width, height);
+                        pieCanvasWidth = minLength - maxLabelWidth;
+
+                        if (pieCanvasWidth < minLength / 3)
+                            pieCanvasWidth = minLength / 3;
+                        
+                        pieCanvasHeight = pieCanvasWidth;
+
+                        labelEllipseWidth = pieCanvasWidth + LABEL_LINE_LENGTH;
+                        labelEllipseHeight = labelEllipseWidth + LABEL_LINE_LENGTH;
+
+//----------------------------------              
+
+            //------------------------------------------
+		    /*
+
+            Double percentValue;
+            
+            //percentValue = ((maxPixelPos - minPixelPos) / chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength()) * (minPixelPos / (maxPixelPos) * 100);
+            
+            if (maxPixelValue - minPixelValue > chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength() / 2 - minPixelValue)
+                percentValue = 1 - Math.Abs((minPixelValue / maxPixelValue) - ((minPixelValue) / (434)));
+            else
+                percentValue = 1 - Math.Abs((minPixelValue / maxPixelValue) - ((minPixelValue) / (434 - (maxPixelValue - minPixelValue))));
+
+            Double value = (chart.ChartArea.AxisX.ScrollBarElement.Maximum - chart.ChartArea.AxisX.ScrollBarElement.Minimum) * percentValue;
+
+            chart.ChartArea.AxisX.ScrollBarElement.Scale = percentValue;
+
+            chart.ChartArea.AxisX.ScrollBarElement._currentThumbSize = chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength() * chart.ChartArea.AxisX.ScrollBarElement.Scale;
+
+            chart.ChartArea.AxisX._internalZoomingScale = chart.ChartArea.AxisX._internalMinimumZoomingScale + (1 - chart.ChartArea.AxisX._internalMinimumZoomingScale) * (1 - chart.ChartArea.AxisX.ScrollBarElement.Scale);
+
+            if (chart.Series.Count > 0)
+            {
+                chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(chart.Series[0].UpdateVisual), new object[] { VcProperties.ScrollBarScale, null });
+            }
+
+            Double val;
+            if (maxPixelValue - minPixelValue > chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength() / 2 - minPixelValue)
+            {
+                val = Math.Abs((434 - maxPixelValue) / minPixelValue * 100 - 100);
+                if (val > 434)
+                    val = 434 - val;
+            }
+            else
+                val = (maxPixelValue - minPixelValue) / (434 - minPixelValue) * 100;
+
+            chart.ChartArea.AxisX.ScrollBarElement._isNotificationEnabled = false;
+            chart.ChartArea.AxisX.ScrollBarElement.Value = val;
+            chart.ChartArea.AxisX.ScrollBarElement._isNotificationEnabled = true;
+
+            chart.ChartArea.AxisX.ScrollBarElement.RaiseScrollEvent(ScrollEventType.ThumbPosition);
+            ///////////////////////////
+  
+  
+  /*  Double offsetInPixel4MinValue;
+            Double offsetInPixel4MaxValue;
+
+            Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
+            Double lengthInPixel;
+            Double offsetInPixel = chart.ChartArea.AxisX.GetScrollBarValueFromOffset(chart.ChartArea.AxisX.ScrollBarOffset);
+
+            if (axisOrientation == Orientation.Horizontal)
+            {
+                offsetInPixel = chart.ChartArea.GetScrollingOffsetOfAxis(chart.ChartArea.AxisX, offsetInPixel);
+
+                lengthInPixel = chart.ChartArea.ChartVisualCanvas.Width;
+                offsetInPixel4MinValue = offsetInPixel;
+                offsetInPixel4MaxValue = offsetInPixel4MinValue + Width;
+            }
+            else
+            {
+                // For Bar chart types
+                lengthInPixel = chart.ChartArea.ChartVisualCanvas.Height;
+                offsetInPixel4MaxValue = lengthInPixel - offsetInPixel;
+                offsetInPixel4MinValue = offsetInPixel4MaxValue - Height;
+            }
+
+            viewPortPixDiff = offsetInPixel4MaxValue - offsetInPixel4MinValue; */
+
+
+
+/////////
+ if ((Boolean)dataPoint.LabelEnabled)
+                    {
+                        //Double currXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+                        //Double currYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+
+                        //if (chart.AnimatedUpdate)
+                        //{
+                        //    if(dataPoint.Storyboard != null)
+                        //        dataPoint.Storyboard.Pause();
+                        //    dataPoint._oldLabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
+                        //}
+                        ////dataPoint.LabelVisual.SetValue(Canvas.LeftProperty, oldLabelPosition.X);
+                        ////dataPoint.LabelVisual.SetValue(Canvas.TopProperty, oldLabelPosition.Y);
+
+                        ////dataPoint._oldLabelPosition = new Point(oldLabelPosition.X, oldLabelPosition.Y);
+
+                        //dataPoint._visualPosition = new Point(currXPosition, currYPosition);
+
+                        //if (dataPoint.Faces != null)
+                        //{
+                        //    Double labelLeft = 0;
+                        //    Double labelTop = 0;
+
+                        //    if (dataPoint.Faces.PreviousDataPoint != null)
+                        //    {
+                        //        SetLabelPosition4LineDataPoint(dataPoint.Faces.PreviousDataPoint, width, height, dataPoint.Faces.PreviousDataPoint.YValue >= 0,
+                        //            dataPoint.Faces.PreviousDataPoint._visualPosition.X, dataPoint.Faces.PreviousDataPoint._visualPosition.Y,
+                        //            ref labelLeft, ref labelTop, 6, new Size(dataPoint.Faces.PreviousDataPoint.LabelVisual.ActualWidth, dataPoint.Faces.PreviousDataPoint.LabelVisual.ActualHeight));
+
+                        //        dataPoint.Faces.PreviousDataPoint.LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
+                        //        dataPoint.Faces.PreviousDataPoint.LabelVisual.SetValue(Canvas.TopProperty, labelTop);
+                        //    }
+
+                        //    if (dataPoint.Faces.NextDataPoint != null)
+                        //    {
+                        //        SetLabelPosition4LineDataPoint(dataPoint.Faces.NextDataPoint, width, height, dataPoint.Faces.NextDataPoint.YValue >= 0,
+                        //            dataPoint.Faces.NextDataPoint._visualPosition.X, dataPoint.Faces.NextDataPoint._visualPosition.Y,
+                        //            ref labelLeft, ref labelTop, 6, new Size(dataPoint.Faces.NextDataPoint.LabelVisual.ActualWidth, dataPoint.Faces.NextDataPoint.LabelVisual.ActualHeight));
+
+                        //        dataPoint.Faces.NextDataPoint.LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
+                        //        dataPoint.Faces.NextDataPoint.LabelVisual.SetValue(Canvas.TopProperty, labelTop);
+                        //    }
+                        //}
+                    }
+
+private void CalculateMaxAndMinPosition()
+        {
+            // Calculate MaxPosition
+            Double x1 = Center.X + XRadiusLabel * Math.Cos(ResetMeanAngle(BaseMeanAngle + Math.PI / 2));
+            Double y1 = Center.Y + YRadiusLabel * Math.Sin(ResetMeanAngle(BaseMeanAngle + Math.PI / 2));
+
+            Line l = new Line();
+            l.X1 = Center.X;
+            l.Y1 = Center.Y;
+            l.X2 = x1;
+            l.Y2 = y1;
+
+            Brush color = Graphics.GetRandomColor();
+            color.Opacity = 0.7;
+            l.Stroke = color;
+            l.StrokeThickness = 2;
+            Visual.Children.Add(l);
+            (LabelVisual as Canvas).Background = color;
+
+            // Calculate MaxPosition
+            Double x2 = Center.X + XRadiusLabel * Math.Cos(ResetMeanAngle(BaseMeanAngle - Math.PI / 2));
+            Double y2 = Center.Y + YRadiusLabel * Math.Sin(ResetMeanAngle(BaseMeanAngle - Math.PI / 2));
+
+            l = new Line();
+            l.X1 = Center.X;
+            l.Y1 = Center.Y;
+            l.X2 = x2;
+            l.Y2 = y2;
+            
+            //l.Stroke = color;
+            l.StrokeThickness = 1;
+            Visual.Children.Add(l);
+
+            MaxXPosition = Math.Max(x1, x2);
+            MaxYPosition = Math.Max(y1, y2);
+            MinXPosition = Math.Min(x1, x2);
+            MinYPosition = Math.Min(y1, y2);
+        }
+
+
+        /// <summary>
+        /// Get visual object for StackedBar100 chart
+        /// </summary>
+        /// <param name="width">Width of the PlotArea</param>
+        /// <param name="height">Height of the PlotArea</param>
+        /// <param name="plotDetails">PlotDetails</param>
+        /// <param name="chart">Chart</param>
+        /// <param name="plankDepth">PlankDepth</param>
+        /// <param name="animationEnabled">Whether animation is enabled for chart</param>
+        /// <returns>StackedBar100 chart Canvas</returns>
+        internal static Canvas GetVisualObjectForStackedBar100Chart(Double width, Double height, PlotDetails plotDetails, Chart chart, Double plankDepth, Boolean animationEnabled)
+        {
+            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
+
+            List<PlotGroup> plotGroupList = (from plots in plotDetails.PlotGroups where plots.RenderAs == RenderAs.StackedBar100 select plots).ToList();
+
+            Double numberOfDivisions = plotDetails.DrawingDivisionFactor;
+
+            Boolean plankDrawn = false;
+            Canvas visual = new Canvas() { Width = width, Height = height };
+            Canvas labelCanvas = new Canvas() { Width = width, Height = height };
+            Canvas columnCanvas = new Canvas() { Width = width, Height = height };
+
+            Double depth3d = plankDepth / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
+            Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[plotGroupList[0].DataSeriesList[0]] + 1);
+            visual.SetValue(Canvas.TopProperty, visualOffset);
+            visual.SetValue(Canvas.LeftProperty, -visualOffset);
+
+            List<DataSeries> seriesList = plotDetails.GetSeriesListByRenderAs(RenderAs.StackedBar100);
+            Dictionary<Axis, Dictionary<Axis, Int32>> seriesIndex = ColumnChart.GetSeriesIndex(seriesList);
+
+            foreach (PlotGroup plotGroup in plotGroupList)
+            {
+                if (!seriesIndex.ContainsKey(plotGroup.AxisY))
+                    continue;
+
+                Int32 drawingIndex = seriesIndex[plotGroup.AxisY][plotGroup.AxisX];
+
+                Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Bar, RenderAs.StackedBar, RenderAs.StackedBar100);
+
+                if (Double.IsPositiveInfinity(minDiff))
+                    minDiff = 0;
+
+                //minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
+
+                Double maxBarHeight = Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - BAR_GAP_RATIO);
+                Double heightPerBar = maxBarHeight / numberOfDivisions;
+
+                if (minDiff == 0)
+                {
+                    heightPerBar = height * .5;
+                    maxBarHeight = heightPerBar;
+                    heightPerBar /= numberOfDivisions;
+                }
+                else
+                {
+                    heightPerBar = Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum);
+                    heightPerBar *= (1 - BAR_GAP_RATIO);
+                    maxBarHeight = heightPerBar;
+                    heightPerBar /= numberOfDivisions;
+                }
+
+                if (!Double.IsNaN(chart.DataPointWidth))
+                {
+                    if (chart.DataPointWidth >= 0)
+                    {
+                        heightPerBar = maxBarHeight = chart.DataPointWidth / 100 * chart.PlotArea.Height;
+                        maxBarHeight *= numberOfDivisions;
+                    }
+                }
+
+                List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
+
+                Double limitingYValue = 0;
+                if (plotGroup.AxisY.InternalAxisMinimum > 0)
+                    limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
+                if (plotGroup.AxisY.InternalAxisMaximum < 0)
+                    limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
+
+                foreach (Double xValue in xValuesList)
+                {
+                    RectangularChartShapeParams barParams = new RectangularChartShapeParams();
+                    barParams.ShadowOffset = 5;
+                    barParams.Depth = depth3d;
+                    barParams.IsStacked = true;
+
+                    Double absoluteSum = plotGroup.XWiseStackedDataList[xValue].AbsoluteYValueSum;
+
+                    if (Double.IsNaN(absoluteSum) || absoluteSum <= 0)
+                        absoluteSum = 1;
+
+                    Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue) + drawingIndex * heightPerBar - (maxBarHeight / 2);
+                    Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
+
+                    Double finalHeight = CalculateHeightOfEachColumn(ref top, heightPerBar, height);
+
+                    if (finalHeight < 0)
+                        continue;
+
+                    Double right;
+                    Double barWidth;
+                    Double prevSum = 0;
+                    Double percentYValue;
+
+                    // Plot positive values
+                    foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Positive)
+                    {
+                        dataPoint.Parent.Faces = new Faces { Visual = columnCanvas, LabelCanvas = labelCanvas };
+
+                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                            continue;
+
+                        ColumnChart.SetColumnParms(ref barParams, ref chart, dataPoint, true);
+
+                        barParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Positive.Last());
+                        if (barParams.IsTopOfStack)
+                        {
+                            barParams.XRadius = new CornerRadius(0, dataPoint.RadiusX.Value.TopRight, dataPoint.RadiusX.Value.BottomRight, 0);
+                            barParams.YRadius = new CornerRadius(0, dataPoint.RadiusY.Value.TopRight, dataPoint.RadiusY.Value.BottomRight, 0);
+                        }
+
+                        percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
+                        right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
+                        barWidth = Math.Abs(right - left);
+
+                        prevSum += percentYValue;
+
+                        barParams.Size = new Size(barWidth, finalHeight);
+
+                        Faces bar;
+                        Panel barVisual = null;
+
+                        if (chart.View3D)
+                        {
+                            bar = Get3DBar(barParams);
+                            barVisual = bar.Visual as Panel;
+                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
+                        }
+                        else
+                        {
+                            bar = Get2DBar(barParams);
+                            barVisual = bar.Visual as Panel;
+                        }
+
+                        dataPoint.Faces = bar;
+                        dataPoint.Faces.LabelCanvas = labelCanvas;
+
+                        barVisual.SetValue(Canvas.LeftProperty, left);
+                        barVisual.SetValue(Canvas.TopProperty, top);
+
+                        columnCanvas.Children.Add(barVisual);
+                        //labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+
+                        // Apply animation
+                        if (animationEnabled)
+                        {
+                            if (dataPoint.Parent.Storyboard == null)
+                                dataPoint.Parent.Storyboard = new Storyboard();
+
+                            currentDataSeries = dataPoint.Parent;
+
+                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
+                            dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
+
+                            // Apply animation to the marker and labels
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, currentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                        }
+
+                        left = right;
+                    }
+
+                    prevSum = 0;
+                    right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
+
+                    // Plot negative values
+                    foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
+                    {
+                        dataPoint.Parent.Faces = new Faces { Visual = columnCanvas, LabelCanvas = labelCanvas };
+
+                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                            continue;
+
+                        ColumnChart.SetColumnParms(ref barParams, ref chart, dataPoint, false);
+
+                        barParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Negative.Last());
+                        if (barParams.IsTopOfStack)
+                        {
+                            barParams.XRadius = new CornerRadius(dataPoint.RadiusX.Value.TopLeft, 0, 0, dataPoint.RadiusX.Value.BottomLeft);
+                            barParams.YRadius = new CornerRadius(dataPoint.RadiusY.Value.TopRight, 0, 0, dataPoint.RadiusY.Value.BottomLeft);
+                        }
+
+                        percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
+
+                        left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
+                        barWidth = Math.Abs(right - left);
+
+                        prevSum += percentYValue;
+                        barParams.Size = new Size(barWidth, finalHeight);
+
+                        Faces bar;
+                        Panel barVisual = null;
+
+                        if (chart.View3D)
+                        {
+                            bar = Get3DBar(barParams);
+                            barVisual = bar.Visual as Panel;
+                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
+                        }
+                        else
+                        {
+                            bar = Get2DBar(barParams);
+                            barVisual = bar.Visual as Panel;
+                        }
+
+                        dataPoint.Faces = bar;
+                        dataPoint.Faces.LabelCanvas = labelCanvas;
+
+                        barVisual.SetValue(Canvas.LeftProperty, left);
+                        barVisual.SetValue(Canvas.TopProperty, top);
+
+                        columnCanvas.Children.Add(barVisual);
+                        
+                        // labelCanvas.Children.Add(GetMarker(chart, labelCanvas, dataPoint, left, top));
+
+                        // Apply animation
+                        if (animationEnabled)
+                        {   
+                            if (dataPoint.Parent.Storyboard == null)
+                                dataPoint.Parent.Storyboard = new Storyboard();
+
+                            currentDataSeries = dataPoint.Parent;
+
+                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
+                            dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
+
+                            // Apply animation to the marker and labels
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, currentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                        }
+
+                        right = left;
+                    }
+
+                }
+            }
+
+            if (!plankDrawn && chart.View3D && plotGroupList[0].AxisY.InternalAxisMinimum < 0 && plotGroupList[0].AxisY.InternalAxisMaximum > 0)
+            {   
+                //RectangularChartShapeParams barParams = new RectangularChartShapeParams();
+                //barParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)127, (Byte)127, (Byte)127));
+                //barParams.Lighting = true;
+                //barParams.Size = new Size(1, height);
+                //barParams.Depth = depth3d;
+
+                Brush frontBrush, topBrush, rightBrush;
+                ExtendedGraphics.GetBrushesForPlank(out frontBrush, out topBrush, out rightBrush);
+
+                Faces zeroPlank = ColumnChart.Get3DPlank(1, height, depth3d, frontBrush, topBrush, rightBrush);
+                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
+
+                Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
+                zeroPlankVisual.SetValue(Canvas.LeftProperty, left);
+                zeroPlankVisual.SetValue(Canvas.TopProperty, (Double)0);
+                zeroPlankVisual.SetValue(Canvas.ZIndexProperty, 0);
+                zeroPlankVisual.Opacity = 0.7;
+                columnCanvas.Children.Add(zeroPlankVisual);
+            }
+
+            visual.Children.Add(columnCanvas);
+            visual.Children.Add(labelCanvas);
+            return visual;
+        }

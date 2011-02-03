@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Visifire Test Page</title>
+        <script type="text/javascript" src="../Visifire.js"></script>
+    <style type="text/css">
+        #VisifireChart0
+        {
+            height: 450px;
+            width: 500px;
+        }
+    </style>
+    
+</head>
+    
+<body style="background-color:Gray;">
+    
+    <div id="VisifireChart0">
+        <script type="text/javascript">
+
+            // Create Visifire object
+            var vChart1 = new Visifire('../ClientBin/SL.Visifire.Charts.xap', "MyChart1", 500, 300);
+            vChart1.setDataUri("data1.xml");
+            vChart1.preLoad = function(args) {
+                var chart = args[0];   // Chart Reference.
+
+                chart.Series[0].MouseLeftButtonUp = OnMouseLeftButtonUp;
+            };
+            // Render chart
+            vChart1.render("VisifireChart0");
+
+
+            function OnMouseLeftButtonUp(e) {
+                var vChart2 = new Visifire('../ClientBin/SL.Visifire.Charts.xap', "MyChart2", 500, 300);
+                vChart2.setDataUri("data3.xml");
+                vChart2.render("VisifireChart0");
+            };
+            
+        </script>`
+    </div>
+    
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Visifire Basic Chart Sample</title>
+    <script type="text/javascript" src="Visifire.js"></script>
+    <script type="text/javascript" >
+        var chart;
+        var enabled = true;
+
+        function DisplaySeries() 
+        {
+            enabled = !enabled;
+            chart.Series[1].SetPropertyFromJs("Enabled", enabled);
+        }
+    </script>
+</head>
+    
+<body>
+    
+    <div id="VisifireChart0" >
+
+        <script type="text/javascript" >
+            
+            // Create Visifire object
+            var vChart = new Visifire('ClientBin/SL.Visifire.Charts.xap', "MyChart", 500, 800);
+            
+            // vChart1.setLogLevel(0); // If you want to disable logging.
+
+            var chartXml = '<vc:Chart IndicatorEnabled="true" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" BorderThickness="0.5" Padding="3" AnimationEnabled="true" Theme="Theme1" >'
+               + ' <vc:Chart.AxesY>'
+               + ' <vc:Axis Logarithmic="True"/>'
+               + ' </vc:Chart.AxesY>'
+               + ' <vc:Chart.PlotArea>'
+               + ' <vc:PlotArea/>'
+               + ' </vc:Chart.PlotArea>'
+               + '     <vc:Chart.Titles>'
+               + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14"/>'
+               + '     </vc:Chart.Titles>'
+               + '     <vc:Chart.Series>'
+               + '         <vc:DataSeries ShowInLegend="true" Name="MySeries1" RenderAs="StackedColumn" LabelEnabled="True" LabelText="#Series">'
+               + '             <vc:DataSeries.DataPoints>'
+               + '                 <vc:DataPoint AxisXLabel="USA" XValue="10" YValue="35"/>'
+               + '                 <vc:DataPoint AxisXLabel="China" XValue="21"  YValue="32"/>'
+               + '                 <vc:DataPoint AxisXLabel="Russia" XValue="31"  YValue="27"/>'
+               + '                 <vc:DataPoint AxisXLabel="Australia" XValue="41"  YValue="17"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" XValue="51"  YValue="16"/>'
+               + '             </vc:DataSeries.DataPoints>'
+               + '         </vc:DataSeries>'
+                 + '         <vc:DataSeries ShowInLegend="true" Name="MySeries2" RenderAs="StackedColumn" LabelEnabled="True" LabelText="#Series">'
+               + '             <vc:DataSeries.DataPoints>'
+               + '                 <vc:DataPoint AxisXLabel="USA" XValue="10" YValue="35"/>'
+               + '                 <vc:DataPoint AxisXLabel="China" XValue="21"  YValue="32"/>'
+               + '                 <vc:DataPoint AxisXLabel="Russia" XValue="31"  YValue="27"/>'
+               + '                 <vc:DataPoint AxisXLabel="Australia" XValue="41"  YValue="17"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" XValue="51"  YValue="16"/>'
+               + '             </vc:DataSeries.DataPoints>'
+               + '         </vc:DataSeries>'
+               + '     </vc:Chart.Series>'
+               + ' </vc:Chart>';
+            
+            // Set Chart XML
+            vChart.setDataXml(chartXml);
+            
+            // Render chart
+            vChart.render("VisifireChart0");
+        </script>
+        
+    </div>
+    <input type="button" onclick="DisplaySeries();"  style="width:150px;" value="Disable/Enable" />
+</body>
+
+</html>

@@ -1,0 +1,158 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E5A10564-F1C8-47B5-A4A8-B1514D02CA0D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WPFVisifireChartsTest</RootNamespace>
+    <AssemblyName>WPFVisifireChartsTest</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>WPFVisifireCharts.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Silverlight|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Silverlight\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WPF|AnyCPU' ">
+    <OutputPath>bin\WPF\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel.Web">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.XML" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\AxisLabelsTest.cs">
+      <Link>AxisLabelsTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\AxisTest.cs">
+      <Link>AxisTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\ChartGridTest.cs">
+      <Link>ChartGridTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\ChartTest.cs">
+      <Link>ChartTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\Common.cs">
+      <Link>Common.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\DataPointTest.cs">
+      <Link>DataPointTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\DataSeriesTest.cs">
+      <Link>DataSeriesTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\DateTimeAxisTest.cs">
+      <Link>DateTimeAxisTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\FunnelChartTests.cs">
+      <Link>FunnelChartTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\LegendTest.cs">
+      <Link>LegendTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\MajorTicksTest.cs">
+      <Link>MajorTicksTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\OverriddenMethod.cs">
+      <Link>OverriddenMethod.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\OverriddenTitleObject.cs">
+      <Link>OverriddenTitleObject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\PerformanceTests.cs">
+      <Link>PerformanceTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\PlotAreaTest.cs">
+      <Link>PlotAreaTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\PlotDetailsTest.cs">
+      <Link>PlotDetailsTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\TitleTest.cs">
+      <Link>TitleTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\ToolTipTest.cs">
+      <Link>ToolTipTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\TrendLineTest.cs">
+      <Link>TrendLineTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireChartsTest\WPFControlTest.cs">
+      <Link>WPFControlTest.cs</Link>
+    </Compile>
+    <Compile Include="Resource1.Designer.cs">
+      <DependentUpon>Resource.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="WPFVisifireCharts.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WPFVisifireCharts\WPFVisifireCharts.csproj">
+      <Project>{CF8E563B-5C37-47C3-8431-056EE13E6A00}</Project>
+      <Name>WPFVisifireCharts</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
