@@ -1,0 +1,1005 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F16255E4-2248-47D9-9606-BBE44463075F}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SLVisifireApp</RootNamespace>
+    <AssemblyName>SLVisifireApp</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SilverlightApplication>true</SilverlightApplication>
+    <SupportedCultures>
+    </SupportedCultures>
+    <XapOutputs>true</XapOutputs>
+    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+    <XapFilename>SLVisifireApp.xap</XapFilename>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>SLVisifireApp.App</SilverlightAppEntry>
+    <TestPageFileName>TestPage.html</TestPageFileName>
+    <CreateTestPage>true</CreateTestPage>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>false</ThrowErrorsInValidation>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <TargetFrameworkProfile />
+    <OutOfBrowserSettingsFile>Properties\OutOfBrowserSettings.xml</OutOfBrowserSettingsFile>
+    <EnableOutOfBrowser>false</EnableOutOfBrowser>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Silverlight|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Silverlight\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <NoConfig>true</NoConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WPF|AnyCPU' ">
+    <OutputPath>bin\WPF\</OutputPath>
+    <NoConfig>true</NoConfig>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217" />
+    <Reference Include="System.Windows" />
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Controls, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Windows.Controls.Data, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Data.Input, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Common\SLVisifireApp\Area\Area2D1.xaml.cs">
+      <Link>Area\Area2D1.xaml.cs</Link>
+      <DependentUpon>Area2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Area\Area2D2.xaml.cs">
+      <Link>Area\Area2D2.xaml.cs</Link>
+      <DependentUpon>Area2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Area\Area2D3.xaml.cs">
+      <Link>Area\Area2D3.xaml.cs</Link>
+      <DependentUpon>Area2D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Area\Area2D4.xaml.cs">
+      <Link>Area\Area2D4.xaml.cs</Link>
+      <DependentUpon>Area2D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Area\Area3D1.xaml.cs">
+      <Link>Area\Area3D1.xaml.cs</Link>
+      <DependentUpon>Area3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Area\Area3D2.xaml.cs">
+      <Link>Area\Area3D2.xaml.cs</Link>
+      <DependentUpon>Area3D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar2D1.xaml.cs">
+      <Link>Bar\Bar2D1.xaml.cs</Link>
+      <DependentUpon>Bar2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar2D2.xaml.cs">
+      <Link>Bar\Bar2D2.xaml.cs</Link>
+      <DependentUpon>Bar2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar2D3.xaml.cs">
+      <Link>Bar\Bar2D3.xaml.cs</Link>
+      <DependentUpon>Bar2D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar2D4.xaml.cs">
+      <Link>Bar\Bar2D4.xaml.cs</Link>
+      <DependentUpon>Bar2D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar2D5.xaml.cs">
+      <Link>Bar\Bar2D5.xaml.cs</Link>
+      <DependentUpon>Bar2D5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar2D6.xaml.cs">
+      <Link>Bar\Bar2D6.xaml.cs</Link>
+      <DependentUpon>Bar2D6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar2D7.xaml.cs">
+      <Link>Bar\Bar2D7.xaml.cs</Link>
+      <DependentUpon>Bar2D7.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar3D1.xaml.cs">
+      <Link>Bar\Bar3D1.xaml.cs</Link>
+      <DependentUpon>Bar3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar3D2.xaml.cs">
+      <Link>Bar\Bar3D2.xaml.cs</Link>
+      <DependentUpon>Bar3D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar3D3.xaml.cs">
+      <Link>Bar\Bar3D3.xaml.cs</Link>
+      <DependentUpon>Bar3D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar3D4.xaml.cs">
+      <Link>Bar\Bar3D4.xaml.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bar\Bar3D5.xaml.cs">
+      <Link>Bar\Bar3D5.xaml.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bubble\Bubble2D1.xaml.cs">
+      <Link>Bubble\Bubble2D1.xaml.cs</Link>
+      <DependentUpon>Bubble2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bubble\Bubble2D2.xaml.cs">
+      <Link>Bubble\Bubble2D2.xaml.cs</Link>
+      <DependentUpon>Bubble2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bubble\Bubble2D3.xaml.cs">
+      <Link>Bubble\Bubble2D3.xaml.cs</Link>
+      <DependentUpon>Bubble2D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bubble\Bubble2D4.xaml.cs">
+      <Link>Bubble\Bubble2D4.xaml.cs</Link>
+      <DependentUpon>Bubble2D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bubble\Bubble2D5.xaml.cs">
+      <Link>Bubble\Bubble2D5.xaml.cs</Link>
+      <DependentUpon>Bubble2D5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Bubble\Bubble3D1.xaml.cs">
+      <Link>Bubble\Bubble3D1.xaml.cs</Link>
+      <DependentUpon>Bubble3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column2D\Column2D1.xaml.cs">
+      <Link>Column2D\Column2D1.xaml.cs</Link>
+      <DependentUpon>Column2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column2D\Column2D10.xaml.cs">
+      <Link>Column2D\Column2D10.xaml.cs</Link>
+      <DependentUpon>Column2D10.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column2D\Column2D2.xaml.cs">
+      <Link>Column2D\Column2D2.xaml.cs</Link>
+      <DependentUpon>Column2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column2D\Column2D3.xaml.cs">
+      <Link>Column2D\Column2D3.xaml.cs</Link>
+      <DependentUpon>Column2D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column2D\Column2D4.xaml.cs">
+      <Link>Column2D\Column2D4.xaml.cs</Link>
+      <DependentUpon>Column2D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column2D\Column2D5.xaml.cs">
+      <Link>Column2D\Column2D5.xaml.cs</Link>
+      <DependentUpon>Column2D5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column2D\Column2D6.xaml.cs">
+      <Link>Column2D\Column2D6.xaml.cs</Link>
+      <DependentUpon>Column2D6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column2D\Column2D7.xaml.cs">
+      <Link>Column2D\Column2D7.xaml.cs</Link>
+      <DependentUpon>Column2D7.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column2D\Column2D8.xaml.cs">
+      <Link>Column2D\Column2D8.xaml.cs</Link>
+      <DependentUpon>Column2D8.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column2D\Column2D9.xaml.cs">
+      <Link>Column2D\Column2D9.xaml.cs</Link>
+      <DependentUpon>Column2D9.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column3D\Column3D1.xaml.cs">
+      <Link>Column3D\Column3D1.xaml.cs</Link>
+      <DependentUpon>Column3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column3D\Column3D10.xaml.cs">
+      <Link>Column3D\Column3D10.xaml.cs</Link>
+      <DependentUpon>Column3D10.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column3D\Column3D2.xaml.cs">
+      <Link>Column3D\Column3D2.xaml.cs</Link>
+      <DependentUpon>Column3D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column3D\Column3D3.xaml.cs">
+      <Link>Column3D\Column3D3.xaml.cs</Link>
+      <DependentUpon>Column3D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column3D\Column3D4.xaml.cs">
+      <Link>Column3D\Column3D4.xaml.cs</Link>
+      <DependentUpon>Column3D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column3D\Column3D5.xaml.cs">
+      <Link>Column3D\Column3D5.xaml.cs</Link>
+      <DependentUpon>Column3D5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column3D\Column3D6.xaml.cs">
+      <Link>Column3D\Column3D6.xaml.cs</Link>
+      <DependentUpon>Column3D6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column3D\Column3D7.xaml.cs">
+      <Link>Column3D\Column3D7.xaml.cs</Link>
+      <DependentUpon>Column3D7.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column3D\Column3D8.xaml.cs">
+      <Link>Column3D\Column3D8.xaml.cs</Link>
+      <DependentUpon>Column3D8.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Column3D\Column3D9.xaml.cs">
+      <Link>Column3D\Column3D9.xaml.cs</Link>
+      <DependentUpon>Column3D9.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Combination\Combi1.xaml.cs">
+      <Link>Combination\Combi1.xaml.cs</Link>
+      <DependentUpon>Combi1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Combination\Combi2.xaml.cs">
+      <Link>Combination\Combi2.xaml.cs</Link>
+      <DependentUpon>Combi2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Combination\Combi3.xaml.cs">
+      <Link>Combination\Combi3.xaml.cs</Link>
+      <DependentUpon>Combi3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Combination\Combi4.xaml.cs">
+      <Link>Combination\Combi4.xaml.cs</Link>
+      <DependentUpon>Combi4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Combination\Combi5.xaml.cs">
+      <Link>Combination\Combi5.xaml.cs</Link>
+      <DependentUpon>Combi5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Combination\Combi6.xaml.cs">
+      <Link>Combination\Combi6.xaml.cs</Link>
+      <DependentUpon>Combi6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Doughnut\Doughnut2D1.xaml.cs">
+      <Link>Doughnut\Doughnut2D1.xaml.cs</Link>
+      <DependentUpon>Doughnut2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Doughnut\Doughnut2D2.xaml.cs">
+      <Link>Doughnut\Doughnut2D2.xaml.cs</Link>
+      <DependentUpon>Doughnut2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Doughnut\Doughnut3D1.xaml.cs">
+      <Link>Doughnut\Doughnut3D1.xaml.cs</Link>
+      <DependentUpon>Doughnut3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Doughnut\Doughnut3D2.xaml.cs">
+      <Link>Doughnut\Doughnut3D2.xaml.cs</Link>
+      <DependentUpon>Doughnut3D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Line\Line1.xaml.cs">
+      <Link>Line\Line1.xaml.cs</Link>
+      <DependentUpon>Line1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Line\Line2.xaml.cs">
+      <Link>Line\Line2.xaml.cs</Link>
+      <DependentUpon>Line2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Line\Line3.xaml.cs">
+      <Link>Line\Line3.xaml.cs</Link>
+      <DependentUpon>Line3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Line\Line4.xaml.cs">
+      <Link>Line\Line4.xaml.cs</Link>
+      <DependentUpon>Line4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Line\Line5.xaml.cs">
+      <Link>Line\Line5.xaml.cs</Link>
+      <DependentUpon>Line5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Line\Line6.xaml.cs">
+      <Link>Line\Line6.xaml.cs</Link>
+      <DependentUpon>Line6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Pie\Pie2D1.xaml.cs">
+      <Link>Pie\Pie2D1.xaml.cs</Link>
+      <DependentUpon>Pie2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Pie\Pie2D2.xaml.cs">
+      <Link>Pie\Pie2D2.xaml.cs</Link>
+      <DependentUpon>Pie2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Pie\Pie3D1.xaml.cs">
+      <Link>Pie\Pie3D1.xaml.cs</Link>
+      <DependentUpon>Pie3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Pie\Pie3D2.xaml.cs">
+      <Link>Pie\Pie3D2.xaml.cs</Link>
+      <DependentUpon>Pie3D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Point\Point1.xaml.cs">
+      <Link>Point\Point1.xaml.cs</Link>
+      <DependentUpon>Point1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Point\Point2.xaml.cs">
+      <Link>Point\Point2.xaml.cs</Link>
+      <DependentUpon>Point2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Point\Point3.xaml.cs">
+      <Link>Point\Point3.xaml.cs</Link>
+      <DependentUpon>Point3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Point\Point4.xaml.cs">
+      <Link>Point\Point4.xaml.cs</Link>
+      <DependentUpon>Point4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Point\Point5.xaml.cs">
+      <Link>Point\Point5.xaml.cs</Link>
+      <DependentUpon>Point5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Point\Point6.xaml.cs">
+      <Link>Point\Point6.xaml.cs</Link>
+      <DependentUpon>Point6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Stacked\StackedArea2D1.xaml.cs">
+      <Link>Stacked\StackedArea2D1.xaml.cs</Link>
+      <DependentUpon>StackedArea2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Stacked\StackedArea3D1.xaml.cs">
+      <Link>Stacked\StackedArea3D1.xaml.cs</Link>
+      <DependentUpon>StackedArea3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Stacked\StackedBar1002D1.xaml.cs">
+      <Link>Stacked\StackedBar1002D1.xaml.cs</Link>
+      <DependentUpon>StackedBar1002D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Stacked\StackedBar1003D1.xaml.cs">
+      <Link>Stacked\StackedBar1003D1.xaml.cs</Link>
+      <DependentUpon>StackedBar1003D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Stacked\StackedBar2D1.xaml.cs">
+      <Link>Stacked\StackedBar2D1.xaml.cs</Link>
+      <DependentUpon>StackedBar2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Stacked\StackedColumn2D1.xaml.cs">
+      <Link>Stacked\StackedColumn2D1.xaml.cs</Link>
+      <DependentUpon>StackedColumn2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Stacked\StackedColumn2D2.xaml.cs">
+      <Link>Stacked\StackedColumn2D2.xaml.cs</Link>
+      <DependentUpon>StackedColumn2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\Common\SLVisifireApp\Stacked\StackedColumn2D3.xaml.cs">
+      <Link>Stacked\StackedColumn2D3.xaml.cs</Link>
+      <DependentUpon>StackedColumn2D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\Common\SLVisifireApp\MyTheme.xaml">
+      <Link>MyTheme.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Content>
+    <Page Include="..\..\Common\SLVisifireApp\Area\Area2D1.xaml">
+      <Link>Area\Area2D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Area\Area2D2.xaml">
+      <Link>Area\Area2D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Area\Area2D3.xaml">
+      <Link>Area\Area2D3.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Area\Area2D4.xaml">
+      <Link>Area\Area2D4.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Area\Area3D1.xaml">
+      <Link>Area\Area3D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Area\Area3D2.xaml">
+      <Link>Area\Area3D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar2D1.xaml">
+      <Link>Bar\Bar2D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar2D2.xaml">
+      <Link>Bar\Bar2D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar2D3.xaml">
+      <Link>Bar\Bar2D3.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar2D4.xaml">
+      <Link>Bar\Bar2D4.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar2D5.xaml">
+      <Link>Bar\Bar2D5.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar2D6.xaml">
+      <Link>Bar\Bar2D6.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar2D7.xaml">
+      <Link>Bar\Bar2D7.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar3D1.xaml">
+      <Link>Bar\Bar3D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar3D2.xaml">
+      <Link>Bar\Bar3D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar3D3.xaml">
+      <Link>Bar\Bar3D3.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar3D4.xaml">
+      <Link>Bar\Bar3D4.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bar\Bar3D5.xaml">
+      <Link>Bar\Bar3D5.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bubble\Bubble2D1.xaml">
+      <Link>Bubble\Bubble2D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bubble\Bubble2D2.xaml">
+      <Link>Bubble\Bubble2D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bubble\Bubble2D3.xaml">
+      <Link>Bubble\Bubble2D3.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bubble\Bubble2D4.xaml">
+      <Link>Bubble\Bubble2D4.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bubble\Bubble2D5.xaml">
+      <Link>Bubble\Bubble2D5.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Bubble\Bubble3D1.xaml">
+      <Link>Bubble\Bubble3D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column2D\Column2D1.xaml">
+      <Link>Column2D\Column2D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column2D\Column2D10.xaml">
+      <Link>Column2D\Column2D10.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column2D\Column2D2.xaml">
+      <Link>Column2D\Column2D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column2D\Column2D3.xaml">
+      <Link>Column2D\Column2D3.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column2D\Column2D4.xaml">
+      <Link>Column2D\Column2D4.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column2D\Column2D5.xaml">
+      <Link>Column2D\Column2D5.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column2D\Column2D6.xaml">
+      <Link>Column2D\Column2D6.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column2D\Column2D7.xaml">
+      <Link>Column2D\Column2D7.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column2D\Column2D8.xaml">
+      <Link>Column2D\Column2D8.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column2D\Column2D9.xaml">
+      <Link>Column2D\Column2D9.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column3D\Column3D1.xaml">
+      <Link>Column3D\Column3D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column3D\Column3D10.xaml">
+      <Link>Column3D\Column3D10.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column3D\Column3D2.xaml">
+      <Link>Column3D\Column3D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column3D\Column3D3.xaml">
+      <Link>Column3D\Column3D3.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column3D\Column3D4.xaml">
+      <Link>Column3D\Column3D4.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column3D\Column3D5.xaml">
+      <Link>Column3D\Column3D5.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column3D\Column3D6.xaml">
+      <Link>Column3D\Column3D6.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column3D\Column3D7.xaml">
+      <Link>Column3D\Column3D7.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column3D\Column3D8.xaml">
+      <Link>Column3D\Column3D8.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Column3D\Column3D9.xaml">
+      <Link>Column3D\Column3D9.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Combination\Combi1.xaml">
+      <Link>Combination\Combi1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Combination\Combi2.xaml">
+      <Link>Combination\Combi2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Combination\Combi3.xaml">
+      <Link>Combination\Combi3.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Combination\Combi4.xaml">
+      <Link>Combination\Combi4.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Combination\Combi5.xaml">
+      <Link>Combination\Combi5.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Combination\Combi6.xaml">
+      <Link>Combination\Combi6.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Doughnut\Doughnut2D1.xaml">
+      <Link>Doughnut\Doughnut2D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Doughnut\Doughnut2D2.xaml">
+      <Link>Doughnut\Doughnut2D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Doughnut\Doughnut3D1.xaml">
+      <Link>Doughnut\Doughnut3D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Doughnut\Doughnut3D2.xaml">
+      <Link>Doughnut\Doughnut3D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Line\Line1.xaml">
+      <Link>Line\Line1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Line\Line2.xaml">
+      <Link>Line\Line2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Line\Line3.xaml">
+      <Link>Line\Line3.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Line\Line4.xaml">
+      <Link>Line\Line4.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Line\Line5.xaml">
+      <Link>Line\Line5.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Line\Line6.xaml">
+      <Link>Line\Line6.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Pie\Pie2D1.xaml">
+      <Link>Pie\Pie2D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Pie\Pie2D2.xaml">
+      <Link>Pie\Pie2D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Pie\Pie3D1.xaml">
+      <Link>Pie\Pie3D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Pie\Pie3D2.xaml">
+      <Link>Pie\Pie3D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Point\Point1.xaml">
+      <Link>Point\Point1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Point\Point2.xaml">
+      <Link>Point\Point2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Point\Point3.xaml">
+      <Link>Point\Point3.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Point\Point4.xaml">
+      <Link>Point\Point4.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Point\Point5.xaml">
+      <Link>Point\Point5.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Point\Point6.xaml">
+      <Link>Point\Point6.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Stacked\StackedArea2D1.xaml">
+      <Link>Stacked\StackedArea2D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Stacked\StackedArea3D1.xaml">
+      <Link>Stacked\StackedArea3D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Stacked\StackedBar1002D1.xaml">
+      <Link>Stacked\StackedBar1002D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Stacked\StackedBar1003D1.xaml">
+      <Link>Stacked\StackedBar1003D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Stacked\StackedBar2D1.xaml">
+      <Link>Stacked\StackedBar2D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Stacked\StackedColumn2D1.xaml">
+      <Link>Stacked\StackedColumn2D1.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Stacked\StackedColumn2D2.xaml">
+      <Link>Stacked\StackedColumn2D2.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\..\Common\SLVisifireApp\Stacked\StackedColumn2D3.xaml">
+      <Link>Stacked\StackedColumn2D3.xaml</Link>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="App.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Page.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AppManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SLVisifireCharts\SLVisifireCharts.csproj">
+      <Project>{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}</Project>
+      <Name>SLVisifireCharts</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\OutOfBrowserSettings.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

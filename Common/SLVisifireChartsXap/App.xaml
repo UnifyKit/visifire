@@ -1,0 +1,33 @@
+﻿<Application xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             x:Class="SLVisifireChartsXap.App"
+             >
+    <Application.Resources>
+        <!--<vc:Theme  x:Key="Theme1" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" >
+            <vc:Theme.ColorSet>
+            <SolidColorBrush Color="Red"></SolidColorBrush>
+            <SolidColorBrush Color="Green"></SolidColorBrush>
+            <SolidColorBrush Color="Blue"></SolidColorBrush>
+            <SolidColorBrush Color="Pink"></SolidColorBrush>
+            </vc:Theme.ColorSet>
+        </vc:Theme>
+
+        <vc:Theme x:Key="Theme2" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" >
+            <vc:Theme.ColorSet>
+            <SolidColorBrush Color="Red"></SolidColorBrush>
+            <SolidColorBrush Color="Green"></SolidColorBrush>
+            <SolidColorBrush Color="Blue"></SolidColorBrush>
+            <SolidColorBrush Color="Pink"></SolidColorBrush>
+            </vc:Theme.ColorSet>
+        </vc:Theme>-->
+       <!-- <SolidColorBrush x:Key="MyColor" Color="Red"></SolidColorBrush>
+        <vc:Theme xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" x:Key="Theme2" >
+            <vc:Theme.ColorSet>
+                <SolidColorBrush Color="Red"></SolidColorBrush>
+                <SolidColorBrush Color="Green"></SolidColorBrush>
+                <SolidColorBrush Color="Blue"></SolidColorBrush>
+                <SolidColorBrush Color="Pink"></SolidColorBrush>
+            </vc:Theme.ColorSet>
+        </vc:Theme>-->
+    </Application.Resources>
+</Application>
