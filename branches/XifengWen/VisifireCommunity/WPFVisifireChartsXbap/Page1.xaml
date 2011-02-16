@@ -1,0 +1,28 @@
+﻿<Page x:Class="WPFVisifireChartsXbap.Page1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Page1" Background="#FFD6D6D6" 
+    xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
+    >
+    <Grid x:Name="LayoutRoot">
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
+                  Width="490" Height="290" Theme="Theme1" x:Name="MyChart" View3D="true">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Athens 2004 Olympics" />
+            </vc:Chart.Titles>
+
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Area">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="USA" YValue="50"/>
+                        <vc:DataPoint AxisXLabel="China" YValue="35"/>
+                        <vc:DataPoint AxisXLabel="Russia" YValue="27"/>
+                        <vc:DataPoint AxisXLabel="Australia" YValue="17"/>
+                        <vc:DataPoint AxisXLabel="Japan" YValue="16"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</Page>
