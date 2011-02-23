@@ -59,7 +59,7 @@ namespace Visifire.Charts
     /// Partially extended chart control class
     /// </summary>
     public partial class Chart : VisifireControl
-    {   
+    {
         #region Public Methods
 
         /// <summary>
@@ -150,10 +150,10 @@ namespace Visifire.Charts
             _centerDockInsidePlotAreaPanel = GetTemplateChild(CenterDockInsidePlotAreaPanelName) as StackPanel;
             _centerDockOutsidePlotAreaPanel = GetTemplateChild(CenterDockOutsidePlotAreaPanelName) as StackPanel;
 
-            _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;  
-            
+            _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;
+
             _zoomRectangle = GetTemplateChild(ZoomRectangleName) as Border;
-            _elementCanvas = GetTemplateChild(ElementCanvasName) as Canvas;  
+            _elementCanvas = GetTemplateChild(ElementCanvasName) as Canvas;
         }
 
         /// <summary>
@@ -169,11 +169,11 @@ namespace Visifire.Charts
                     _bevelCanvas.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
                 }
             }
-            
+
             _chartAreaMargin = new Thickness(_chartAreaGrid.Margin.Left, _chartAreaGrid.Margin.Top, _chartAreaGrid.Margin.Right, _chartAreaGrid.Margin.Bottom);
 
             if (Bevel)
-            {   
+            {
                 _chartAreaGrid.Margin = new Thickness(
                     _chartAreaMargin.Left + BEVEL_DEPTH,
                     _chartAreaMargin.Top + BEVEL_DEPTH,
@@ -187,9 +187,9 @@ namespace Visifire.Charts
         /// or internal processes such as a rebuilding layout pass. 
         /// </summary>
         public override void OnApplyTemplate()
-        {   
+        {
             base.OnApplyTemplate();
-            
+
             LoadControlsFromTemplate();
 
             LoadToolBar();
@@ -233,7 +233,7 @@ namespace Visifire.Charts
 
             foreach (DataSeries ds in Series)
             {
-#if WPF         
+#if WPF
                 if (IsInDesignMode)
                     ObservableObject.RemoveElementFromElementTree(ds);
 #endif
@@ -315,11 +315,11 @@ namespace Visifire.Charts
                 axis.IsTabStop = false;
             }
         }
-        
+
         internal void AddLegendsToChartRootElament()
         {
             if (_rootElement != null)
-            {   
+            {
                 foreach (Legend legend in Legends)
                 {
                     legend.IsNotificationEnable = false;
@@ -337,7 +337,7 @@ namespace Visifire.Charts
             }
         }
 
-        
+
         internal void AddPlotAreaToChartRootElament()
         {
             if (PlotArea != null && _rootElement != null)
@@ -359,9 +359,15 @@ namespace Visifire.Charts
 
         public void HideIndicator()
         {
-             if (ChartArea != null)
-                 Dispatcher.BeginInvoke(new Action(ChartArea.HideIndicator));
+            if (ChartArea != null)
+                Dispatcher.BeginInvoke(new Action(ChartArea.HideIndicator));
+            #region Nortek
+            internalSelectedXYValues = Non_Selection;
+            #endregion
         }
+
+
+
 
         /// <summary>
         /// Position the indicator.
@@ -382,10 +388,14 @@ namespace Visifire.Charts
 
                 // Calculate internalXValue and internalYValue
                 Double internalXValue, internalYValue;
-                RenderHelper.UserValueToInternalValues(xAxis, yAxis, xValue, yValue, out internalXValue, out internalYValue); ;
-                       
-                if(!Double.IsNaN(yValue) && xValue != null)
-                    Dispatcher.BeginInvoke(new Action<Chart, Double, Double>(ChartArea.PositionIndicator), new object[]{this, internalXValue, yValue});
+                RenderHelper.UserValueToInternalValues(xAxis, yAxis, xValue, yValue, out internalXValue, out internalYValue);
+
+                if (!Double.IsNaN(yValue) && xValue != null)
+                    Dispatcher.BeginInvoke(new Action<Chart, Double, Double>(ChartArea.PositionIndicator), new object[] { this, internalXValue, yValue });
+
+                #region Nortek added
+                internalSelectedXYValues = new KeyValuePair<object, double>(xValue, yValue);
+                #endregion
             }
         }
 
@@ -397,9 +407,9 @@ namespace Visifire.Charts
         [System.Windows.Browser.ScriptableMember()]
 #endif
         public void Export()
-        {   
+        {
             // User will be able to select the image format type while saving
-            base.Save(null, ExportType.Jpg , true);
+            base.Save(null, ExportType.Jpg, true);
         }
 
 #if WPF
@@ -408,7 +418,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="Chart">Visifire.Charts.Chart</param>
         public void Export(String path, ExportType exportType)
-        {   
+        {
             base.Save(path, exportType, false);
         }
 #endif
@@ -439,13 +449,13 @@ namespace Visifire.Charts
         /// Limits the number of points to be displayed on the chart.
         /// </summary>
         public Int32 SamplingThreshold
-        {   
+        {
             get
             {
                 return (Int32)GetValue(SamplingThresholdProperty);
             }
             set
-            {   
+            {
                 SetValue(SamplingThresholdProperty, value);
             }
         }
@@ -524,7 +534,7 @@ namespace Visifire.Charts
             c._clearAndResetZoomState = true;
             c.InvokeRender();
         }
-                
+
         /// <summary>
         /// Event handler manages ThemeEnabled property change event of Chart
         /// </summary>
@@ -575,7 +585,7 @@ namespace Visifire.Charts
             DependencyProperty.Register("DataPointWidth",
             typeof(Double),
             typeof(Chart),
-            new PropertyMetadata(Double.NaN,OnDataPointWidthPropertyChanged));
+            new PropertyMetadata(Double.NaN, OnDataPointWidthPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.UniqueColors dependency property.
@@ -743,7 +753,7 @@ namespace Visifire.Charts
             typeof(Boolean),
             typeof(Chart),
             new PropertyMetadata(OnLightingEnabledPropertyChanged));
-        
+
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.CornerRadius dependency property.
         /// </summary>
@@ -755,7 +765,7 @@ namespace Visifire.Charts
             typeof(CornerRadius),
             typeof(Chart),
             null);
-        
+
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.ShadowEnabled dependency property.
         /// </summary>
@@ -767,7 +777,7 @@ namespace Visifire.Charts
             typeof(Boolean),
             typeof(Chart),
             new PropertyMetadata(OnShadowEnabledPropertyChanged));
-                
+
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.PlotArea dependency property.
         /// </summary>
@@ -896,7 +906,7 @@ namespace Visifire.Charts
                 return (Boolean)GetValue(View3DProperty);
             }
         }
-        
+
         /// <summary>
         /// Target window Property for hyperlink 
         /// </summary>
@@ -926,7 +936,7 @@ namespace Visifire.Charts
                 SetValue(HrefProperty, value);
             }
         }
-        
+
         /// <summary>
         /// Name of the theme to be applied
         /// </summary>
@@ -963,9 +973,9 @@ namespace Visifire.Charts
         public Boolean AnimationEnabled
         {
             get
-            {   
+            {
                 if (!IsInDesignMode)
-                {   
+                {
                     if (String.IsNullOrEmpty(AnimationEnabledProperty.ToString()))
                     {
                         return false;
@@ -977,7 +987,7 @@ namespace Visifire.Charts
                     return (Boolean)GetValue(AnimationEnabledProperty);
             }
             set
-            {   
+            {
                 SetValue(AnimationEnabledProperty, value);
             }
         }
@@ -1023,16 +1033,16 @@ namespace Visifire.Charts
                 SetValue(InternalBorderThicknessProperty, value);
             }
         }
-        
+
         #endregion
 
         /// <summary>
         /// Background color property
         /// </summary>
         public new Brush Background
-        {   
+        {
             get
-            {   
+            {
                 return (Brush)GetValue(BackgroundProperty);
             }
             set
@@ -1041,7 +1051,7 @@ namespace Visifire.Charts
                 SetValue(InternalBackgroundProperty, value);
             }
         }
-        
+
         /// <summary>
         /// Enabled or disables the bevel effect
         /// </summary>
@@ -1056,7 +1066,7 @@ namespace Visifire.Charts
                 SetValue(BevelProperty, value);
             }
         }
-        
+
         /// <summary>
         /// Set of colors that will be used for the InternalDataPoints
         /// </summary>
@@ -1071,7 +1081,7 @@ namespace Visifire.Charts
                 SetValue(ColorSetProperty, value);
             }
         }
-        
+
         /// <summary>
         /// Set of colors that will be used for the InternalDataPoints
         /// </summary>
@@ -1086,7 +1096,7 @@ namespace Visifire.Charts
                 SetValue(ColorSetsProperty, value);
             }
         }
-                       
+
         /// <summary>
         /// Enables or disables automatic color shading
         /// </summary>
@@ -1101,7 +1111,7 @@ namespace Visifire.Charts
                 SetValue(LightingEnabledProperty, value);
             }
         }
-        
+
         /// <summary>
         /// Sets the parameter used to create rounded or elliptical corners of the element
         /// </summary>
@@ -1121,7 +1131,7 @@ namespace Visifire.Charts
                 SetValue(CornerRadiusProperty, value);
             }
         }
-        
+
         /// <summary>
         /// Enables or disables the shadow for the element
         /// </summary>
@@ -1172,7 +1182,7 @@ namespace Visifire.Charts
             get;
             set;
         }
-        
+
         /// <summary>
         /// Titles as TitleCollection of type Title
         /// </summary>
@@ -1237,6 +1247,10 @@ namespace Visifire.Charts
             }
         }
 
+
+
+
+
         #endregion
 
         #region Protected Methods
@@ -1277,7 +1291,7 @@ namespace Visifire.Charts
 
             // Initialize Series list
             Series = new DataSeriesCollection();
-            
+
             // Initialize PlotArea
             //PlotArea = new PlotArea() { Chart = this };
 
@@ -1430,7 +1444,7 @@ namespace Visifire.Charts
                 if (e.NewItems != null)
                 {
                     foreach (Axis axis in e.NewItems)
-                    {   
+                    {
                         axis.Chart = this;
 
                         if (axis._isAutoGenerated)
@@ -1492,7 +1506,7 @@ namespace Visifire.Charts
 
             InvokeRender();
         }
-        
+
         /// <summary>
         /// Event handler manages the addition and removal of legend from chart
         /// </summary>
@@ -1513,7 +1527,7 @@ namespace Visifire.Charts
                     {
                         if (String.IsNullOrEmpty((String)legend.GetValue(NameProperty)))
                         {
-                            if(isAutoLegend)
+                            if (isAutoLegend)
                                 legend.Name = "Legend" + Legends.IndexOf(legend);
                             else
                                 legend.Name = "Legend" + Legends.IndexOf(legend) + "_" + Guid.NewGuid().ToString().Replace('-', '_');
@@ -1535,24 +1549,24 @@ namespace Visifire.Charts
                 InvokeRender();
             }
         }
-        
+
         /// <summary>
         /// Event handler manages the addition and removal of trendLine from chart
         /// </summary>
         /// <param name="sender">TrendLine</param>
         /// <param name="e">NotifyCollectionChangedEventArgs</param>
         private void TrendLines_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {   
+        {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
                 if (e.NewItems != null)
-                {   
+                {
                     foreach (TrendLine trendLine in e.NewItems)
                     {
                         trendLine.Chart = this;
 
                         if (!String.IsNullOrEmpty(this.Theme))
-                        {   
+                        {
                             trendLine.ApplyStyleFromTheme(this, "TrendLine");
                         }
 
@@ -1563,11 +1577,11 @@ namespace Visifire.Charts
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove
                 || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-            {   
+            {
                 if (e.OldItems != null)
                 {
                     foreach (TrendLine trendLine in e.OldItems)
-                    {   
+                    {
                         trendLine.Chart = null;
                         trendLine.PropertyChanged -= Element_PropertyChanged;
                     }
@@ -1589,14 +1603,14 @@ namespace Visifire.Charts
             {
                 if (e.NewItems != null)
                     foreach (DataSeries ds in e.NewItems)
-                    {   
+                    {
                         ds.Chart = this;
 
                         //if (ds.DataContext == null)
-                          //  ds.SetBinding(DataContextProperty, new Binding());
+                        //  ds.SetBinding(DataContextProperty, new Binding());
 
                         foreach (DataPoint dp in ds.DataPoints)
-                        {   
+                        {
                             dp.Chart = this;
                         }
 
@@ -1616,7 +1630,7 @@ namespace Visifire.Charts
                         ds.PropertyChanged -= Element_PropertyChanged;
                         ds.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
                     }
-                 
+
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
@@ -1626,12 +1640,12 @@ namespace Visifire.Charts
                     List<Panel> preExistingCanvases = (from can in dataSeriesListExceptOldItems select can.Visual).ToList();
 
                     foreach (DataSeries ds in e.OldItems)
-                    {   
+                    {
                         ds.RemoveToolTip();
 
                         if (ds.Visual != null)
-                        {   
-                            if(preExistingCanvases.Contains(ds.Visual))
+                        {
+                            if (preExistingCanvases.Contains(ds.Visual))
                                 continue;
 
                             Panel seriesVisual = ds.Visual;
@@ -1652,11 +1666,11 @@ namespace Visifire.Charts
                 }
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-            {   
+            {
                 if (this.InternalSeries != null)
-                {   
+                {
                     foreach (DataSeries ds in InternalSeries)
-                    {   
+                    {
                         Panel seriesVisual = ds.Visual;
 
                         // remove pre existing parent panel for the series visual 
@@ -1682,7 +1696,7 @@ namespace Visifire.Charts
             System.Diagnostics.Debug.WriteLine("Running Thread IsBackGround=" + System.Threading.Thread.CurrentThread.IsBackground.ToString());
             InvokeRender();
         }
-        
+
         /// <summary>
         /// Event handler manages property change of visifire elements, like Title, Legends, DataSeries etc.
         /// </summary>
@@ -1783,7 +1797,7 @@ namespace Visifire.Charts
                 ChartArea = new ChartArea(this as Chart);
             }
 
-#if WPF     
+#if WPF
             NameScope.SetNameScope(this._rootElement, new NameScope());
 #endif
 
@@ -1857,7 +1871,7 @@ namespace Visifire.Charts
                 }
             }
         }
-              
+
         /// <summary>
         /// Apply lighting effect for chart
         /// </summary>
@@ -1876,7 +1890,7 @@ namespace Visifire.Charts
                 }
             }
         }
-        
+
         /// <summary>
         /// Apply shadow effect on chart
         /// (Creates a shadow layer behind the chart)
@@ -1884,15 +1898,15 @@ namespace Visifire.Charts
         /// <param name="Height">Chart width</param>
         /// <param name="Width">Chart height</param>
         private void ApplyChartShadow(Double width, Double height)
-        {   
+        {
             if (!_isShadowApplied && ShadowEnabled && !Double.IsNaN(height) && height != 0 && !Double.IsNaN(width) && width != 0)
             {
                 if (!VisifireControl.IsMediaEffectsEnabled)
-                {   
+                {
                     _shadowGrid.Children.Clear();
 
                     if (_rootElement != null)
-                    {   
+                    {
                         // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
                         ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(null, width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
                         ChartShadowLayer.Width = width - Chart.SHADOW_DEPTH;
@@ -1913,10 +1927,10 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    #if !WP
+#if !WP
                     if (_rootElement != null)
                         _rootElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
-                    #endif
+#endif
                     _isShadowApplied = true;
                 }
             }
@@ -1971,7 +1985,7 @@ namespace Visifire.Charts
             {
                 if (s == null)
                 {
-#if WPF             
+#if WPF
                     ResourceDictionary resource = (ResourceDictionary)Application.LoadComponent(new Uri(@"" + themeName + ".xaml", UriKind.RelativeOrAbsolute));
                     StyleDictionary = resource;
 #else               
@@ -1999,7 +2013,7 @@ namespace Visifire.Charts
                     System.IO.StreamReader reader = new System.IO.StreamReader(s);
                     String xaml = reader.ReadToEnd();
 #if WPF
-                    StyleDictionary  = (ResourceDictionary)XamlReader.Load(new XmlTextReader(new StringReader(xaml)));
+                    StyleDictionary = (ResourceDictionary)XamlReader.Load(new XmlTextReader(new StringReader(xaml)));
 #else
                     StyleDictionary = System.Windows.Markup.XamlReader.Load(xaml) as ResourceDictionary;
 #endif
@@ -2010,15 +2024,15 @@ namespace Visifire.Charts
 
             if (StyleDictionary != null)
             {
-//#if SL
-//                if (Style == null)
-//                {
-//                    Style myStyle = StyleDictionary["Chart"] as Style;
+                //#if SL
+                //                if (Style == null)
+                //                {
+                //                    Style myStyle = StyleDictionary["Chart"] as Style;
 
-//                    if (myStyle != null)
-//                        Style = myStyle;
-//                }
-//#else
+                //                    if (myStyle != null)
+                //                        Style = myStyle;
+                //                }
+                //#else
                 Style myStyle = StyleDictionary["Chart"] as Style;
 
                 _isThemeChanged = isThemePropertyChanged;
@@ -2027,11 +2041,11 @@ namespace Visifire.Charts
                 {
                     if (isThemePropertyChanged)
                         Style = myStyle;
-                    else if(Style == null)
+                    else if (Style == null)
                         Style = myStyle;
                 }
 
-//#endif
+                //#endif
             }
             else
             {
@@ -2073,15 +2087,15 @@ namespace Visifire.Charts
             // Attach events to the root element of the chart to track mouse movement over chart.
             this._rootElement.MouseLeave += new MouseEventHandler(Chart_MouseLeave);
         }
-        
+
         /// <summary>
         /// Attach events and tooltip to chart
         /// </summary>
         private void AttachToolTipAndEvents()
-        {   
+        {
             if (!String.IsNullOrEmpty(ToolTipText))
                 AttachToolTip(this, this, this);
-           
+
             AttachEvents2Visual(this, this, this._rootElement);
 
             AttachEvents2Visual4MouseDownEvent(this, this, this._plotCanvas);
@@ -2106,7 +2120,17 @@ namespace Visifire.Charts
         private static void OnIndicatorEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-            c.InvokeRender();
+            #region Nortek
+            if (c.ChartArea != null)
+            {
+                if ((bool)e.NewValue == false)
+                {
+                    c.indicatorLocked = false;
+                    //c.InvokeRender(); //Source 
+                    c.HideIndicator(); //New
+                }
+            }
+            #endregion
         }
 
         /// <summary>
@@ -2184,7 +2208,7 @@ namespace Visifire.Charts
         private static void OnThemePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-            c.LoadTheme((String)e.NewValue, (e.OldValue == null)?false:true);
+            c.LoadTheme((String)e.NewValue, (e.OldValue == null) ? false : true);
             c.InvokeRender();
         }
 
@@ -2300,7 +2324,7 @@ namespace Visifire.Charts
         {
             Chart chart = d as Chart;
             PlotArea plotArea = (PlotArea)e.NewValue;
-             
+
             plotArea.Chart = chart;
             plotArea.PropertyChanged -= chart.Element_PropertyChanged;
             plotArea.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(chart.Element_PropertyChanged);
@@ -2354,16 +2378,16 @@ namespace Visifire.Charts
             get;
             set;
         }
-        
+
         #endregion
-                
+
         #region Internal Properties
 
         /// <summary>
         /// If scroll is activated by any cause then IsScrollingActivated should be set to true. 
         /// </summary>
         internal Boolean IsScrollingActivated
-        {   
+        {
             get;
             set;
         }
@@ -2405,7 +2429,7 @@ namespace Visifire.Charts
             get;
             set;
         }
-        
+
         /// <summary>
         /// StyleDictionary of themes
         /// </summary>
@@ -2414,7 +2438,7 @@ namespace Visifire.Charts
             get;
             set;
         }
-        
+
         /// <summary>
         /// AxesX as Observable collection of type Axis
         /// </summary>
@@ -2423,7 +2447,7 @@ namespace Visifire.Charts
             get;
             set;
         }
-        
+
         /// <summary>
         /// AxesY as Observable collection of type Axis
         /// </summary>
@@ -2434,7 +2458,7 @@ namespace Visifire.Charts
         }
 
         #endregion
-        
+
         #region Internal Methods
 
         /// <summary>
@@ -2494,7 +2518,7 @@ namespace Visifire.Charts
         //        }
         //    }
         //}
-        
+
         /// <summary>
         /// Get ColorSet by ColorSet name
         /// </summary>
@@ -2506,10 +2530,10 @@ namespace Visifire.Charts
 
             if (ColorSets != null && ColorSets.Count > 0)
                 colorSet = ColorSets.GetColorSetByName(id);
-            
-            if(colorSet == null)
+
+            if (colorSet == null)
                 colorSet = EmbeddedColorSets.GetColorSetByName(id);
-            
+
             return colorSet;
         }
 
@@ -2517,7 +2541,7 @@ namespace Visifire.Charts
         /// Fire Rendered event
         /// </summary>
         internal void FireRenderedEvent()
-        {   
+        {
             if (_rendered != null)
                 _rendered(this, null);
         }
@@ -2536,9 +2560,9 @@ namespace Visifire.Charts
 
             if (stackTrace.Contains("set_Height(Double value)")
             || stackTrace.Contains("set_Width(Double value)")
-            || e.Message == "Height must be non-negative." 
-            || e.Message == "Width must be non-negative." 
-            || e.Message == "Size must be non-negative." 
+            || e.Message == "Height must be non-negative."
+            || e.Message == "Width must be non-negative."
+            || e.Message == "Size must be non-negative."
             || e.Message == "Internal Size Error"
             || e.Message.ToLower().Contains("width")
             || e.Message.ToLower().Contains("height"))
@@ -2571,7 +2595,7 @@ namespace Visifire.Charts
             if (!String.IsNullOrEmpty(newValue))
                 AttachToolTip(this, this, this);
         }
-        
+
         /// <summary>
         /// Get collection of titles which are docked inside PlotArea
         /// using LINQ
@@ -2600,7 +2624,7 @@ namespace Visifire.Charts
         internal List<Title> GetTitlesDockedOutSidePlotArea()
         {
             if (Titles != null)
-            {   
+            {
                 var titlesDockedOutSidePlotArea =
                     from title in Titles
                     where (title.DockInsidePlotArea == false)
@@ -2611,7 +2635,7 @@ namespace Visifire.Charts
             else
                 return null;
         }
-        
+
         internal void InvokeRender()
         {
 #if WPF
@@ -2642,18 +2666,18 @@ namespace Visifire.Charts
         {
             if (_isTemplateApplied)
             {
-#if WPF         
+#if WPF
                 if (RENDER_LOCK)
 #else
                 if (RENDER_LOCK && System.Threading.Thread.CurrentThread.IsBackground)
 #endif
-                {   
+                {
                     _renderLapsedCounter++;
                     System.Diagnostics.Debug.WriteLine("----Rendered Locked in InvokeRender Function");
                 }
                 else
                 {
-#if WPF             
+#if WPF
                     if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
                         Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
                     else
@@ -2672,30 +2696,61 @@ namespace Visifire.Charts
                         IS_FULL_RENDER_PENDING = true;
                         this.Dispatcher.BeginInvoke(Render);
                     }
-#endif              
+#endif
                 }
             }
         }
-        
+
         /// <summary>
         /// Render redraws the chart
         /// </summary>
         internal void Render()
-        {   
+        {
             if (_isTemplateApplied && !RENDER_LOCK && _rootElement != null)
-            {   
+            {
                 if (Double.IsNaN(this.ActualWidth) || Double.IsNaN(this.ActualHeight) || this.ActualWidth == 0 || this.ActualHeight == 0)
                     return;
 
                 RENDER_LOCK = true;
 
                 try
-                {   
+                {
                     System.Diagnostics.Debug.WriteLine("----Rendered");
                     PrepareChartAreaForDrawing();
+                    #region Nortek
+                    this.UpdateLayout();
+                    FireRenderingEvent();
 
+                    if (Series.Count == 1 && Series[0].RenderAs == RenderAs.HeatMap)
+                    {
+                        var heatMapSurface = Series[0].HeatMapSurface;
+                        if (IsInDesignMode)
+                        {
+                            return;
+                        }
+                        if (heatMapSurface.IsXDateTime)
+                        {
+                            Series[0].XValueType = ChartValueTypes.DateTime;
+                            Series[0].DataPoints[0].XValue = heatMapSurface.XRange.Min;
+                            Series[0].DataPoints[0].YValue = heatMapSurface.YRange.Min;
+                            Series[0].DataPoints[1].XValue = heatMapSurface.XRange.Max;
+                            Series[0].DataPoints[1].YValue = heatMapSurface.YRange.Max;
+                        }
+                        else
+                        {
+                            Series[0].XValueType = ChartValueTypes.Auto;
+
+                            Series[0].DataPoints[0].XValue = heatMapSurface.XRange.Min;
+                            Series[0].DataPoints[0].YValue = heatMapSurface.YRange.Min;
+                            Series[0].DataPoints[1].XValue = heatMapSurface.XRange.Max;
+                            Series[0].DataPoints[1].YValue = heatMapSurface.YRange.Max;
+                        }
+                        Series[0].IsNotificationEnable = true;
+
+
+                    }
+                    #endregion
                     ChartArea.Draw(this);
-
                     IS_FULL_RENDER_PENDING = false;
                 }
                 catch (Exception e)
@@ -2711,12 +2766,12 @@ namespace Visifire.Charts
                 }
             }
         }
-        
+
         /// <summary>
         /// Unlock RenderLock
         /// </summary>
         internal void UnlockRender()
-        {   
+        {
             System.Diagnostics.Debug.WriteLine("----Rendered UnLocked in UnlockRender");
             RENDER_LOCK = false;
 
@@ -2781,7 +2836,7 @@ namespace Visifire.Charts
         /// <param name="dockInsidePlotArea">DockInsidePlotArea</param>
         /// <returns>Brush</returns>
         internal static Brush CalculateFontColor(Chart chart, Brush backgroundColor, Brush fontColor, Boolean dockInsidePlotArea)
-        {   
+        {
             Brush brush = fontColor;
             Double intensity;
             if (fontColor == null)
@@ -2840,7 +2895,7 @@ namespace Visifire.Charts
 
         #region Internal Events And Delegates
 
-#if WPF 
+#if WPF
         /// <summary>
         /// RenderDelegate is used for attaching Render() function as target while Invoking Render() using Dispatcher.
         /// </summary>
@@ -2848,7 +2903,7 @@ namespace Visifire.Charts
 #endif
 
         #endregion
-        
+
         #region Data
 
         /// <summary>
@@ -2913,7 +2968,7 @@ namespace Visifire.Charts
         /// Is used to handle inactive animation after first time render
         /// </summary>
         internal Boolean _internalAnimationEnabled = false;
-        
+
         /// <summary>
         /// Whether Theme is changed by the user
         /// </summary>
@@ -2943,7 +2998,7 @@ namespace Visifire.Charts
         /// Bevel depth for chart
         /// </summary>
         internal const Double BEVEL_DEPTH = 5;
-        
+
         #endregion
     }
 }

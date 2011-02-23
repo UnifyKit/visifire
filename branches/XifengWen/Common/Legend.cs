@@ -29,6 +29,7 @@ using System.Windows.Data;
 using Visifire.Commons;
 using System.Linq;
 using System.Windows.Media.Effects;
+using System.Windows.Media.Imaging;
 
 namespace Visifire.Charts
 {
@@ -53,7 +54,7 @@ namespace Visifire.Charts
             {
                 DefaultStyleKeyProperty.OverrideMetadata(typeof(Legend), new FrameworkPropertyMetadata(typeof(Legend)));
                 _defaultStyleKeyApplied = true;
-            } 
+            }
 #else
             DefaultStyleKey = typeof(Legend);
 #endif
@@ -529,36 +530,36 @@ namespace Visifire.Charts
         /// <returns>
         /// The identifier for the Visifire.Charts.Legend.FontFamily dependency property.
         /// </returns>
-        public new static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Register 
+        public new static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Register
             ("FontFamily",
             typeof(FontFamily),
             typeof(Legend),
             new PropertyMetadata(OnFontFamilyPropertyChanged));
-        
+
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.FontSize dependency property.
         /// </summary>
         /// <returns>
         /// The identifier for the Visifire.Charts.Legend.FontSize dependency property.
         /// </returns>
-        public new static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register 
+        public new static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register
             ("FontSize",
             typeof(Double),
             typeof(Legend),
             new PropertyMetadata(OnFontSizePropertyChanged));
-        
+
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.FontStyle dependency property.
         /// </summary>
         /// <returns>
         /// The identifier for the Visifire.Charts.Legend.FontStyle dependency property.
         /// </returns>
-        public new static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register 
+        public new static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register
             ("FontStyle",
             typeof(FontStyle),
             typeof(Legend),
             new PropertyMetadata(OnFontStylePropertyChanged));
-        
+
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.FontWeight dependency property.
         /// </summary>
@@ -583,7 +584,7 @@ namespace Visifire.Charts
             typeof(Legend),
             new PropertyMetadata(1.0, OnOpacityPropertyChanged));
 
-                /// <summary>
+        /// <summary>
         /// Identifies the Visifire.Charts.Legend.BorderThickness dependency property.
         /// </summary>
         /// <returns>
@@ -594,7 +595,7 @@ namespace Visifire.Charts
             typeof(Thickness),
             typeof(Legend),
             new PropertyMetadata(OnBorderThicknessPropertyChanged));
-        
+
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.Background dependency property.
         /// </summary>
@@ -607,7 +608,7 @@ namespace Visifire.Charts
             typeof(Legend),
             new PropertyMetadata(OnBackgroundPropertyChanged));
 
-                /// <summary>
+        /// <summary>
         /// Identifies the Visifire.Charts.Legend.Padding dependency property.
         /// </summary>
         /// <returns>
@@ -618,7 +619,7 @@ namespace Visifire.Charts
              typeof(Thickness),
              typeof(Legend),
              new PropertyMetadata(OnPaddingPropertyChanged));
-        
+
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.HorizontalAlignment dependency property.
         /// </summary>
@@ -630,7 +631,7 @@ namespace Visifire.Charts
             typeof(HorizontalAlignment),
             typeof(Legend),
             new PropertyMetadata(OnHorizontalAlignmentPropertyChanged));
-        
+
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.VerticalAlignment dependency property.
         /// </summary>
@@ -842,7 +843,7 @@ namespace Visifire.Charts
                 else
                     SetValue(VerticalAlignmentProperty, value);
 #else
-                 SetValue(VerticalAlignmentProperty, value);
+                SetValue(VerticalAlignmentProperty, value);
 #endif
             }
         }
@@ -1065,7 +1066,7 @@ namespace Visifire.Charts
                     SetValue(FontWeightProperty, value);
                     FirePropertyChanged(VcProperties.FontWeight);
                 }
-#else           
+#else
                 SetValue(FontWeightProperty, value);
 #endif
             }
@@ -1112,7 +1113,7 @@ namespace Visifire.Charts
         public CornerRadius CornerRadius
         {
             get
-            {   
+            {
                 return (CornerRadius)GetValue(CornerRadiusProperty);
             }
             set
@@ -1383,7 +1384,7 @@ namespace Visifire.Charts
         /// Get or set the FontWeight property of Legend text
         /// </summary>
 #if WPF
-         [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
+        [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
 #endif
         internal FontWeight InternalFontWeight
         {
@@ -1467,11 +1468,11 @@ namespace Visifire.Charts
                 return (Thickness)((_internalPadding == null) ? GetValue(PaddingProperty) : _internalPadding);
             }
             set
-            {   
+            {
                 _internalPadding = value;
             }
         }
-        
+
         /// <summary>
         /// Get or set the Opacity property
         /// </summary>
@@ -1712,12 +1713,12 @@ namespace Visifire.Charts
         {
             get
             {
-                Layouts layOut = (Layouts) GetValue(LayoutProperty);
+                Layouts layOut = (Layouts)GetValue(LayoutProperty);
 
-                if(layOut == Layouts.Auto)
+                if (layOut == Layouts.Auto)
                     return Layouts.FlowLayout;
                 else
-                    return (Layouts) GetValue(LayoutProperty);
+                    return (Layouts)GetValue(LayoutProperty);
             }
             set
             {
@@ -1734,7 +1735,7 @@ namespace Visifire.Charts
         internal static readonly DependencyProperty LayoutProperty = DependencyProperty.Register
             ("Layout",
             typeof(Layouts),
-            typeof(Legend),null);
+            typeof(Legend), null);
 
         /// <summary>
         /// Label text and Marker as symbol
@@ -2252,8 +2253,8 @@ namespace Visifire.Charts
         /// <returns>Size</returns>
         private Size TextBlockActualSize(TextBlock textBlock)
         {
-#if WPF     
-            textBlock.Measure(new Size(Double.MaxValue,Double.MaxValue));
+#if WPF
+            textBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
             return textBlock.DesiredSize;
 #else
             return new Size(textBlock.ActualWidth, textBlock.ActualHeight);
@@ -2275,27 +2276,27 @@ namespace Visifire.Charts
         /// Apply shadow over Legend
         /// </summary>
         private void ApplyShadow(Grid innerGrid)
-        {   
+        {
             if (ShadowEnabled)
-            {   
+            {
                 if (!VisifireControl.IsMediaEffectsEnabled)
-                {   
+                {
                     Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, Visual.Width, Visual.Height,
                                                         CornerRadius, CornerRadius, 6);
 
-                    shadowGrid.Clip = ExtendedGraphics.GetShadowClip(new Size(shadowGrid.Width , shadowGrid.Height), CornerRadius);
-                    
+                    shadowGrid.Clip = ExtendedGraphics.GetShadowClip(new Size(shadowGrid.Width, shadowGrid.Height), CornerRadius);
+
                     shadowGrid.SetValue(Canvas.ZIndexProperty, -12);
                     shadowGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
                     shadowGrid.VerticalAlignment = VerticalAlignment.Stretch;
                     // shadowGrid.Margin = new Thickness(0, 0, -(Charts.Chart.SHADOW_DEPTH + BorderThickness.Right + BorderThickness.Left), -(Charts.Chart.SHADOW_DEPTH + BorderThickness.Bottom + BorderThickness.Top));
                     shadowGrid.Margin = new Thickness(0, 0, -(Charts.Chart.SHADOW_DEPTH + EntryMargin), -(Charts.Chart.SHADOW_DEPTH + EntryMargin));
 
-                    innerGrid.Children.Insert(0,shadowGrid);
+                    innerGrid.Children.Insert(0, shadowGrid);
                 }
                 else
-                {   
-#if !WP                  
+                {
+#if !WP
                     DropShadowEffect shadow = new DropShadowEffect()
                     {
                         BlurRadius = 5,
@@ -2343,7 +2344,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <returns>EntrySize</returns>
         private EntrySize GetMaxSymbolAndColumnWidth()
-        {   
+        {
             EntrySize entrySize = new EntrySize();
 
             foreach (LegendEntry labelAndSymbol in Entries)
@@ -2429,7 +2430,7 @@ namespace Visifire.Charts
             }
 
 #if WPF
-            line.SetValue(Canvas.TopProperty, height/2 );
+            line.SetValue(Canvas.TopProperty, height / 2);
 #else
             line.Height = 8;
             line.SetValue(Canvas.TopProperty, (height / 2) + .4876);
@@ -2693,13 +2694,13 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="legendContent">Legend content referecnce</param>
         private void DrawHorizontalGridlayout4Legend(ref Grid legendContent, out ScrollViewer scrollViewer)
-        {   
+        {
             Grid legendGrid = new Grid();
             scrollViewer = new ScrollViewer();
             scrollViewer.BorderThickness = new Thickness(0);
 
             if (Entries.Count > 0)
-            {   
+            {
                 // Check number of columns possible
                 Int32 totalNumberOfColumn = (from le in Entries where le.Labels != null select le.Labels.Count()).Max() + 1; // 1 for Legend
 
@@ -2714,32 +2715,32 @@ namespace Visifire.Charts
                 Int32 rowIndex = 0;
 
                 List<Rectangle> linesAsRect = new List<Rectangle>();
-                
+
                 foreach (LegendEntry legendEntry in Entries)
-                {   
+                {
                     Int32 columnIndex = 0;
 
                     if (legendEntry.IsCompleteLine)
-                    {   
+                    {
                         Rectangle rectAsLine = new Rectangle()
-                        {   
+                        {
                             Height = 1,
                             HorizontalAlignment = HorizontalAlignment.Stretch,
                             Fill = new SolidColorBrush(Colors.Black)
                         };
-                        
+
                         linesAsRect.Add(rectAsLine);
 
                         rectAsLine.SetValue(Grid.RowProperty, rowIndex);
                         legendGrid.Children.Add(rectAsLine);
                     }
                     else
-                    {   
+                    {
                         Marker marker = legendEntry.Marker;
 
                         // Create the first column for Marker
                         if (marker != null)
-                        {   
+                        {
                             marker.CreateVisual();
                             marker.Visual.Margin = new Thickness(EntryMargin, EntryMargin, LabelMargin / 2, EntryMargin);
                             marker.Visual.SetValue(Grid.RowProperty, rowIndex);
@@ -2785,13 +2786,13 @@ namespace Visifire.Charts
                         foreach (TextBlock label in labels)
                             label.VerticalAlignment = verticalAlignment;
                     }
-                    
+
                     // Next row
                     rowIndex++;
                 }
 
-                foreach(Rectangle rectAsLine in linesAsRect)
-                   rectAsLine.SetValue(Grid.ColumnSpanProperty, totalNumberOfColumn);
+                foreach (Rectangle rectAsLine in linesAsRect)
+                    rectAsLine.SetValue(Grid.ColumnSpanProperty, totalNumberOfColumn);
 
             }
 
@@ -2871,12 +2872,233 @@ namespace Visifire.Charts
         //    legendContent.Children.Add(legendGrid);
         //}
 
+        #region Nortek Added
+        private int intervalDistance = 40; //Points
+        private void CreateLegendLegendTicksAndLables(Range<double> zRange, Size areaSize, Ticks ticks, AxisLabels legendLables)
+        {
+            var axis = new Axis();
+            int noMaxInteval = 10;
+            if (Orientation == Orientation.Vertical)
+            {
+                ticks.SetParms(PlacementTypes.Left, Double.NaN, areaSize.Height);
+                legendLables.Height = areaSize.Height;
+                legendLables.Placement = PlacementTypes.Left;
+                axis.AxisOrientation = AxisOrientation.Vertical;
+                axis.AxisType = AxisTypes.Primary;
+                axis.AxisRepresentation = AxisRepresentations.AxisY;
+                noMaxInteval = (Int32)(areaSize.Height / intervalDistance);
+
+            }
+            else if (Orientation == Orientation.Horizontal)
+            {
+                ticks.SetParms(PlacementTypes.Bottom, areaSize.Width, Double.NaN);
+                legendLables.Width = areaSize.Width;
+                legendLables.Placement = PlacementTypes.Bottom;
+                legendLables.AxisLabelContentDictionary = new Dictionary<double, string>();
+
+                axis.AxisOrientation = AxisOrientation.Horizontal;
+                axis.AxisType = AxisTypes.Primary;
+
+                axis.AxisRepresentation = AxisRepresentations.AxisX;
+                noMaxInteval = (Int32)(areaSize.Width / intervalDistance);
+            }
+            decimal yAxisMax = (decimal)zRange.Max;
+            decimal yAxisMin = (decimal)zRange.Min;
+
+            if (noMaxInteval < 1)
+            {
+                noMaxInteval = 1;
+            }
+
+            double intervalValue = AxisIntervalTool.GenerateDefaultInterval(ref yAxisMax, ref yAxisMin, true, true, noMaxInteval);
+            ticks.IsNotificationEnable = false;
+            ticks.Maximum = zRange.Max;
+            ticks.Minimum = zRange.Min;
+            ticks.DataMaximum = zRange.Max;
+            ticks.DataMinimum = zRange.Min;
+            ticks.IsNotificationEnable = true;
+            ticks.LineColor = Brushes.Black;
+            ticks.LineThickness = 0.5;
+            ticks.Interval = intervalValue;
+
+            axis._isAutoGenerated = true;
+            axis.Chart = Chart;
+            axis.XValueType = ChartValueTypes.Numeric;
+            axis.Interval = intervalValue;
+            axis.InternalInterval = intervalValue;
+            PlotDetails pl = new PlotDetails(null);
+            pl.ChartOrientation = ChartOrientationType.Vertical;
+            axis.PlotDetails = pl;
+            legendLables.Maximum = zRange.Max;
+            legendLables.Minimum = zRange.Min;
+            legendLables.DataMaximum = zRange.Max;
+            legendLables.DataMinimum = zRange.Min;
+            legendLables.ParentAxis = axis;
+            legendLables.Parent = axis;
+            legendLables.InternalRows = (Int32)legendLables.Rows;
+            legendLables.Interval = intervalValue;
+            legendLables.Chart = Chart;
+
+            ticks.ParentAxis = axis;
+            ticks.CreateVisualObject();
+            legendLables.CreateVisualObject();
+        }
+
+        private byte[] DrawHeatMapBar(int width, int height, int bpp)
+        {
+            var chart = Chart as Chart;
+            Byte[] pixels = new byte[height * width * bpp / 8];
+            using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(new System.IO.MemoryStream(pixels)))
+            {
+                if (Orientation == Orientation.Vertical)
+                {
+                    double yFactor = chart.Series[0].InternalHeatMapPalette.ColorCount * 1.0 / height;
+                    for (int y = 0; y < height; y++)
+                    {
+                        int index = (chart.Series[0].InternalHeatMapPalette.ColorCount - 1) - (int)(y * yFactor);
+                        for (int x = 0; x < width; x++)
+                        {
+                            var c = chart.Series[0].InternalHeatMapPalette.GetColor(index);
+                            bw.Write(c);
+                        }
+                    }
+                }
+                else if (Orientation == Orientation.Horizontal)
+                {
+                    double xFactor = chart.Series[0].InternalHeatMapPalette.ColorCount * 1.0 / width;
+                    for (int y = 0; y < height; y++)
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            int index = (int)(x * xFactor);
+                            var c = chart.Series[0].InternalHeatMapPalette.GetColor(index);
+                            bw.Write(c);
+                        }
+                    }
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            return pixels;
+        }
+
+        const double defaultBarAreaWidthHeight = 45;
+        const double defaultBarWidthHeight = 15;
+        private Canvas CreateLegendContentForHeatMap(Range<double> zRange, Size plotSize, double rightOffset, double topOffset)
+        {
+            Canvas legendContent = new Canvas();
+            Bitmap myImage = new Bitmap();
+            Ticks ticks = new Ticks();
+            AxisLabels legendLables = new AxisLabels();
+            WriteableBitmap wv = null;
+            if (Orientation == Orientation.Vertical)
+            {
+                legendContent.VerticalAlignment = VerticalAlignment.Center;
+                int finalWidth = (int)Math.Min(InternalMaximumWidth, defaultBarWidthHeight);
+                int finalHeight = (int)plotSize.Height;
+                if (finalWidth != 0 && finalHeight != 0)
+                {
+                    wv = new WriteableBitmap(finalWidth, finalHeight, HeatMapHelper.DpiX, HeatMapHelper.DpiY, PixelFormats.Bgra32, null);
+                    byte[] pixels = DrawHeatMapBar(wv.PixelWidth, wv.PixelHeight, wv.Format.BitsPerPixel);
+                    wv.WritePixels(new Int32Rect(0, 0, wv.PixelWidth, wv.PixelHeight), pixels, wv.PixelWidth * wv.Format.BitsPerPixel / 8, 0);
+                    myImage.Source = wv;
+
+                    myImage.SetValue(Canvas.LeftProperty, defaultBarAreaWidthHeight - defaultBarWidthHeight);
+                    myImage.SetValue(Canvas.TopProperty, topOffset);
+
+                    CreateLegendLegendTicksAndLables(zRange, new Size(finalWidth, finalHeight), ticks, legendLables);
+
+                    ticks.Visual.SetValue(Canvas.TopProperty, topOffset);
+                    ticks.Visual.SetValue(Canvas.RightProperty, defaultBarWidthHeight);
+                    legendLables.Visual.SetValue(Canvas.TopProperty, topOffset);
+                    legendLables.Visual.SetValue(Canvas.LeftProperty, 0.0);
+                }
+            }
+            else if (Orientation == Orientation.Horizontal)
+            {
+                legendContent.HorizontalAlignment = HorizontalAlignment.Right;
+                int finalWidth = (int)plotSize.Width;
+                int finalHeight = (int)Math.Min(InternalMaximumWidth, defaultBarWidthHeight);
+                if (finalWidth != 0 && finalHeight != 0)
+                {
+
+                    wv = new WriteableBitmap(finalWidth, finalHeight, HeatMapHelper.DpiX, HeatMapHelper.DpiY, PixelFormats.Bgra32, null);
+                    byte[] pixels = DrawHeatMapBar(wv.PixelWidth, wv.PixelHeight, wv.Format.BitsPerPixel);
+                    wv.WritePixels(new Int32Rect(0, 0, wv.PixelWidth, wv.PixelHeight), pixels, wv.PixelWidth * wv.Format.BitsPerPixel / 8, 0);
+                    myImage.Source = wv;
+
+                    myImage.SetValue(Canvas.RightProperty, rightOffset);
+                    myImage.SetValue(Canvas.TopProperty, 0.0);
+
+                    CreateLegendLegendTicksAndLables(zRange, new Size(finalWidth, finalHeight), ticks, legendLables);
+                    ticks.Visual.SetValue(Canvas.RightProperty, rightOffset);
+                    ticks.Visual.SetValue(Canvas.TopProperty, defaultBarWidthHeight);
+                    legendLables.Visual.SetValue(Canvas.RightProperty, rightOffset);
+                    legendLables.Visual.SetValue(Canvas.TopProperty, defaultBarAreaWidthHeight - defaultBarWidthHeight - 8);
+                }
+            }
+
+            legendContent.Children.Add(myImage);
+            if (ticks.Visual != null)
+            {
+                legendContent.Children.Add(ticks.Visual);
+            }
+            if (legendLables.Visual != null)
+            {
+                legendContent.Children.Add(legendLables.Visual);
+            }
+
+            //legendContent.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            return legendContent;
+        }
+
+        private Grid CreateEmptyContentForHeatMap()
+        {
+            Grid legendContent = new Grid();
+            Image myImage = new Image();
+            myImage.HorizontalAlignment = HorizontalAlignment.Center;
+            myImage.VerticalAlignment = VerticalAlignment.Center;
+            if (Orientation == Orientation.Vertical)
+            {
+                myImage.Height = InternalMaximumHeight;
+                var finalWidth = Math.Min(InternalMaximumWidth, defaultBarAreaWidthHeight);
+                myImage.Width = finalWidth;
+
+
+            }
+            else if (Orientation == Orientation.Horizontal)
+            {
+                myImage.Width = InternalMaximumWidth;
+                var finalHeight = Math.Min(InternalMaximumHeight, defaultBarAreaWidthHeight);
+                myImage.Height = finalHeight;
+            }
+            legendContent.Children.Add(myImage);
+            legendContent.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            return legendContent;
+        }
+
+        public void AdjustHeatMapLegendAfterCreatingPlotArea(Range<double> zRange, Size plotSize, double rightOffset, double topOffset)
+        {
+            LegendContainer.Children.Add(CreateLegendContentForHeatMap(zRange, plotSize, rightOffset, topOffset));
+        }
+
+        public void CleanLegendContainer()
+        {
+            var cct = LegendContainer.Children.Count;
+            LegendContainer.Children.RemoveRange(0, cct);
+        }
+
+        #endregion
+
+
         /// <summary>
         /// Create the content of the Legend
         /// </summary>
         /// <returns>Grid</returns>
         private Grid CreateLegendContent()
-        {   
+        {
             Grid legendContent = new Grid();
             ScrollViewer scrollViewer = null;
 
@@ -2884,7 +3106,7 @@ namespace Visifire.Charts
             InternalMaximumHeight -= 2 * InternalPadding.Left;
 
             if (Orientation == Orientation.Vertical)
-            {   
+            {
                 if (Layout == Layouts.FlowLayout)
                 {
                     DrawVerticalFlowLayout4Legend(ref legendContent);
@@ -2897,7 +3119,7 @@ namespace Visifire.Charts
             else if (Orientation == Orientation.Horizontal)
             {
                 if (Layout == Layouts.FlowLayout)
-                {   
+                {
                     DrawHorizontalFlowLayout4Legend(ref legendContent);
                 }
                 else if (Layout == Layouts.GridLayout) // MaxWidth is reqired for GridLayout calculation
@@ -2911,7 +3133,7 @@ namespace Visifire.Charts
             legendContent.Width = legendContent.DesiredSize.Width + InternalPadding.Left * 2;
 
             if (Layout == Layouts.GridLayout)
-            {   
+            {
                 Double maxHeight, maxWidth;
 
                 if (Double.IsInfinity(InternalMaximumWidth))
@@ -2919,7 +3141,7 @@ namespace Visifire.Charts
                 else
                     maxWidth = InternalMaximumWidth;
 
-                                if (Double.IsInfinity(InternalMaximumHeight))
+                if (Double.IsInfinity(InternalMaximumHeight))
                     maxHeight = (Chart as Chart).ActualHeight * 0.5;
                 else
                     maxHeight = InternalMaximumHeight;
@@ -2930,9 +3152,9 @@ namespace Visifire.Charts
                     legendContent.Width = maxWidth;
                     scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
                 }
- 
+
                 if (legendContent.Height > maxHeight)
-                {   
+                {
                     scrollViewer.Height = maxHeight - InternalPadding.Left * 2;
                     scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
                     legendContent.Height = maxHeight;
@@ -2944,7 +3166,7 @@ namespace Visifire.Charts
                     {
                         legendContent.Width += SCROLLBAR_SIZE_OF_SCROLLVIEWER;
 
-                        if(!Double.IsNaN(scrollViewer.Width))
+                        if (!Double.IsNaN(scrollViewer.Width))
                             scrollViewer.Width += SCROLLBAR_SIZE_OF_SCROLLVIEWER;
                     }
                 }
@@ -3000,7 +3222,7 @@ namespace Visifire.Charts
             if (_onMouseMove != null)
                 _onMouseMove(sender, new LegendMouseEventArgs(e as MouseEventArgs));
         }
-        
+
         internal override object GetMouseLeftButtonDownEventHandler()
         {
             return _onMouseLeftButtonDown;
@@ -3089,12 +3311,27 @@ namespace Visifire.Charts
                 LegendContainer.Children.Add(legendTitle.Visual);
             }
 
-            Grid legendContent = CreateLegendContent();
+            #region Nortek Wrapped and Added
+            Grid legendContent = null;
+
+            var chart = Chart as Chart;
+            if (chart.Series.Count == 1 && chart.Series[0].RenderAs == RenderAs.HeatMap || chart.Series[0].RenderAs == RenderAs.RadarHeatMap)
+            {
+                legendContent = CreateEmptyContentForHeatMap();
+            }
+            else
+            {
+                legendContent = CreateLegendContent();//Source code
+            }
+            #endregion
             legendContent.Tag = tag;
 
             LegendContainer.Children.Add(legendContent);
 
-            LegendContainer.VerticalAlignment = VerticalAlignment.Center;
+            #region Nortek replaced
+            //LegendContainer.VerticalAlignment = VerticalAlignment.Center; //Source Code. Replace by
+            LegendContainer.VerticalAlignment = VerticalAlignment.Stretch;
+            #endregion
             LegendContainer.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             ApplyVisualProperty();
@@ -3106,7 +3343,7 @@ namespace Visifire.Charts
 
             if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight < Visual.DesiredSize.Height)
                 Visual.Height = InternalMaxHeight;
-            else 
+            else
                 Visual.Height = Visual.DesiredSize.Height;
 
             if (!Double.IsPositiveInfinity(InternalMaxWidth) && InternalMaxWidth < Visual.DesiredSize.Width + InternalPadding.Left)
@@ -3118,11 +3355,22 @@ namespace Visifire.Charts
 
             PlotArea plotArea = (Chart as Chart).PlotArea;
 
-            RectangleGeometry rectGeo = new RectangleGeometry();
-            rectGeo.Rect = new Rect(InternalBorderThickness.Left, InternalBorderThickness.Top, Visual.Width - InternalBorderThickness.Left - InternalBorderThickness.Right, Visual.Height - InternalBorderThickness.Top - InternalBorderThickness.Bottom);
-            rectGeo.RadiusX = CornerRadius.TopLeft;
-            rectGeo.RadiusY = CornerRadius.TopRight;
-            LegendContainer.Clip = rectGeo;
+            #region Nortek Wrapped
+            if (chart.Series.Count == 1 && chart.Series[0].RenderAs == RenderAs.HeatMap || chart.Series[0].RenderAs == RenderAs.RadarHeatMap)
+            {
+            }
+            else
+            {
+                //Source code
+                RectangleGeometry rectGeo = new RectangleGeometry();
+                rectGeo.Rect = new Rect(InternalBorderThickness.Left, InternalBorderThickness.Top, Visual.Width - InternalBorderThickness.Left - InternalBorderThickness.Right, Visual.Height - InternalBorderThickness.Top - InternalBorderThickness.Bottom);
+                rectGeo.RadiusX = CornerRadius.TopLeft;
+                rectGeo.RadiusY = CornerRadius.TopRight;
+                LegendContainer.Clip = rectGeo;
+            }
+            #endregion
+
+
 
             ApplyShadow(innerGrid);
 
@@ -3171,7 +3419,7 @@ namespace Visifire.Charts
         /// Handler for MouseLeftButtonUp event
         /// </summary>
         private event EventHandler<LegendMouseButtonEventArgs> _onMouseLeftButtonUp;
-        
+
         /// <summary>
         /// Handler for MouseMove event
         /// </summary>
@@ -3199,7 +3447,7 @@ namespace Visifire.Charts
         private Nullable<Thickness> _borderThickness = null;
         private Brush _internalBackground = null;
         private Nullable<HorizontalAlignment> _internalHorizontalAlignment = null;
-        
+
         private Nullable<VerticalAlignment> _internalVerticalAlignment = null;
         private Nullable<Thickness> _internalPadding = null;
         private Double _internalOpacity = Double.NaN;
@@ -3212,8 +3460,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Whether the default style is applied
         /// </summary>
-        private static Boolean _defaultStyleKeyApplied;         
- 
+        private static Boolean _defaultStyleKeyApplied;
+
 #endif
 
 
@@ -3223,14 +3471,14 @@ namespace Visifire.Charts
     internal class LegendEntry
     {
         public LegendEntry(Marker marker, List<String> labels, List<HorizontalAlignment> xAlignments)
-        {   
+        {
             Marker = marker;
             Labels = labels;
             XAlignments = xAlignments;
         }
 
         public LegendEntry() { }
-            
+
         public Boolean IsCompleteLine;
         public Marker Marker;
         public List<String> Labels;

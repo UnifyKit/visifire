@@ -32,7 +32,7 @@ namespace Visifire.Charts
     }
 
     public enum OCHL
-    {   
+    {
         Open = 0,
         Close = 1,
         High = 2,
@@ -43,16 +43,16 @@ namespace Visifire.Charts
     /// Export file types
     /// </summary>
     public enum ExportType
-    {   
+    {
         Jpg = 0,
         Bmp = 1
     }
-    
+
     /// <summary>
     /// Fill types
     /// </summary>
     public enum FillType
-    {   
+    {
         Solid, Hollow
     }
 
@@ -137,16 +137,16 @@ namespace Visifire.Charts
     /// <summary>
     /// Defines the type of the axis
     /// </summary>
-    public enum AxisTypes 
-    { 
-        Primary = 0, 
-        Secondary = 1 
+    public enum AxisTypes
+    {
+        Primary = 0,
+        Secondary = 1
     }
 
     /// <summary>
     /// Defines relative placement type for the axis elements
     /// </summary>
-    internal enum PlacementTypes 
+    internal enum PlacementTypes
     {
         Top = 0,
         Left = 1,
@@ -165,10 +165,10 @@ namespace Visifire.Charts
     /// <summary>
     /// Defines enum for use with axis manager
     /// </summary>
-    internal enum MantissaOrExponent 
-    { 
-        Mantissa = 1, 
-        Exponent = 2 
+    internal enum MantissaOrExponent
+    {
+        Mantissa = 1,
+        Exponent = 2
     }
 
     internal enum ScaleDirection
@@ -181,7 +181,7 @@ namespace Visifire.Charts
     /// This property is used to select the chart type
     /// </summary>
     public enum RenderAs
-    {   
+    {
         Column = 0,
         Line = 1,
         Pie = 2,
@@ -205,16 +205,20 @@ namespace Visifire.Charts
         Radar = 20,
         Polar = 21,
         Pyramid = 22,
-        QuickLine = 23
+        QuickLine = 23,
+        #region Nortek Added
+        HeatMap = 24,
+        RadarHeatMap = 25
+        #endregion
     }
-    
+
     /// <summary>
     /// Styles for labels
     /// </summary>
     public enum LabelStyles
     {
-        OutSide = 0, 
-        Inside = 1 
+        OutSide = 0,
+        Inside = 1
     }
 
     /// <summary>
@@ -230,7 +234,7 @@ namespace Visifire.Charts
     /// <summary>
     /// Defines the various chart orientations
     /// </summary>
-    internal enum ChartOrientationType 
+    internal enum ChartOrientationType
     {
         Undefined = 0,     // Undefined - not yet assigned 
         Vertical = 1,      // Vertical - charts of type point, bubble line, column(all similar types), area(all similar types)
@@ -242,10 +246,10 @@ namespace Visifire.Charts
     /// <summary>
     /// Axis representations as X wise or Y wise
     /// </summary>
-    internal enum AxisRepresentations 
-    { 
-        AxisX = 0, 
-        AxisY = 1 
+    internal enum AxisRepresentations
+    {
+        AxisX = 0,
+        AxisY = 1
     }
 
     internal enum ElementTypes
@@ -259,13 +263,13 @@ namespace Visifire.Charts
     /// Visifire elements
     /// </summary>
     public enum Elements
-    {   
-        Chart = 0, 
-        Title = 1, 
-        DataSeries = 2, 
-        DataPoint = 3, 
-        AxisX = 4, 
-        AxisY = 5, 
+    {
+        Chart = 0,
+        Title = 1,
+        DataSeries = 2,
+        DataPoint = 3,
+        AxisX = 4,
+        AxisY = 5,
         Legend = 6
     }
 
@@ -273,7 +277,7 @@ namespace Visifire.Charts
     /// Layout of legends
     /// </summary>
     public enum Layouts
-    {   
+    {
         Auto = 0,
         FlowLayout = 1,
         GridLayout = 2
@@ -425,6 +429,21 @@ namespace Visifire.Charts
         ZIndex,
         ZValue,
         ZValueFormatString,
+        #region Nortek Added
+        HeatMapSurface,
+        HeatMapPalette,
+        InnerRadius,
+        CHeatMapYAxisPlacement,
+        EndAngle,
+        HeatMapAxisMinValue,
+        HeatMapAxisMaxValue,
+        ZValueUpBoundary,
+        ZValueLowBoundary,
+        SelectedXYValues,
+        ZValueMax,
+        ZValueMin,
+        SurfaceUpdate,
+        #endregion
     }
 }
 
@@ -448,19 +467,19 @@ namespace Visifire.Commons
     /// </summary>
     public enum MarkerTypes
     {
-        Circle = 0, 
-        Square = 1, 
-        Triangle = 2, 
-        Cross = 3, 
-        Diamond = 4, 
+        Circle = 0,
+        Square = 1,
+        Triangle = 2,
+        Cross = 3,
+        Diamond = 4,
         Line = 5
     }
-    
+
     /// <summary>
     /// Style of _axisIndicatorBorderElement
     /// </summary>
     public enum BorderStyles
-    {   
+    {
         Solid = 0,
         Dashed = 1,
         Dotted = 2
@@ -471,7 +490,7 @@ namespace Visifire.Commons
     /// </summary>
     public enum PieFaceTypes
     {
-        Top=0, Bottom=1, Left=2, Right=3, CurvedSurface=4
+        Top = 0, Bottom = 1, Left = 2, Right = 3, CurvedSurface = 4
     }
 
 }

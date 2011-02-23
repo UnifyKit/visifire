@@ -100,7 +100,7 @@ namespace Visifire.Charts
             Ticks.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Ticks_CollectionChanged);
 
             CustomAxisLabels.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(CustomLabels_CollectionChanged);
-            
+
             InternalAxisMinimum = Double.NaN;
             InternalAxisMaximum = Double.NaN;
         }
@@ -119,7 +119,7 @@ namespace Visifire.Charts
 #if WPF
                 if (IsInDesignMode)
                     ObservableObject.RemoveElementFromElementTree(labels);
-#endif          
+#endif
 
                 if (!_rootElement.Children.Contains(labels))
                     _rootElement.Children.Add(labels);
@@ -163,7 +163,7 @@ namespace Visifire.Charts
             {
                 grid.IsNotificationEnable = false;
 
-#if WPF         
+#if WPF
                 if (IsInDesignMode)
                     ObservableObject.RemoveElementFromElementTree(grid);
 #endif
@@ -177,12 +177,12 @@ namespace Visifire.Charts
         }
 
         private void AddAxisLabelsIntoRootElement()
-        {   
+        {
             if (AxisLabels != null && _rootElement != null)
-            {   
+            {
                 AxisLabels.IsNotificationEnable = false;
-                
-#if WPF         
+
+#if WPF
                 if (IsInDesignMode)
                     ObservableObject.RemoveElementFromElementTree(AxisLabels);
 #endif
@@ -194,7 +194,7 @@ namespace Visifire.Charts
                 AxisLabels.IsTabStop = false;
             }
         }
-                
+
 
         public override void Bind()
         {
@@ -238,9 +238,9 @@ namespace Visifire.Charts
         /// <param name="xValue">XValue</param>
         /// <returns></returns>
         public Double XValueToScrollBarOffset(Double xValue)
-        {   
+        {
             if (AxisRepresentation == AxisRepresentations.AxisX)
-            {   
+            {
                 Double minPixelValue;
                 Double maxPixelValue;
                 Double scrollBarOffset;
@@ -283,29 +283,29 @@ namespace Visifire.Charts
         /// <param name="maxXValueNumeric">Maximum XValue</param>
         /// <returns>ZoomingScale as Double</returns>
         private Double CalculateZoomingScaleFromXValueRange(Object minXValue, Object maxXValue)
-        {   
+        {
             Chart chart = Chart as Chart;
 
             Double newMinXValue = XValueToInternalXValue(minXValue);
             Double newMaxXValue = XValueToInternalXValue(maxXValue);
-            
+
             chart.ChartArea.AxisX._numericViewMinimum = Math.Min(newMaxXValue, newMinXValue);
             chart.ChartArea.AxisX._numericViewMaximum = Math.Max(newMaxXValue, newMinXValue);
-            
+
             Double minPixelValue;
             Double maxPixelValue;
 
             if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
-            {   
+            {
                 minPixelValue = Graphics.ValueToPixelPosition(0, ScrollableSize, InternalAxisMinimum, InternalAxisMaximum, newMinXValue);
                 maxPixelValue = Graphics.ValueToPixelPosition(0, ScrollableSize, InternalAxisMinimum, InternalAxisMaximum, newMaxXValue);
             }
             else
-            {   
+            {
                 minPixelValue = Graphics.ValueToPixelPosition(ScrollableSize, 0, InternalAxisMinimum, InternalAxisMaximum, newMinXValue);
                 maxPixelValue = Graphics.ValueToPixelPosition(ScrollableSize, 0, InternalAxisMinimum, InternalAxisMaximum, newMaxXValue);
             }
-            
+
             Double viewPortPixDiff = ScrollableSize;    // Pixel diff between ViewMin and ViewMax
             Double xValuePixDiff = Math.Abs(maxPixelValue - minPixelValue);
 
@@ -355,10 +355,10 @@ namespace Visifire.Charts
             {
                 Double minValue = XValueToInternalXValue(minXValue);
                 Double maxValue = XValueToInternalXValue(maxXValue);
-                
+
                 // Swap min and max values if min value is greater than max value
                 if (minValue > maxValue)
-                {   
+                {
                     Double temp = minValue;
                     minValue = maxValue;
                     maxValue = temp;
@@ -391,14 +391,14 @@ namespace Visifire.Charts
 
             if (chart.ZoomingEnabled)
             {
-                if(_oldZoomState.MinXValue != null && _oldZoomState.MaxXValue != null)
+                if (_oldZoomState.MinXValue != null && _oldZoomState.MaxXValue != null)
                     _zoomStateStack.Push(new ZoomState(_oldZoomState.MinXValue, _oldZoomState.MaxXValue));
-                
+
                 ZoomIn(minXValue, maxXValue);
 
                 _oldZoomState.MinXValue = minXValue;
                 _oldZoomState.MaxXValue = maxXValue;
-                
+
                 chart._zoomOutTextBlock.Visibility = Visibility.Visible;
                 chart._zoomIconSeparater.Visibility = Visibility.Visible;
                 chart._showAllTextBlock.Visibility = Visibility.Visible;
@@ -406,7 +406,7 @@ namespace Visifire.Charts
         }
 
         internal void ZoomOutIconImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {   
+        {
             if (_zoomStateStack.Count > 0)
             {
                 _zoomState = _zoomStateStack.Pop();
@@ -483,7 +483,7 @@ namespace Visifire.Charts
                 {
                     if (axis.AxisType == AxisTypes.Primary)
                     {
-                        top = chart.Padding.Top + chart._topOuterPanel.ActualHeight 
+                        top = chart.Padding.Top + chart._topOuterPanel.ActualHeight
                             + chart._topAxisGrid.ActualHeight
                             + chart._topOffsetGrid.ActualHeight + chart.BorderThickness.Top;
                     }
@@ -492,7 +492,7 @@ namespace Visifire.Charts
                 {
                     if (axis.AxisType == AxisTypes.Primary)
                     {
-                        top = chart.Padding.Top + chart._topOuterPanel.ActualHeight 
+                        top = chart.Padding.Top + chart._topOuterPanel.ActualHeight
                             + chart._topAxisGrid.ActualHeight + chart.ChartArea.PlotAreaCanvas.Height
                             + chart._topOffsetGrid.ActualHeight + chart.BorderThickness.Top;
                     }
@@ -523,7 +523,7 @@ namespace Visifire.Charts
                     else
                     {
                         left = chart.Padding.Left + chart._leftOuterPanel.ActualWidth
-                            + chart._leftAxisGrid.ActualWidth + chart.ChartArea.PlotAreaCanvas.Width 
+                            + chart._leftAxisGrid.ActualWidth + chart.ChartArea.PlotAreaCanvas.Width
                             + chart._leftOffsetGrid.ActualWidth + chart.BorderThickness.Left;
                     }
                 }
@@ -532,7 +532,7 @@ namespace Visifire.Charts
                     if (axis.AxisType == AxisTypes.Primary || axis.AxisType == AxisTypes.Secondary)
                     {
                         left = chart.Padding.Left + chart._leftOuterPanel.ActualWidth
-                            + chart._leftAxisGrid.ActualWidth 
+                            + chart._leftAxisGrid.ActualWidth
                             + chart._leftOffsetGrid.ActualWidth + chart.BorderThickness.Left;
                     }
                 }
@@ -552,7 +552,7 @@ namespace Visifire.Charts
                     if (axis.AxisType == AxisTypes.Primary || axis.AxisType == AxisTypes.Secondary)
                     {
                         left = chart.Padding.Left + chart._leftOuterPanel.ActualWidth
-                            + chart._leftAxisGrid.ActualWidth 
+                            + chart._leftAxisGrid.ActualWidth
                             + chart._leftOffsetGrid.ActualWidth + chart.BorderThickness.Left;
                     }
                 }
@@ -565,7 +565,6 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
-       
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.ViewportRangeEnabled dependency property.
         /// </summary>
@@ -1606,7 +1605,7 @@ namespace Visifire.Charts
         [System.ComponentModel.TypeConverter(typeof(Converters.ObjectConverter))]
 #endif
         public Object AxisMaximum
-        {   
+        {
             get
             {
                 return (Object)GetValue(AxisMaximumProperty);
@@ -2160,13 +2159,13 @@ namespace Visifire.Charts
         /// It is a read-only property.
         /// </summary>
         public Object ActualAxisMinimum
-        {   
+        {
             get
-            {   
+            {
                 if (IsDateTimeAxis)
-                {   
+                {
                     if (Chart != null && (Chart as Chart).PlotDetails.ListOfAllDataPoints.Count != 0)
-                    {   
+                    {
                         return DateTimeHelper.XValueToDateTime(MinDate,
                             InternalAxisMinimum, InternalIntervalType);
                     }
@@ -2188,11 +2187,11 @@ namespace Visifire.Charts
         /// It is a read-only property.
         /// </summary>
         public Object ActualAxisMaximum
-        {   
+        {
             get
-            {   
+            {
                 if (IsDateTimeAxis)
-                {   
+                {
                     if (Chart != null && (Chart as Chart).PlotDetails.ListOfAllDataPoints.Count != 0)
                     {
                         return DateTimeHelper.XValueToDateTime(MinDate,
@@ -2215,7 +2214,7 @@ namespace Visifire.Charts
         /// Internal axis minimum is used for internal calculation purpose
         /// </summary>
         internal Double InternalAxisMinimum
-        {   
+        {
             get;
             private set;
         }
@@ -2231,7 +2230,7 @@ namespace Visifire.Charts
 
         internal Double _oldInternalAxisMinimum;
         internal Double _oldInternalAxisMaximum;
-        
+
         /// <summary>
         /// Internal interval is used for internal calculation purpose
         /// </summary>
@@ -2611,8 +2610,8 @@ namespace Visifire.Charts
 
             axis.AxisLabels.Parent = axis;
             axis.AxisLabels.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(AxisLabels_PropertyChanged);
-            
-            if(!axis.AxisLabels.IsDefault)
+
+            if (!axis.AxisLabels.IsDefault)
                 axis.FirePropertyChanged(VcProperties.AxisLabels);
         }
 
@@ -2772,7 +2771,7 @@ namespace Visifire.Charts
             Axis axis = d as Axis;
             axis.FirePropertyChanged(VcProperties.TitleTextDecorations);
         }
-        
+
         /// <summary>
         /// Event handler manages axistype property change event of axis
         /// </summary>
@@ -2842,12 +2841,12 @@ namespace Visifire.Charts
             Axis axis = d as Axis;
 
             if (e.NewValue == null)
-            {   
+            {
                 axis.ResetAxisMaximum();
                 axis.FirePropertyChanged(VcProperties.AxisMaximum);
             }
             else
-            {   
+            {
                 Double numericVal = axis.AxisMaximumNumeric;
                 DateTime dateTimeValue = axis.AxisMaximumDateTime;
                 Axis.ConvertValueToDateTimeOrNumeric("AxisMaximum", e.NewValue, ref numericVal, ref dateTimeValue, out axis._axisMaximumValueType);
@@ -2858,7 +2857,7 @@ namespace Visifire.Charts
                 {
                     if (axis.Chart != null && (axis.Chart as Chart).Series.Count > 0)
                         (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMaximum, null });
-                    
+
                 }
                 else
                     axis.FirePropertyChanged(VcProperties.AxisMaximum);
@@ -2871,16 +2870,16 @@ namespace Visifire.Charts
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnAxisMinimumPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
+        {
             Axis axis = d as Axis;
-            
+
             if (e.NewValue == null)
-            {      
+            {
                 axis.ResetAxisMinimum();
                 axis.FirePropertyChanged(VcProperties.AxisMinimum);
             }
             else
-            {   
+            {
                 Double numericVal = axis.AxisMinimumNumeric;
                 DateTime dateTimeValue = axis.AxisMinimumDateTime;
                 Axis.ConvertValueToDateTimeOrNumeric("AxisMinimum", e.NewValue, ref numericVal, ref dateTimeValue, out axis._axisMinimumValueType);
@@ -2888,7 +2887,7 @@ namespace Visifire.Charts
                 axis.AxisMinimumDateTime = dateTimeValue;
 
                 if (axis.AxisRepresentation == AxisRepresentations.AxisY)
-                {   
+                {
                     if (axis.Chart != null && (axis.Chart as Chart).Series.Count > 0)
                         (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMinimum, null });
                 }
@@ -3057,7 +3056,7 @@ namespace Visifire.Charts
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnScrollBarSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
+        {
             Axis axis = d as Axis;
             axis.FirePropertyChanged(VcProperties.ScrollBarSize);
         }
@@ -3066,10 +3065,10 @@ namespace Visifire.Charts
         {
             Axis axis = d as Axis;
 
-           axis.FirePropertyChanged(VcProperties.ScrollBarScale);
+            axis.FirePropertyChanged(VcProperties.ScrollBarScale);
 
             if (axis.Chart != null && (axis.Chart as Chart).ChartArea != null)
-            {   
+            {
                 if (axis.IsNotificationEnable)
                 {
                     (axis.Chart as Chart).ChartArea.IsAutoCalculatedScrollBarScale = false;
@@ -3083,7 +3082,7 @@ namespace Visifire.Charts
 
         private static void OnClosestPlotDistancePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            Axis axis = d as Axis;                     
+            Axis axis = d as Axis;
             axis.FirePropertyChanged(VcProperties.ClosestPlotDistance);
         }
 
@@ -3141,7 +3140,7 @@ namespace Visifire.Charts
             Minimum = AxisRepresentation == AxisRepresentations.AxisX ? PlotDetails.GetAxisXMinimumDataValue(this) : PlotDetails.GetAxisYMinimumDataValue(this);
             Maximum = AxisRepresentation == AxisRepresentations.AxisX ? PlotDetails.GetAxisXMaximumDataValue(this) : PlotDetails.GetAxisYMaximumDataValue(this);
 
-            if(Logarithmic)
+            if (Logarithmic)
             {
                 Double minimum = PlotDetails.GetAxisYMinimumDataValueFromAllDataSeries(this);
                 if (!PlotDetails.CheckIfAnyDataPointVisualExistsInChart())
@@ -3153,7 +3152,7 @@ namespace Visifire.Charts
                 if (minimum <= 0 || Maximum <= 0)
                     throw new Exception("Negative or zero values cannot be plotted correctly on logarithmic charts.");
             }
-                
+
             Boolean overflowValidity = (AxisRepresentation == AxisRepresentations.AxisX);
             Boolean stackingOverride = PlotDetails.GetStacked100OverrideState();
 
@@ -3278,7 +3277,7 @@ namespace Visifire.Charts
             {
                 if (!SetAxesXLimits())
                     return;
-                
+
                 if (!Double.IsNaN((Double)Interval) && IsDateTimeAxis)
                 {
                     AxisManager.Interval = (Double)Interval;
@@ -3306,7 +3305,7 @@ namespace Visifire.Charts
                     Double primaryAxisIntervalCount = ((double)primaryAxisY.InternalAxisMaximum - (double)primaryAxisY.InternalAxisMinimum) / (double)primaryAxisY.InternalInterval;
 
                     if (!Double.IsNaN(primaryAxisIntervalCount))
-                    {   
+                    {
                         // This will set the internal overriding flag
                         AxisManager.AxisMinimumValue = AxisManager.AxisMinimumValue;
                         if ((Boolean)StartFromZero)
@@ -3418,7 +3417,7 @@ namespace Visifire.Charts
         /// <param name="width">Axis width</param>
         /// <param name="height">Axis height</param>
         private void CreateAxisLine(Double y1, Double y2, Double x1, Double x2, Double width, Double height)
-        {   
+        {
             AxisLine = new Line() { Y1 = y1, Y2 = y2, X1 = x1, X2 = x2, Width = width, Height = height };
             AxisLine.StrokeThickness = (Double)LineThickness;
             AxisLine.Stroke = LineColor;
@@ -3576,7 +3575,7 @@ namespace Visifire.Charts
         /// Applies setting for primary vertical axis (Primary axis Y or Primary axis X in Bar)
         /// </summary>
         private void ApplyVerticalPrimaryAxisSettings()
-        {   
+        {
             // Set the parameters fo the Axis Stack panel
             Visual.Children.Add(new Border() { Width = this.InternalPadding.Left });
 
@@ -3610,7 +3609,7 @@ namespace Visifire.Charts
             // Set the parameters for the axis labels
             AxisLabels.Placement = PlacementTypes.Left;
             AxisLabels.Height = ScrollableSize;
-            
+
             CreateAxisLine(StartOffset, Height - EndOffset, (Double)LineThickness / 2, (Double)LineThickness / 2, (Double)LineThickness, this.Height);
 
             // Set parameters for the Major Grids
@@ -3629,7 +3628,7 @@ namespace Visifire.Charts
 
             // Set the alignement for the axis Title
             if (AxisTitleElement != null)
-            {   
+            {
                 AxisTitleElement.InternalHorizontalAlignment = HorizontalAlignment.Left;
                 AxisTitleElement.InternalVerticalAlignment = VerticalAlignment.Center;
             }
@@ -3683,7 +3682,7 @@ namespace Visifire.Charts
                 AxisLabels.Visual.Clip = clipRectangle;
             }
 
-            
+
             #endregion
 
             #region Set CustomAxisLabels Width
@@ -4155,7 +4154,7 @@ namespace Visifire.Charts
             #endregion
 
             if (Height == ScrollableSize)
-            {   
+            {
                 if (AxisLabels.Visual != null)
                     AxisElementsContainer.Children.Add(AxisLabels.Visual);
 
@@ -4166,7 +4165,7 @@ namespace Visifire.Charts
                 }
             }
             else
-            {   
+            {
                 InternalStackPanel.Children.Add(AxisLabels.Visual);
 
                 foreach (CustomAxisLabels customLabels in CustomAxisLabels)
@@ -4572,7 +4571,7 @@ namespace Visifire.Charts
             CreateAxisTitleVisual(new Thickness(0, INNER_MARGIN, 0, INNER_MARGIN));
 
             if (AxisTitleElement != null)
-            {   
+            {
                 AxisElementsContainer.Children.Add(AxisTitleElement.Visual);
             }
 
@@ -5188,7 +5187,7 @@ namespace Visifire.Charts
 
                     AxisTitleElement.CreateVisualObject(new ElementData() { Element = this });
 #if WPF
-                AxisTitleElement.Visual.FlowDirection = FlowDirection.LeftToRight;
+                    AxisTitleElement.Visual.FlowDirection = FlowDirection.LeftToRight;
 #endif
                     Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
 
@@ -5209,14 +5208,14 @@ namespace Visifire.Charts
                     else
                     {
                         if (size.Height > Height && Height != 0)
-                        {   
+                        {
                             if (AxisTitleElement.InternalFontSize == 0.2)
                                 goto RETURN;
-                                
+
                             fontSize = AxisTitleElement.InternalFontSize;
                             fontSize -= 0.2;
                             AxisTitleElement.InternalFontSize = Math.Round(fontSize, 2);
-                            
+
                             goto RECAL;
                         }
                     }
@@ -5335,7 +5334,7 @@ namespace Visifire.Charts
                         FirstLabelDate = DateTimeHelper.XValueToDateTime(MinDate, AxisManager.AxisMinimumValue, InternalIntervalType);
                 }
             }
-            
+
             if (Double.IsNaN((Double)AxisMaximumNumeric))
             {
                 if (PlotDetails.DrawingDivisionFactor != 0 && Double.IsNaN((Double)AxisMaximumNumeric))
@@ -5343,12 +5342,12 @@ namespace Visifire.Charts
                     AxisManager.AxisMaximumValue = AxisManager.MaximumValue + (minValue) / 2 * 1.1;
                 }
                 else
-                {   
+                {
                     AxisManager.AxisMaximumValue = AxisManager.MaximumValue + (minValue) / 2 * .4;
                 }
             }
             else
-            {   
+            {
                 AxisManager.AxisMaximumValue = (Double)AxisMaximumNumeric;
             }
 
@@ -5362,7 +5361,7 @@ namespace Visifire.Charts
         }
 
         internal DateTime FirstLabelDate
-        {   
+        {
             get;
             set;
         }
@@ -5375,9 +5374,9 @@ namespace Visifire.Charts
             Double minimumDifference = PlotDetails.GetMaxOfMinDifferencesForXValue();
 
             if (Double.IsNaN((Double)AxisMinimumNumeric))
-            {   
+            {
                 if (Double.IsNaN((Double)AxisMaximumNumeric))
-                {   
+                {
                     if ((AxisManager.AxisMaximumValue - Maximum) <= (Minimum - AxisManager.AxisMinimumValue))
                     {
                         // This part makes the gaps equal
@@ -5390,7 +5389,7 @@ namespace Visifire.Charts
                 }
             }
         }
-        
+
         /// <summary>
         /// Convert scaling sets from string to unit and value array
         /// </summary>
@@ -5665,7 +5664,7 @@ namespace Visifire.Charts
 
                 if (PlotDetails.ChartOrientation == ChartOrientationType.Circular)
                 {
-                    if(tick.GetValue(Visifire.Charts.Ticks.TickLengthProperty) == null)
+                    if (tick.GetValue(Visifire.Charts.Ticks.TickLengthProperty) == null)
                         tick.TickLength = 2.3;
                 }
 
@@ -5677,7 +5676,7 @@ namespace Visifire.Charts
         /// Set up grids for axis
         /// </summary>
         private void SetUpGrids()
-        {   
+        {
             if (Grids.Count == 0 && AxisRepresentation.ToString() != "AxisX")
             {
                 ChartGrid chartGrid = new ChartGrid() { _isAutoGenerated = true };
@@ -5817,6 +5816,20 @@ namespace Visifire.Charts
             return Graphics.PixelPositionToValue(maxHeight, 0, InternalAxisMinimum, InternalAxisMaximum, pixelPosition);
         }
 
+        #region Nortek Add
+
+        internal Double XValueToPixelPosition(Double maxWidth, Double xValue)
+        {
+            return Graphics.ValueToPixelPosition(0, maxWidth, InternalAxisMinimum, InternalAxisMaximum, xValue);
+        }
+
+        internal Double YValueToPixelPosition(Double maxHeight, Double yValue)
+        {
+            return Graphics.ValueToPixelPosition(maxHeight, 0, InternalAxisMinimum, InternalAxisMaximum, yValue);
+        }
+        #endregion
+
+
         /// <summary>
         /// Add prefix and suffix
         /// </summary>
@@ -5902,7 +5915,7 @@ namespace Visifire.Charts
         {
             if (Double.IsNaN(offset))
             {
-               offset = 0;
+                offset = 0;
             }
 
             offset = (ScrollBarElement.Maximum - ScrollBarElement.Minimum) * offset + ScrollBarElement.Minimum;
@@ -5952,12 +5965,12 @@ namespace Visifire.Charts
             {
                 if (chart.PlotDetails.ListOfAllDataPoints.Count != 0 && !Double.IsInfinity(xValue) && !Double.IsNaN(xValue))
                 {
-                    ViewMinimum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, 
+                    ViewMinimum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
                         xValue, chart.ChartArea.AxisX.InternalIntervalType);
                 }
                 else
                     ViewMinimum = chart.ChartArea.AxisX.MinDate;
-            }   
+            }
             else
                 ViewMinimum = xValue;
 
@@ -5965,24 +5978,35 @@ namespace Visifire.Charts
             xValue = PixelPositionToXValue(lengthInPixel, offsetInPixel4MaxValue);
             _numericViewMaximum = xValue;
 
-            if (chart.ChartArea.AxisX.IsDateTimeAxis)
+            #region Nortek catch EXCEPTION
+            try
             {
-                if (chart.PlotDetails.ListOfAllDataPoints.Count != 0 && !Double.IsInfinity(xValue) && !Double.IsNaN(xValue))
+
+                if (chart.ChartArea.AxisX.IsDateTimeAxis)
                 {
-                    ViewMaximum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
-                    xValue, chart.ChartArea.AxisX.InternalIntervalType);
+                    if (chart.PlotDetails.ListOfAllDataPoints.Count != 0 && !Double.IsInfinity(xValue) && !Double.IsNaN(xValue))
+                    {
+                        ViewMaximum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
+                        xValue, chart.ChartArea.AxisX.InternalIntervalType);
+                    }
+                    else
+                        ViewMinimum = chart.ChartArea.AxisX.MaxDate;
                 }
                 else
-                    ViewMinimum = chart.ChartArea.AxisX.MaxDate;
+                    ViewMaximum = xValue;
             }
-            else
-                ViewMaximum = xValue;
+            catch
+            {
+                System.Diagnostics.Debug.Write("Axis.CalculateViewMinimumAndMaximum:Unable to calculate XValue from time", "Warn");
+                throw;
+            }
+            #endregion
         }
 
         internal void FireScrollEvent(ScrollEventArgs e, Double offsetInPixel)
-        {   
+        {
             if (Chart != null && (Chart as Chart).Series.Count > 0)
-            {   
+            {
                 if (PlotDetails.ListOfAllDataPoints.Count != 0)
                 {
                     if (_oldScrollBarOffsetInPixel == offsetInPixel && !(Chart as Chart).ChartArea._isDragging)
@@ -6002,7 +6026,7 @@ namespace Visifire.Charts
                     _oldScrollBarOffsetInPixel = offsetInPixel;
 
                     if (AxisRepresentation == AxisRepresentations.AxisX)
-                    {   
+                    {
                         Chart chart = Chart as Chart;
 
                         CalculateViewMinimumAndMaximum(chart, offsetInPixel, chart.ChartArea.ChartVisualCanvas.Width, chart.ChartArea.ChartVisualCanvas.Height);
@@ -6034,7 +6058,7 @@ namespace Visifire.Charts
                         }
 
                         if (_onScroll != null && !chart.ChartArea._isFirstTimeRender)
-                        {   
+                        {
                             _onScroll(this, new AxisScrollEventArgs(e));
                         }
 
@@ -6051,7 +6075,7 @@ namespace Visifire.Charts
         internal void CreateVisualObject(Chart Chart)
         {
             if (AxisLabels == null)
-            {   
+            {
                 AxisLabels = new AxisLabels() { IsDefault = true };
                 AddAxisLabelsIntoRootElement();
             }
@@ -6069,7 +6093,7 @@ namespace Visifire.Charts
                 AxisLabels.ApplyStyleFromTheme(Chart, "AxisYLabels");
 
             foreach (CustomAxisLabels customLabels in CustomAxisLabels)
-            {   
+            {
                 customLabels.Chart = Chart;
 
                 if (AxisRepresentation == AxisRepresentations.AxisX)
@@ -6079,7 +6103,7 @@ namespace Visifire.Charts
             }
 
             if (Chart.PlotDetails.ChartOrientation != ChartOrientationType.Circular)
-            {   
+            {
                 // Create visual elements
                 Visual = new StackPanel() { Background = InternalBackground };
 
@@ -6131,7 +6155,7 @@ namespace Visifire.Charts
             }
             else
             {
-                CreateAxesForCircularChart();   
+                CreateAxesForCircularChart();
             }
         }
 
@@ -6143,8 +6167,8 @@ namespace Visifire.Charts
             Chart chart = Chart as Chart;
 
             Boolean isAllLineCharts = (((from ds in chart.Series
-                                         where ( RenderHelper.IsLineCType(ds) || ds.RenderAs == RenderAs.Area) 
-                                        select ds).Count() == chart.Series.Count)
+                                         where (RenderHelper.IsLineCType(ds) || ds.RenderAs == RenderAs.Area)
+                                         select ds).Count() == chart.Series.Count)
                                         && chart.PlotDetails.ListOfAllDataPoints.Count <= 500);
 
             if (isAllLineCharts || chart.PlotDetails.ListOfAllDataPoints.Count < 500)
@@ -6199,7 +6223,7 @@ namespace Visifire.Charts
                 chart._showAllTextBlock.Visibility = Visibility.Visible;
             }
 
-            if(ScrollBarElement.Scale == 1)
+            if (ScrollBarElement.Scale == 1)
                 ResetZoomState(chart, true);
         }
 
@@ -6227,11 +6251,11 @@ namespace Visifire.Charts
         }
 
         void ScrollBarElement_DragStarted(object sender, EventArgs e)
-        {   
+        {
             ZoomBar zoomBar = sender as ZoomBar;
             zoomBar.ScrollEventFireEnabled = false;
         }
-        
+
         void OnZoomingScaleChanged(object sender, EventArgs e)
         {
             ZoomBar zoomBar = sender as ZoomBar;
@@ -6334,7 +6358,7 @@ namespace Visifire.Charts
                 _onZoom += value;
             }
         }
-        
+
         #endregion
 
         #region Data
@@ -6410,7 +6434,7 @@ namespace Visifire.Charts
         internal event EventHandler<AxisZoomEventArgs> _onZoom;
 
         internal Stack<ZoomState> _zoomStateStack = new Stack<ZoomState>();
-        
+
         /// <summary>
         /// Numeric XValue corresponding to View Minimum (Applicable for Numeric axis as well as DateTime axis)
         /// </summary>
@@ -6459,7 +6483,7 @@ namespace Visifire.Charts
         /// MinimumZooming Scale
         /// </summary>
         internal static readonly Double INTERNAL_MINIMUM_ZOOMING_SCALE = 0.0000001;
-        
+
 
         Boolean _showAllState = false;
 

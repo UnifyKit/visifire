@@ -40,7 +40,7 @@ using System.Diagnostics;
 using Visifire.Commons;
 
 namespace Visifire.Charts
-{   
+{
     /// <summary>
     /// Containes all the details about the data required for various plotting puposes
     /// </summary>
@@ -70,17 +70,17 @@ namespace Visifire.Charts
         }
 
         public void ReCreate(VisifireElement element, ElementTypes elementType, VcProperties property, object oldValue, object newValue)
-        {   
+        {
             //Type elementType = element.GetType();
-            
+
             // Create a plot groups list
             // this.PlotGroups = new List<PlotGroup>();
 
             CalculateInternalXValue4NumericAxis(Chart);
 
             // Set default chart orientation
-            if((elementType == ElementTypes.Chart && property == VcProperties.Series)
-                ||(elementType == ElementTypes.DataSeries && property == VcProperties.RenderAs)
+            if ((elementType == ElementTypes.Chart && property == VcProperties.Series)
+                || (elementType == ElementTypes.DataSeries && property == VcProperties.RenderAs)
             )
                 this.ChartOrientation = ChartOrientationType.Undefined;
 
@@ -89,7 +89,7 @@ namespace Visifire.Charts
                 || (elementType == ElementTypes.DataSeries && property == VcProperties.RenderAs)
                 || (elementType == ElementTypes.DataPoint && property == VcProperties.XValue)
                 || (elementType == ElementTypes.Chart && property == VcProperties.None)
-             )  
+             )
                 SetDataPointsNameAndValidateDataPointXValueType();
 
             // Calculate all the required details
@@ -111,7 +111,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
-        
+
         /// <summary>
         /// List of all DataPoints in chart related to Primary Axis
         /// </summary>
@@ -128,7 +128,7 @@ namespace Visifire.Charts
         internal List<DataPoint> ListOfAllDataPoints
         {
             get
-            { 
+            {
                 return _listOfAllDataPoints;
             }
         }
@@ -247,11 +247,11 @@ namespace Visifire.Charts
         {
             Int32 dsIndex = 0;
             foreach (DataSeries ds in Chart.InternalSeries)
-            {   
+            {
                 foreach (DataPoint dp in ds.InternalDataPoints)
-                {   
+                {
                     if (ds.XValueType == ChartValueTypes.Auto)
-                    {   
+                    {
                         ds.InternalXValueType = (dp.XValueType == ChartValueTypes.DateTime) ? ChartValueTypes.Date : dp.XValueType;
                     }
                     else if ((ds.XValueType == ChartValueTypes.Date || ds.XValueType == ChartValueTypes.DateTime || ds.XValueType == ChartValueTypes.Time)
@@ -285,7 +285,7 @@ namespace Visifire.Charts
             }
 
             if (elementType == ElementTypes.Chart && property == VcProperties.AxesX)
-            {   
+            {
                 Axis axisXSecondary = GetAxisXFromChart(Chart, AxisTypes.Secondary);
 
                 if (axisXSecondary != null)
@@ -299,7 +299,7 @@ namespace Visifire.Charts
                 property == VcProperties.None
                 )
             {
-                if(_axisXPrimary == null)
+                if (_axisXPrimary == null)
                     _axisXPrimary = GetAxisXFromChart(Chart, AxisTypes.Primary);
 
                 // Generate XValues for DataTime axis
@@ -339,15 +339,15 @@ namespace Visifire.Charts
                 SetTrendLineValues(_axisXPrimary);
                 SetTrendLineStartAndEndValues(_axisXPrimary);
             }
-            
+
             // Generates a index set that identifies the order in which the series must be drawn(layering order)
             if ((elementType == ElementTypes.Chart && property == VcProperties.Series)
                 || (elementType == ElementTypes.DataSeries && property == VcProperties.RenderAs)
                 || (elementType == ElementTypes.DataSeries && property == VcProperties.DataPoints)
                 )
                 SeriesDrawingIndex = GenerateDrawingOrder();
-                
-                
+
+
             // Gets a unique set of axis labels by axisX type
             if ((elementType == ElementTypes.Chart && property == VcProperties.Series)
                 || (elementType == ElementTypes.DataPoint && property == VcProperties.AxisXLabel)
@@ -387,7 +387,7 @@ namespace Visifire.Charts
             if ((elementType == ElementTypes.Chart && property == VcProperties.Series)
                 || (elementType == ElementTypes.DataSeries && property == VcProperties.DataPoints)
                 || (elementType == ElementTypes.DataPoint && property == VcProperties.AxisXLabel)
-            )   
+            )
                 SetLabelsCountState();
         }
 
@@ -430,7 +430,7 @@ namespace Visifire.Charts
         internal static Boolean CalculateAutoFitToPlotArea(Chart chart)
         {
             if (chart != null && chart.InternalSeries != null)
-            {   
+            {
                 foreach (DataSeries ds in chart.InternalSeries)
                 {
                     if (ds.RenderAs == Charts.RenderAs.Bubble && ds.AutoFitToPlotArea)
@@ -446,7 +446,7 @@ namespace Visifire.Charts
             foreach (DataSeries ds in chart.InternalSeries)
             {
                 Int32 index = 1;
-                 
+
                 if (ds.IsXValueNull4AllDataPoints())
                 {
                     foreach (DataPoint dp in ds.InternalDataPoints)
@@ -455,11 +455,11 @@ namespace Visifire.Charts
                     }
                 }
                 else
-                {   
+                {
                     Double lastInternalIndex = 0;
 
                     foreach (DataPoint dp in ds.InternalDataPoints)
-                    {   
+                    {
                         if (dp.XValue == null && Double.IsNaN(dp.InternalXValue))
                             dp.InternalXValue = ++lastInternalIndex;
                         else if (!Double.IsNaN(dp.InternalXValue))
@@ -477,7 +477,7 @@ namespace Visifire.Charts
         }
 
         internal void CalculateInternalXValuesOfDataPoints()
-        {   
+        {
             _axisXPrimary = GetAxisXFromChart(Chart, AxisTypes.Primary);
 
             CalculateInternalXValue4NumericAxis(Chart);
@@ -486,14 +486,14 @@ namespace Visifire.Charts
             if (GetChartOrientation() != ChartOrientationType.Circular)
                 GenerateXValueForDataTimeAxis(_axisXPrimary);
         }
-        
+
         public void Calculate(Boolean isUpdateAxisLabelsList)
         {
             AutoFitToPlotArea = CalculateAutoFitToPlotArea(Chart);
 
             // Validate XValue type of the DataPoint and DataSeries
             SetDataPointsNameAndValidateDataPointXValueType();
-            
+
             // Create Axis incase if it doesnt exist
             CreateMissingAxes();
 
@@ -532,8 +532,8 @@ namespace Visifire.Charts
             }
             else
             {
-                if(isUpdateAxisLabelsList)
-                AxisXPrimaryLabels = GetAxisXLabels(AxisTypes.Primary);
+                if (isUpdateAxisLabelsList)
+                    AxisXPrimaryLabels = GetAxisXLabels(AxisTypes.Primary);
 
                 AxisXSecondaryLabels = GetAxisXLabels(AxisTypes.Secondary);
             }
@@ -578,7 +578,7 @@ namespace Visifire.Charts
                     }
 
                     try
-                    {   
+                    {
                         if (dp.XValueType == ChartValueTypes.Numeric)
                             throw new Exception();
 
@@ -675,10 +675,10 @@ namespace Visifire.Charts
             return isDateTimeAxis;
         }
 
-       /// <summary>
-       /// Set TrendLine values
-       /// </summary>
-       /// <param name="axisX">Axis</param>
+        /// <summary>
+        /// Set TrendLine values
+        /// </summary>
+        /// <param name="axisX">Axis</param>
         internal void SetTrendLineValues(Axis axisX)
         {
             if (axisX.IsDateTimeAxis)
@@ -749,7 +749,7 @@ namespace Visifire.Charts
             {
                 if (axis._axisMinimumValueType == ChartValueTypes.Numeric)
                     throw new Exception("AxisMinimum should have a value of type Date/DateTime/Time");
- 
+
                 if (axis.XValueType == ChartValueTypes.Date)
                     axis.AxisMinimumDateTime = new DateTime(axis.AxisMinimumDateTime.Year, axis.AxisMinimumDateTime.Month, axis.AxisMinimumDateTime.Day);
                 else if (axis.XValueType == ChartValueTypes.Time)
@@ -760,7 +760,7 @@ namespace Visifire.Charts
             {
                 if (axis._axisMaximumValueType == ChartValueTypes.Numeric)
                     throw new Exception("AxisMaximum should have a value of type Date/DateTime/Time");
-                
+
                 if (axis.XValueType == ChartValueTypes.Date)
                     axis.AxisMaximumDateTime = new DateTime(axis.AxisMaximumDateTime.Year, axis.AxisMaximumDateTime.Month, axis.AxisMaximumDateTime.Day);
                 else if (axis.XValueType == ChartValueTypes.Time)
@@ -772,10 +772,10 @@ namespace Visifire.Charts
         /// Generates XValues for DataTime axis
         /// </summary>
         private void GenerateXValueForDataTimeAxis(Axis axisX)
-        {   
+        {
             if (axisX != null)
             {
-                
+
                 axisX._isDateTimeAutoInterval = false;// Minimum difference between two DataTime values
                 axisX.IsDateTimeAxis = CheckIsDateTimeAxis(axisX);
 
@@ -1142,7 +1142,7 @@ namespace Visifire.Charts
                 }
             }
         }
-                
+
         /// <summary>
         /// Update interval in terms of time according to interval type
         /// </summary>
@@ -1208,11 +1208,11 @@ namespace Visifire.Charts
 
             // Populates the list with InternalDataPoints with all availabel InternalDataPoints from all DataSeries
             foreach (DataSeries dataSeries in Chart.InternalSeries)
-            {   
+            {
                 // Concatinate the lists of InternalDataPoints if the axis type matches
                 if (dataSeries.Enabled == true)
                 {
-                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList(); 
+                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList();
 
                     _listOfAllDataPoints.InsertRange(_listOfAllDataPoints.Count, enabledDataPoints);
 
@@ -1497,9 +1497,9 @@ namespace Visifire.Charts
                     }
 
 #if WPF
-                    if(defaultLegendsAdded)
+                    if (defaultLegendsAdded)
                         Chart.AddLegendsToChartRootElament();
-#endif              
+#endif
                 }
             }
         }
@@ -1532,22 +1532,22 @@ namespace Visifire.Charts
             PlotGroups.Clear();
 
             // Creates any required legends
-            
+
             CreateLegends();
 
             // From the series generate groups based on RenderAs, AxisXType,AxisYType
             var plotGroupsData = (from dataSeries in Chart.InternalSeries
-                                  group dataSeries by 
+                                  group dataSeries by
                                       new
                                       {
                                           dataSeries.RenderAs,
                                           dataSeries.AxisXType,
                                           dataSeries.AxisYType
                                       });
-            
+
             // Populate the plot groups by checking for validity of charts
             foreach (var plotGroup in plotGroupsData)
-            {   
+            {
                 // Get the overall orientation of the chart
                 ChartOrientationType plotGroupChartOrientation = GetChartOrientation(plotGroup.Key.RenderAs);
 
@@ -1557,7 +1557,7 @@ namespace Visifire.Charts
 
                 // Perfrom tasks based on orientation setting
                 if (ChartOrientation == ChartOrientationType.Undefined)
-                {   
+                {
                     // if orientation is not set then set it first
                     ChartOrientation = plotGroupChartOrientation;
 
@@ -1565,13 +1565,13 @@ namespace Visifire.Charts
                     AddToPlotGroupsList(plotGroup.Key.RenderAs, axisX, axisY, plotGroup.ToList(), ref _listOfAllDataPoints);
                 }
                 else if (ChartOrientation == plotGroupChartOrientation)
-                {   
+                {
                     // if orientation is already set and the current group also is of the same orientation then
                     // create and update a plot group and add to the plot group list
                     AddToPlotGroupsList(plotGroup.Key.RenderAs, axisX, axisY, plotGroup.ToList(), ref _listOfAllDataPoints);
                 }
                 else
-                {   
+                {
                     // if the chart orientation do not match then assert.
                     Debug.Assert(false, "Invalid chart combination. See Documentation for Combination Charts.");
                     throw new Exception("Invalid chart combination");
@@ -1580,10 +1580,10 @@ namespace Visifire.Charts
 
             // Select DataSeries and group them by RenderAs type
             var seriesGroupByRenderAs = (from series in Chart.InternalSeries group series by series.RenderAs);
-            
+
             // Apply sibling count based on the chart types
             foreach (var seriesGroup in seriesGroupByRenderAs)
-            {   
+            {
                 // Convert the group to a list
                 List<DataSeries> seriesList = seriesGroup.ToList();
 
@@ -1596,7 +1596,7 @@ namespace Visifire.Charts
 
             // If the chart contains charts of type Bar, StackedBar, StackedBar100
             if (ChartOrientation == ChartOrientationType.Horizontal)
-            {   
+            {
                 // Get the count of number of series with RenderAs Bar
                 Int32 countOfBarCharts = GetSeriesCountByRenderAs(RenderAs.Bar);
 
@@ -1610,7 +1610,7 @@ namespace Visifire.Charts
                 DrawingDivisionFactor = Math.Max(countOfBarCharts, Math.Max(countOfStackedBarGroups, countOfStackedBar100Groups));
             }
             else if (ChartOrientation == ChartOrientationType.Vertical)
-            {   
+            {
                 // If the chart contains any chart other than bar type or pie or doughnut
 
                 // Get the count of number of series with RenderAs Column
@@ -1640,7 +1640,7 @@ namespace Visifire.Charts
                 DrawingDivisionFactor = Math.Max(DrawingDivisionFactor, countOfStockChart);
             }
             else if (ChartOrientation == ChartOrientationType.NoAxis || ChartOrientation == ChartOrientationType.Circular)
-            {   
+            {
                 // if chart type is NoAxis then set sibling count as zero
                 DrawingDivisionFactor = 0;
             }
@@ -1654,7 +1654,7 @@ namespace Visifire.Charts
         /// <param name="axisY">AxisY reference for the PlotGroup</param>
         /// <param name="series">List of DataSeries belonging to the PlotGroup</param>
         private void AddToPlotGroupsList(RenderAs renderAs, Axis axisX, Axis axisY, List<DataSeries> series, ref List<DataPoint> listOfDataPointsFromAllSeries)
-        {   
+        {
             // Create a new PlotGroup
             PlotGroup plotGroupEntry = new PlotGroup(renderAs, axisX, axisY);
 
@@ -1678,7 +1678,7 @@ namespace Visifire.Charts
         {
             ChartOrientationType chartOrientation;
             switch (renderAs)
-            {   
+            {
                 case RenderAs.Area:
                 case RenderAs.Bubble:
                 case RenderAs.Column:
@@ -1693,6 +1693,9 @@ namespace Visifire.Charts
                 case RenderAs.StackedColumn:
                 case RenderAs.StackedArea100:
                 case RenderAs.StackedColumn100:
+                #region Nortek
+                case RenderAs.HeatMap:
+                #endregion
                     chartOrientation = ChartOrientationType.Vertical;
                     break;
 
@@ -1707,6 +1710,9 @@ namespace Visifire.Charts
                 case RenderAs.SectionFunnel:
                 case RenderAs.StreamLineFunnel:
                 case RenderAs.Pyramid:
+                #region Nortek
+                case RenderAs.RadarHeatMap:
+                #endregion
                     chartOrientation = ChartOrientationType.NoAxis;
                     break;
 
@@ -1814,7 +1820,7 @@ namespace Visifire.Charts
 
             // Set the depth factor as the depth count
             Layer3DCount = layer3DCount;
-            
+
             // Functions to select the key and value from the grouped list obtained from LINQ.
             Func<IGrouping<DataSeries, Int32>, DataSeries> KeySelector = delegate(IGrouping<DataSeries, Int32> entry) { return entry.Key; };
             Func<IGrouping<DataSeries, Int32>, Int32> ElementSelector = delegate(IGrouping<DataSeries, Int32> entry) { return entry.Last(); };
@@ -1833,7 +1839,7 @@ namespace Visifire.Charts
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StepLine, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Spline, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.QuickLine, sortedSeriesIndexGroupedBySeries);
-            
+
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Point, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Stock, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.CandleStick, sortedSeriesIndexGroupedBySeries);
@@ -1844,12 +1850,12 @@ namespace Visifire.Charts
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea, AxisTypes.Primary, AxisTypes.Secondary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea, AxisTypes.Secondary, AxisTypes.Primary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea, AxisTypes.Secondary, AxisTypes.Secondary, sortedSeriesIndexGroupedBySeries);
-            
+
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea100, AxisTypes.Primary, AxisTypes.Primary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea100, AxisTypes.Primary, AxisTypes.Secondary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea100, AxisTypes.Secondary, AxisTypes.Primary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea100, AxisTypes.Secondary, AxisTypes.Secondary, sortedSeriesIndexGroupedBySeries);
-            
+
             // create a List out of the result obtained by sorting the seriesIndex by ZIndex value
             List<KeyValuePair<DataSeries, Int32>> seriesIndexList = (from entry in sortedSeriesIndexGroupedBySeries orderby entry.Value select entry).ToList();
 
@@ -2002,7 +2008,7 @@ namespace Visifire.Charts
         {
             // List of all datapoints in the chart
             List<DataPoint> listOfAllDataPoints = (from dataPoint in _listOfAllDataPoints select dataPoint).ToList();
-            
+
             // Contains a table which hold unique XValues and all the Axis Labels availabel for each XVAlue
             var uniqueXValueDataPoints = (from dataPoint in listOfAllDataPoints where !String.IsNullOrEmpty(dataPoint.AxisXLabel) orderby dataPoint.InternalXValue group dataPoint.AxisXLabel by dataPoint.InternalXValue);
 
@@ -2039,7 +2045,7 @@ namespace Visifire.Charts
         }
 
         private Boolean ValidateChartCombination(params RenderAs[] renderTypes)
-        {   
+        {
             ChartOrientationType chartOrientation = ChartOrientationType.Undefined;
 
             foreach (RenderAs renderType in renderTypes)
@@ -2066,8 +2072,8 @@ namespace Visifire.Charts
         internal Double GetAxisXMaximumDataValue(Axis axisX)
         {
             var maxValues = (from plotData in PlotGroups
-                    where (!Double.IsNaN(plotData.MaximumX) && plotData.AxisX == axisX)
-                    select plotData.MaximumX);
+                             where (!Double.IsNaN(plotData.MaximumX) && plotData.AxisX == axisX)
+                             select plotData.MaximumX);
 
             if (maxValues.Count() > 0)
                 return maxValues.Max();
@@ -2104,8 +2110,8 @@ namespace Visifire.Charts
             else
             {
                 var maxValues = (from plotData in PlotGroups
-                       where plotData.AxisY == axisY
-                       select plotData.MaximumY);
+                                 where plotData.AxisY == axisY
+                                 select plotData.MaximumY);
 
                 if (maxValues.Count() > 0)
                     max = maxValues.Max();
@@ -2126,7 +2132,7 @@ namespace Visifire.Charts
             Double dataSeriesCount = 0;
             Double min = Double.PositiveInfinity;
             foreach (PlotGroup plotGroup in PlotGroups)
-            {   
+            {
                 dataSeriesCount = (from dataSeries in plotGroup.DataSeriesList
                                    where dataSeries.DataPoints.Count > 0
                                    select dataSeries).Count();
@@ -2156,7 +2162,7 @@ namespace Visifire.Charts
         /// <param name="axisY"></param>
         /// <returns>Returns the minimum data value as Double</returns>
         internal Double GetAxisYMinimumDataValue(Axis axisY)
-        {   
+        {
             Double min = Double.PositiveInfinity;
             Axis axisX = this.GetAxisXFromChart(Chart, AxisTypes.Primary);
 
@@ -2176,23 +2182,23 @@ namespace Visifire.Charts
                 }
             }
             else
-            {   
+            {
                 Double dataSeriesCount = 0;
                 foreach (PlotGroup plotGroup in PlotGroups)
-                {   
+                {
                     dataSeriesCount = (from dataSeries in plotGroup.DataSeriesList
                                        where dataSeries.DataPoints.Count > 0
                                        select dataSeries).Count();
 
                     if (dataSeriesCount > 0)
-                    {   
+                    {
                         if ((!Double.IsNaN(plotGroup.MinimumY) && plotGroup.AxisY == axisY))
-                        {   
+                        {
                             min = Math.Min(min, plotGroup.MinimumY);
                         }
                     }
                 }
-             }
+            }
 
             if (!Double.IsInfinity(min) && !Double.IsNaN(min))
                 return min;
@@ -2303,7 +2309,7 @@ namespace Visifire.Charts
                     var plotGroups = (from d in dsList select d.PlotGroup);
 
                     if (plotGroups != null && plotGroups.Count() > 0)
-                    {   
+                    {
                         Double tempMax = (from plotData in plotGroups
                                           where !Double.IsNaN(plotData.MinDifferenceX)
                                           select plotData.MinDifferenceX).Max();
@@ -2340,7 +2346,7 @@ namespace Visifire.Charts
         {
             return (from plotData in PlotGroups
                     where !Double.IsNaN(plotData.MinDifferenceX)
-                    
+
                     select plotData.MinDifferenceX).Min();
         }
 
@@ -2502,7 +2508,7 @@ namespace Visifire.Charts
                 {
                     if (dataSeries.Enabled == true)
                     {
-                       // List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
+                        // List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
 
                         List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList();
 
@@ -2686,7 +2692,7 @@ namespace Visifire.Charts
         internal Double GetAbsoluteSumOfDataPoints(List<DataPoint> dataPoints)
         {
             if (dataPoints.Count > 0 && (dataPoints[0].Parent.RenderAs == RenderAs.SectionFunnel || dataPoints[0].Parent.RenderAs == RenderAs.StreamLineFunnel || dataPoints[0].Parent.RenderAs == RenderAs.Pyramid))
-                return (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.YValue) && dataPoint.YValue >=0 select Math.Abs(dataPoint.YValue)).Sum();
+                return (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.YValue) && dataPoint.YValue >= 0 select Math.Abs(dataPoint.YValue)).Sum();
             else if (dataPoints.Count > 0 && (dataPoints[0].Parent.RenderAs == RenderAs.CandleStick || dataPoints[0].Parent.RenderAs == RenderAs.Stock))
             {
                 var values = (from dataPoint in dataPoints where dataPoint.YValues != null && dataPoint.YValues.Length > 1 select Math.Abs(dataPoint.YValues[1]));

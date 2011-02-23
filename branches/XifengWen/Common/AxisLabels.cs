@@ -549,7 +549,7 @@ namespace Visifire.Charts
                     SetValue(FontFamilyProperty, value);
                     FirePropertyChanged(VcProperties.FontFamily);
                 }
-#else           
+#else
                 SetValue(FontFamilyProperty, value);
 #endif
             }
@@ -580,7 +580,7 @@ namespace Visifire.Charts
         /// Get or set the styles for the text like "Italic" or "Normal"
         /// </summary>
 #if WPF
-         [TypeConverter(typeof(System.Windows.FontStyleConverter))]
+        [TypeConverter(typeof(System.Windows.FontStyleConverter))]
 #endif
         public new FontStyle FontStyle
         {
@@ -598,7 +598,7 @@ namespace Visifire.Charts
                     UpdateVisual(VcProperties.FontStyle, value);
                 }
 #else
-                 SetValue(FontStyleProperty, value);
+                SetValue(FontStyleProperty, value);
 #endif
             }
         }
@@ -933,7 +933,7 @@ namespace Visifire.Charts
         /// Get or set the FontWeight property of title text
         /// </summary>
 #if WPF
-         [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
+        [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
 #endif
         internal FontWeight InternalFontWeight
         {
@@ -1210,7 +1210,7 @@ namespace Visifire.Charts
             AxisLabels axisLabels = d as AxisLabels;
             axisLabels.FirePropertyChanged(VcProperties.TextAlignment);
         }
-        
+
         /// <summary>
         /// Event handler attached with FontFamily property changed event of axislabels element
         /// </summary>
@@ -1360,7 +1360,7 @@ namespace Visifire.Charts
         /// <param name="text">Text as string</param>
         /// <returns>AxisLabel</returns>
         private AxisLabel CreateLabel(String text)
-        {   
+        {
             AxisLabel label = new AxisLabel();
             label.Text = text;
             label.Placement = this.Placement;
@@ -1419,6 +1419,11 @@ namespace Visifire.Charts
             Decimal gap = (Decimal)interval;
             Int32 count = 0;
 
+            #region Nortek Add To solve the problem two charts do not align to same width
+            index = Math.Round(index, 10);
+            maxVal = Math.Round(maxVal, 10);
+            #endregion
+
             // if the axis labels belong to axis x
             if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
             {
@@ -1448,7 +1453,7 @@ namespace Visifire.Charts
                     if (!Double.IsNaN(TextWrap))
                         CalculatAvgWidthOfAChar();
 
-                    if(ParentAxis.AxisOrientation != AxisOrientation.Circular)
+                    if (ParentAxis.AxisOrientation != AxisOrientation.Circular)
                     {
                         for (; index <= maxVal; )
                         {
@@ -1463,7 +1468,7 @@ namespace Visifire.Charts
                                 else
                                 {
                                     if (ParentAxis.XValueType == ChartValueTypes.Date)
-                                    {   
+                                    {
                                         DateTime dt = ParentAxis.MinDate;
                                         Decimal tempIndex = index;
 
@@ -1530,6 +1535,7 @@ namespace Visifire.Charts
                                 index = minval + (++count) * gap;
                             }
                         }
+
                     }
                     else
                     {
@@ -1747,13 +1753,13 @@ namespace Visifire.Charts
         /// <param name="axis">Axis</param>
         /// <param name="label">Axis labels</param>
         internal static String FormatDate(DateTime dt, Axis axis)
-        {   
+        {
             String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "d" : axis.XValueType == ChartValueTypes.Time ? "t" : "G";
             valueFormatString = (String.IsNullOrEmpty((String)axis.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : axis.ValueFormatString;
 
             return axis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture));
         }
-        
+
         /// <summary>
         /// Sets the position of labels based on the placement type
         /// </summary>
@@ -1802,7 +1808,7 @@ namespace Visifire.Charts
 
             // Calculate the height of the labels
             for (Int32 i = 0; i < AxisLabelList.Count; i++)
-            {   
+            {
                 AxisLabel label = AxisLabelList[i];
 
                 //Set size affecting font properties
@@ -1897,7 +1903,7 @@ namespace Visifire.Charts
 
             Boolean isChartGridEnabled = false;
 
-            if(ParentAxis.Grids.Count > 0 && (Boolean)ParentAxis.Grids[0].Enabled)
+            if (ParentAxis.Grids.Count > 0 && (Boolean)ParentAxis.Grids[0].Enabled)
                 isChartGridEnabled = true;
 
             if (ParentAxis.CircularPlotDetails != null && ParentAxis.CircularPlotDetails.CircularChartType == RenderAs.Polar)
@@ -1923,7 +1929,7 @@ namespace Visifire.Charts
             // Calculate the width of the labels
             //for (Int32 i = 0; i < AxisLabelList.Count; i++)
             for (Int32 i = 0; i < AxisLabelList.Count; i += (ParentAxis.SkipOffset + 1))
-            {   
+            {
                 AxisLabel label = AxisLabelList[i];
 
                 // set size affecting pararameters
@@ -2082,7 +2088,7 @@ namespace Visifire.Charts
             //Set size affecting font properties
             label.FontSize = InternalFontSize;
 
-            if(Placement != PlacementTypes.Circular)
+            if (Placement != PlacementTypes.Circular)
                 label.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), ParentAxis.Background, FontColor, false);
             else
                 label.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), null, FontColor, false);
@@ -2149,7 +2155,7 @@ namespace Visifire.Charts
                 {
                     label._padding4AxisYLabelInCircularChart = -4;
                 }
-                
+
                 circularAxisLabels.Add(clabel);
             }
 
@@ -2203,8 +2209,8 @@ namespace Visifire.Charts
                 //Double distance = Graphics.DistanceBetweenTwoPoints(label.Center, label.NextPosition);
                 //minDistance = Math.Min(minDistance, distance);
 
-                if(Math.Round(label.NextPosition.X) != Math.Round(label.Center.X))
-                    xRadius = (label.NextPosition.X - label.Center.X)/ Math.Cos(label.Angle);
+                if (Math.Round(label.NextPosition.X) != Math.Round(label.Center.X))
+                    xRadius = (label.NextPosition.X - label.Center.X) / Math.Cos(label.Angle);
 
                 if (Math.Round(label.NextPosition.Y) != Math.Round(label.Center.Y))
                     yRadius = (label.NextPosition.Y - label.Center.Y) / Math.Sin(label.Angle);
@@ -2292,7 +2298,7 @@ namespace Visifire.Charts
                 //label.CreateVisualObject(_tag);
 
                 if (GetAngle() != 0)
-                {   
+                {
                     top = Math.Abs((label.ActualTextHeight / 2) * Math.Sin(Math.PI / 2 - AxisLabel.GetRadians(GetAngle())));
                 }
 
@@ -2451,19 +2457,19 @@ namespace Visifire.Charts
         private Double CalculateMaxHeightOfLabels(List<Double> labelWidths)
         {
             Double maxRowHeight = 0;
-            
-            
+
+
 
             // Calculate MaxHeight of AxisLabels
             for (Int32 labelIndex = 0; labelIndex < AxisLabelList.Count; labelIndex += (ParentAxis.SkipOffset + 1))
-            {   
+            {
                 AxisLabel label = AxisLabelList[labelIndex];
                 ApplyAxisLabelFontProperties(label);
                 label.CreateVisualObject(_tag);
 
                 maxRowHeight = Math.Max(maxRowHeight, label.ActualHeight);
 
-                if(labelWidths != null)
+                if (labelWidths != null)
                     labelWidths.Add(label.ActualWidth);
             }
 
@@ -2485,7 +2491,7 @@ namespace Visifire.Charts
             Size textBlockSize = new Size();
 
             foreach (AxisLabel label in AxisLabelList)
-            {   
+            {
                 ApplyAxisLabelFontProperties(label);
                 label.CreateVisualObject(null);
 
@@ -2547,7 +2553,7 @@ namespace Visifire.Charts
         //    //Calculate interval
         //    Double interval = (Double)((Double.IsNaN((Double)Interval) && Interval <= 0) ? Interval : ParentAxis.InternalInterval);
         //    Double pixelInterval = Graphics.ValueToPixelPosition(0, widthOfAxis, Minimum, Maximum, interval + Minimum);
-            
+
         //    for (rows = 1; rows <= 3; rows++)
         //    {   
         //        overlap = false;
@@ -2605,7 +2611,7 @@ namespace Visifire.Charts
         /// Calculate default values for angle and rows of axis
         /// </summary>
         private void CalculateHorizontalDefaults(Double widthOfAxis, Double heightOfAxis)
-        {   
+        {
             IsNotificationEnable = false;
 
             widthOfAxis = Double.IsNaN(widthOfAxis) ? 0 : widthOfAxis;
@@ -2614,13 +2620,13 @@ namespace Visifire.Charts
             Double max = Math.Max(widthOfAxis, heightOfAxis);
 
             if (Double.IsNaN(InternalFontSize) || InternalFontSize <= 0)
-            {   
+            {
                 Double initialFontSize = CalculateFontSize(max);
                 InternalFontSize = initialFontSize;
-            }          
+            }
 
             if (InternalRows <= 0)
-            {   
+            {
                 Int32 rows = CalculateNumberOfRows(widthOfAxis);
 
                 if (rows > 2 && Double.IsNaN((Double)InternalAngle))
@@ -2659,7 +2665,7 @@ namespace Visifire.Charts
                 }
             }
             else
-            {   
+            {
                 Int32 rows = CalculateNumberOfRows(widthOfAxis);
 
                 if (rows > 2 && Double.IsNaN((Double)InternalAngle))
@@ -2709,7 +2715,7 @@ namespace Visifire.Charts
                 if (Math.Abs(pixelInterval1 - pixelInterval2) >= maxLabelHeight)
                     overlap = false;
                 else
-                {   
+                {
                     skipOffset++;
                     skipInterval = skipInterval + interval;
                 }
@@ -2732,7 +2738,7 @@ namespace Visifire.Charts
         ///  Calculate default values for vertical axis
         /// </summary>
         private void CalculateVerticalDefaults()
-        {   
+        {
             Double width = Double.IsNaN(Width) ? 0 : Width;
             Double height = Double.IsNaN(Height) ? 0 : Height;
             Double max = Math.Max(width, height);
@@ -2785,7 +2791,7 @@ namespace Visifire.Charts
         /// Creates a visual object for the element
         /// </summary>
         internal void CreateVisualObject()
-        {   
+        {
             // Create a new 
             Visual = new Canvas();
 
@@ -2902,7 +2908,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Whether the axis need to redraw
         /// </summary>
-        private  Boolean _isRedraw;
+        private Boolean _isRedraw;
 
         /// <summary>
         /// Parent axis

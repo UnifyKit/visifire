@@ -706,8 +706,10 @@ namespace Visifire.Commons
         }
 
         protected virtual void LoadWm()
-        {         
-            CreateWmElement(new String((from ch in wmRegVal select Convert.ToChar(ch)).ToArray()), new String((from ch in wmLinkVal select Convert.ToChar(ch)).ToArray()));
+        {
+            #region Nortek deleted
+            //CreateWmElement(new String((from ch in wmRegVal select Convert.ToChar(ch)).ToArray()), new String((from ch in wmLinkVal select Convert.ToChar(ch)).ToArray()));
+            #endregion 
         }
 
         protected void CreateWmElement(String text, String href)

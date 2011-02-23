@@ -129,10 +129,10 @@ namespace Visifire.Charts
                 {
                     Axis xAxis = chart.ChartArea.AxisX;
                     Axis yAxis = this.PlotGroup.AxisY;
-                    
+
                     if (!Double.IsNaN(internalYValue) && !Double.IsNaN(internalXValue))
                         Dispatcher.BeginInvoke(new Action(delegate()
-                        {   
+                        {
                             // Find nearest DataPoint
                             DataPoint nearestDataPoint = RenderHelper.GetNearestDataPoint(this, internalXValue, internalYValue);
 
@@ -149,12 +149,12 @@ namespace Visifire.Charts
         /// <param name="xValue">XValue corrosponding to mouse position</param>
         /// <param name="yValue">YValue corrosponding to mouse position</param>
         public void ShowMovingMarker(Object xValue, Double yValue)
-        {   
+        {
             if (MovingMarkerEnabled)
-            {   
+            {
                 Chart chart = Chart as Chart;
 
-                if (chart!= null && chart.ChartArea != null && chart.ChartArea.AxisX != null)
+                if (chart != null && chart.ChartArea != null && chart.ChartArea.AxisX != null)
                 {
                     Axis xAxis = chart.ChartArea.AxisX;
                     Axis yAxis = this.PlotGroup.AxisY;
@@ -163,10 +163,10 @@ namespace Visifire.Charts
 
                     // Convert user value to User value to internalValues
                     RenderHelper.UserValueToInternalValues(xAxis, yAxis, xValue, yValue, out internalXValue, out internalYValue); ;
-                    
-                    if(!Double.IsNaN(yValue) && xValue != null)
+
+                    if (!Double.IsNaN(yValue) && xValue != null)
                         Dispatcher.BeginInvoke(new Action(delegate()
-                        {   
+                        {
                             // Find nearest DataPoint
                             DataPoint nearestDataPoint = RenderHelper.GetNearestDataPoint(this, internalXValue, yValue);
 
@@ -180,7 +180,7 @@ namespace Visifire.Charts
         void DataMappings_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
-            {   
+            {
                 foreach (DataPoint dp in DataPoints)
                 {
                     foreach (DataMapping dm in e.NewItems)
@@ -189,7 +189,7 @@ namespace Visifire.Charts
                     }
                 }
             }
-            else if(e.OldItems != null)
+            else if (e.OldItems != null)
             {
                 foreach (DataPoint dp in DataPoints)
                 {
@@ -230,9 +230,9 @@ namespace Visifire.Charts
 
         // Using a DependencyProperty as the backing store for ItemsSource.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DataSourceProperty = DependencyProperty.Register
-            ("DataSource", 
-            typeof(IEnumerable), 
-            typeof(DataSeries), 
+            ("DataSource",
+            typeof(IEnumerable),
+            typeof(DataSeries),
             new PropertyMetadata(OnDataSourceChanged));
 
 
@@ -255,9 +255,9 @@ namespace Visifire.Charts
         {
             // Remove handler for oldValue.CollectionChanged (if present)
             INotifyCollectionChanged oldValueINotifyCollectionChanged = oldValue as INotifyCollectionChanged;
-            
+
             if (null != oldValueINotifyCollectionChanged)
-            {   
+            {
                 // Detach the WeakEventListener
                 if (null != _weakEventListener)
                 {
@@ -269,7 +269,7 @@ namespace Visifire.Charts
             // Add handler for newValue.CollectionChanged (if possible)
             INotifyCollectionChanged newValueINotifyCollectionChanged = newValue as INotifyCollectionChanged;
             if (null != newValueINotifyCollectionChanged)
-            {   
+            {
                 // Use a WeakEventListener so that the backwards reference doesn't keep this object alive
                 _weakEventListener = new WeakEventListener<DataSeries, object, NotifyCollectionChangedEventArgs>(this);
                 _weakEventListener.OnEventAction = (instance, source, eventArgs) => DataSource_CollectionChanged(source, eventArgs);
@@ -281,9 +281,9 @@ namespace Visifire.Charts
             if (IsNotificationEnable)
                 BindData();
         }
-        
+
         private void DataSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {   
+        {
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
                 BindData();
@@ -291,7 +291,7 @@ namespace Visifire.Charts
             }
 
             if (e.OldItems != null)
-            {               
+            {
                 var removedDataPoints = (from dp in DataPoints
                                          where dp.DataContext != null && e.OldItems.Contains(dp.DataContext)
                                          select dp).ToList();
@@ -312,7 +312,7 @@ namespace Visifire.Charts
                     dp.DataContext = item;
 
                     if (DataMappings != null)
-                    {   
+                    {
                         try
                         {
                             dp.BindData(item, DataMappings);
@@ -322,13 +322,13 @@ namespace Visifire.Charts
                             throw new Exception("Error While Mapping Data: Please Verify that you are mapping the Data Correctly");
                         }
                     }
-                    
+
                     //this.DataPoints.Add(dp);
                     DataPoints.Insert(e.NewStartingIndex, dp);
                 }
             }
 
-            if(Chart != null && Chart._toolTip != null)
+            if (Chart != null && Chart._toolTip != null)
                 Chart._toolTip.Hide();
         }
 
@@ -385,6 +385,306 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
+        #region Nortek Added
+        public AbstractSurface HeatMapSurface
+        {
+            get
+            {
+                return (AbstractSurface)GetValue(HeatMapSurfaceProperty);
+            }
+            set
+            {
+                SetValue(HeatMapSurfaceProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty HeatMapSurfaceProperty = DependencyProperty.Register
+            ("HeatMapSurface",
+            typeof(AbstractSurface),
+            typeof(DataSeries),
+            new PropertyMetadata(null, OnHeatMapSurfacePropertyChanged, HeatMapSurfaceCoerceValueCallBack));
+
+        private static void OnHeatMapSurfacePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            var oldSurface = e.OldValue as AbstractSurface;
+            if (oldSurface != null)
+            {
+                oldSurface.Update -= dataSeries.UpdateHeatMap;
+            }
+            var newSurface = e.NewValue as AbstractSurface;
+            newSurface.Update += dataSeries.UpdateHeatMap;
+            dataSeries.FirePropertyChanged(VcProperties.HeatMapSurface);
+        }
+
+        private static object HeatMapSurfaceCoerceValueCallBack(DependencyObject d, object baseValue)
+        {
+            if (baseValue == null)
+            {
+                return new BlankSurface();
+            }
+            return baseValue;
+        }
+
+        private void UpdateHeatMap(object sender, EventArgs e)
+        {
+            FirePropertyChanged(VcProperties.SurfaceUpdate);
+        }
+
+        public double ZValueMax
+        {
+            get
+            {
+                return (double)GetValue(ZValueMaxProperty);
+            }
+            set
+            {
+                SetValue(ZValueMaxProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty ZValueMaxProperty = DependencyProperty.Register
+            ("ZValueMax",
+            typeof(double),
+            typeof(DataSeries), new PropertyMetadata(double.NaN, OnZValueMaxChanged));
+
+        private static void OnZValueMaxChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged(VcProperties.ZValueMin);
+        }
+
+        public double ZValueMin
+        {
+            get
+            {
+                return (double)GetValue(ZValueMinProperty);
+            }
+            set
+            {
+                SetValue(ZValueMinProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty ZValueMinProperty = DependencyProperty.Register
+            ("ZValueMin",
+            typeof(double),
+            typeof(DataSeries), new PropertyMetadata(double.NaN, OnZValueMinChanged));
+
+        private static void OnZValueMinChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged(VcProperties.ZValueMax);
+        }
+
+        public double ZValueUpBoundary
+        {
+            get
+            {
+                return (double)GetValue(ZValueUpBoundaryProperty);
+            }
+            set
+            {
+                SetValue(ZValueUpBoundaryProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty ZValueUpBoundaryProperty = DependencyProperty.Register
+            ("ZValueUpBoundary",
+            typeof(double),
+            typeof(DataSeries),
+            new PropertyMetadata(double.MaxValue, OnZValueUpBoundaryPropertyChanged));
+
+        private static void OnZValueUpBoundaryPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged(VcProperties.ZValueUpBoundary);
+        }
+
+        public double ZValueLowBoundary
+        {
+            get
+            {
+                return (double)GetValue(ZValueLowBoundaryProperty);
+            }
+            set
+            {
+                SetValue(ZValueLowBoundaryProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty ZValueLowBoundaryProperty = DependencyProperty.Register
+            ("ZValueLowBoundary",
+            typeof(double),
+            typeof(DataSeries),
+            new PropertyMetadata(double.MinValue, OnZValueLowBoundaryPropertyChanged));
+
+        private static void OnZValueLowBoundaryPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged(VcProperties.ZValueLowBoundary);
+        }
+
+        public double InnerRadius
+        {
+            get
+            {
+                return (double)GetValue(InnerRadiusProperty);
+            }
+            set
+            {
+                if (value > 1 || value < 0)
+                {
+                    throw new ArgumentOutOfRangeException("InnerRadius ranges from 0 to 1");
+                }
+                SetValue(InnerRadiusProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty InnerRadiusProperty = DependencyProperty.Register
+            ("InnerRadius",
+            typeof(double),
+            typeof(DataSeries),
+            new PropertyMetadata(0.0, OnInnerRadiusPropertyChanged));
+
+        private static void OnInnerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged(VcProperties.InnerRadius);
+        }
+
+        public CHeatMapYAxisPlacementTypes CHeatMapYAxisPlacement //For CircularHeatMap
+        {
+            get
+            {
+                return (CHeatMapYAxisPlacementTypes)GetValue(CHeatMapYAxisPlacementProperty);
+            }
+            set
+            {
+                SetValue(CHeatMapYAxisPlacementProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty CHeatMapYAxisPlacementProperty = DependencyProperty.Register
+            ("CHeatMapYAxisPlacement",
+            typeof(CHeatMapYAxisPlacementTypes),
+            typeof(DataSeries),
+            new PropertyMetadata(CHeatMapYAxisPlacementTypes.Right, OnCHeatMapYAxisPlacementChanged));
+
+        private static void OnCHeatMapYAxisPlacementChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged(VcProperties.CHeatMapYAxisPlacement);
+        }
+
+        public double EndAngle
+        {
+            get
+            {
+                return (double)GetValue(EndAngleProperty);
+            }
+            set
+            {
+                if (value < 0 || value > 360)
+                    throw (new Exception("Invalid property value:: EndAngle should be greater than 0 and less than 360."));
+                SetValue(EndAngleProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty EndAngleProperty = DependencyProperty.Register
+            ("EndAngle",
+            typeof(double),
+            typeof(DataSeries),
+            new PropertyMetadata(360.0, OnEndAngleChanged));
+
+        private static void OnEndAngleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged(VcProperties.EndAngle);
+        }
+
+        public HeatMapPalettes HeatMapPalette
+        {
+            get
+            {
+                return (HeatMapPalettes)GetValue(HeatMapPaletteProperty);
+            }
+            set
+            {
+                SetValue(HeatMapPaletteProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty HeatMapPaletteProperty = DependencyProperty.Register
+            ("HeatMapPalette",
+            typeof(HeatMapPalettes),
+            typeof(DataSeries),
+            new PropertyMetadata(HeatMapPalettes.Ahsb, OnHeatMapPalettehanged));
+
+        private static void OnHeatMapPalettehanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries._heatMapPalette = new HeatMapPalette((HeatMapPalettes)e.NewValue);
+            dataSeries.FirePropertyChanged(VcProperties.HeatMapPalette);
+        }
+
+        public bool RadarHeatmapTickInside
+        {
+            get
+            {
+                return (bool)GetValue(RadarHeatmapTickInsideProperty);
+            }
+            set
+            {
+                SetValue(RadarHeatmapTickInsideProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty RadarHeatmapTickInsideProperty = DependencyProperty.Register
+            ("RadarHeatmapTickInside",
+            typeof(bool),
+            typeof(DataSeries),
+            new PropertyMetadata(false, OnRadarHeatmapTickInsidePropertyChanged));
+
+        private static void OnRadarHeatmapTickInsidePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+
+        }
+
+        internal HeatMapPalette _heatMapPalette = new HeatMapPalette();
+        internal HeatMapPalette InternalHeatMapPalette
+        {
+            get
+            {
+                return _heatMapPalette;
+            }
+        }
+
+   
+
+        public RadarHeatmapOrientations RadarHeatMapOrientation
+        {
+            get
+            {
+                return (RadarHeatmapOrientations)GetValue(RadarHeatMapOrientationProperty);
+            }
+            set
+            {
+                SetValue(RadarHeatMapOrientationProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty RadarHeatMapOrientationProperty = DependencyProperty.Register
+            ("RadarHeatMapOrientation",
+            typeof(RadarHeatmapOrientations),
+            typeof(DataSeries),
+            new PropertyMetadata(RadarHeatmapOrientations.CounterClockwise, OnRadarHeatMapOrientationPropertyChanged));
+
+        private static void OnRadarHeatMapOrientationPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+        }
+        #endregion
+
 
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.AutoFitToPlotArea dependency property.
@@ -1178,7 +1478,7 @@ namespace Visifire.Charts
         /// AutoFitToPlotArea property force the DataPoints present this DataSeries to fit inside PlotArea.
         /// </summary>
         public Boolean AutoFitToPlotArea
-        {   
+        {
             get
             {
                 return (Boolean)GetValue(AutoFitToPlotAreaProperty);
@@ -1483,7 +1783,7 @@ namespace Visifire.Charts
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> ShadowEnabled
-        {   
+        {
             get
             {
                 if ((Nullable<Boolean>)GetValue(ShadowEnabledProperty) == null)
@@ -2304,13 +2604,13 @@ namespace Visifire.Charts
                 if ((Chart != null && !String.IsNullOrEmpty((Chart as Chart).ToolTipText)))
                     return null;
 
-                String str; 
+                String str;
                 Chart chart = Chart as Chart;
 
                 if (String.IsNullOrEmpty((String)GetValue(ToolTipTextProperty)))
                 {
                     if (GetValue(ToolTipTextProperty) == null)
-                        return null;                  
+                        return null;
 
                     switch (RenderAs)
                     {
@@ -2339,6 +2639,9 @@ namespace Visifire.Charts
                         case RenderAs.Polar:
                             str = "#XValue, #YValue";
                             break;
+                        #region Nortek add HeatMap tooltip format
+
+                        #endregion
                         default:
                             if (chart != null && chart.ChartArea != null && chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
                                 str = "#XValue, #YValue";
@@ -2527,7 +2830,7 @@ namespace Visifire.Charts
             }
             else if (RenderAs == RenderAs.Radar)
             {
-                if(Faces != null && Faces.Visual != null)
+                if (Faces != null && Faces.Visual != null)
                 {
                     (Faces.Visual as Polygon).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", null) : (Brush)newValue;
                 }
@@ -2539,7 +2842,7 @@ namespace Visifire.Charts
             {
                 if (Faces != null)
                 {
-                    foreach(FrameworkElement fe in Faces.Parts)
+                    foreach (FrameworkElement fe in Faces.Parts)
                         (fe as Path).Stroke = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", null) : (Brush)newValue;
                 }
 
@@ -2605,11 +2908,93 @@ namespace Visifire.Charts
 
                         ds.ToolTipElement.Show();
                     }
-                    
+
                     // chart._toolTip.Hide();
                 }
             }
         }
+
+
+
+
+        #region Nortek Added
+        internal void SetToolTipPropertiesForHeatMap(double internalXValue, double intervalYValue)
+        {
+            Chart chart = Chart as Chart;
+            var axisX = chart.ChartArea.AxisX;
+            string text = string.Empty;
+            double zValue = 0;
+            if (!axisX.IsDateTimeAxis)
+            {
+                if (internalXValue >= (double)chart.Series[0].HeatMapSurface.XRange.Min
+                             && internalXValue < (double)chart.Series[0].HeatMapSurface.XRange.Max
+                             && intervalYValue < chart.Series[0].HeatMapSurface.YRange.Max
+                             && intervalYValue >= chart.Series[0].HeatMapSurface.YRange.Min)
+                {
+                    zValue = HeatMapSurface.GetValue(internalXValue, intervalYValue);
+                }
+                else
+                {
+                    zValue = double.NaN;
+                }
+                text = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:0.##}", zValue);
+            }
+            else
+            {
+                DateTime choosedDate;
+                String valueFormatString = axisX.XValueType == ChartValueTypes.Date ? "d" : axisX.XValueType == ChartValueTypes.Time ? "t" : "G";
+                valueFormatString = (String.IsNullOrEmpty((String)axisX.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : axisX.ValueFormatString;
+
+                TimeSpan ts = (DateTime)axisX.ActualAxisMaximum - (DateTime)axisX.ActualAxisMinimum;
+                var days = ((internalXValue - axisX.InternalAxisMinimum) / (axisX.InternalAxisMaximum - axisX.InternalAxisMinimum)) * ts.TotalDays;
+                var axisXActualAxisMinimum = (DateTime)axisX.ActualAxisMinimum;
+                choosedDate = axisXActualAxisMinimum.AddDays(days);
+                if (choosedDate >= (DateTime)chart.Series[0].HeatMapSurface.XRange.Min
+                        && choosedDate < (DateTime)chart.Series[0].HeatMapSurface.XRange.Max
+                        && intervalYValue < chart.Series[0].HeatMapSurface.YRange.Max
+                        && intervalYValue >= chart.Series[0].HeatMapSurface.YRange.Min)
+                {
+                    zValue = HeatMapSurface.GetValue(choosedDate, intervalYValue);
+                }
+                else
+                {
+                    zValue = double.NaN;
+                }
+
+
+                text = choosedDate.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture);
+                text = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:0.##}", zValue);
+
+            }
+            if (!String.IsNullOrEmpty(text))
+            {
+                //DataSeries ds = nearestDataPoint.Parent;
+                this.ToolTipElement.Text = text;
+
+                if (chart.ToolTipEnabled)
+                {
+                    if (this.ToolTipElement._isAutoGeneratedFontColor)
+                    {
+                        this.ToolTipElement.FontColor = CalculateFontColor(this.ToolTipElement.Background, this.Chart as Chart);
+                        this.ToolTipElement._isAutoGeneratedFontColor = true;
+                    }
+
+                    this.ToolTipElement.Show();
+                }
+
+                // chart._toolTip.Hide();
+            }
+        }
+
+
+        internal void SetToolTipPropertiesForHeatMap(MouseEventArgs e)
+        {
+            var chart = Chart as Chart;
+            var xValue = RenderHelper.CalculateInternalXValueFromPixelPos(chart, chart.ChartArea.AxisX, e);
+            var yValue = RenderHelper.CalculateInternalYValueFromPixelPos(chart, chart.ChartArea.AxisY, e);
+            SetToolTipPropertiesForHeatMap(xValue, yValue);
+        }
+        #endregion
 
         /// <summary>
         /// Hide ToolTip of DataSeries
@@ -2621,7 +3006,7 @@ namespace Visifire.Charts
                 this.ToolTipElement.Hide();
                 return true;
             }
-            
+
             return false;
         }
 
@@ -2641,11 +3026,11 @@ namespace Visifire.Charts
 
         /// <summary>
         /// Get nearest DataPoints from mouse pointer position
-         /// </summary>
+        /// </summary>
         /// <param name="e">MouseEventArgs</param>
         /// <returns>DataPoint</returns>
         internal DataPoint FindNearestDataPointFromMousePointer(MouseEventArgs e)
-        {   
+        {
             DataSeries dataSeries = this;
             Axis xAxis = dataSeries.PlotGroup.AxisX;
             Axis yAxis = dataSeries.PlotGroup.AxisY;
@@ -2669,9 +3054,9 @@ namespace Visifire.Charts
             this._nearestDataPoint = RenderHelper.GetNearestDataPoint(this, internalXValue, internalYValue);
             return this._nearestDataPoint;
         }
-         
+
         internal DataPoint GetNearestDataPointAlongYPosition(MouseEventArgs e, List<DataPoint> listOfDataPoints)
-        {   
+        {
             DataPoint nearestDataPoint = null;
 
             Chart chart = Chart as Chart;
@@ -2681,7 +3066,7 @@ namespace Visifire.Charts
                 AxisOrientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
                 Double pixelPosition = (axisOrientation == AxisOrientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
                 Double lengthInPixel = ((axisOrientation == AxisOrientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
-              
+
                 foreach (DataPoint dp in listOfDataPoints)
                 {
                     DataSeries ds = dp.Parent;
@@ -2717,7 +3102,7 @@ namespace Visifire.Charts
                             nearestDataPoint = dp;
                     }
                 }
-                
+
             }
 
             return nearestDataPoint;
@@ -2725,7 +3110,7 @@ namespace Visifire.Charts
 
         internal void StopDataPointsAnimation()
         {
-            if (Chart != null &&  (Boolean)(Chart as Chart).AnimatedUpdate)
+            if (Chart != null && (Boolean)(Chart as Chart).AnimatedUpdate)
             {
                 foreach (DataPoint dp in InternalDataPoints)
                 {
@@ -2755,7 +3140,7 @@ namespace Visifire.Charts
                 return;
 
             if (IsInDesignMode)
-            {   
+            {
                 if (Chart != null)
                     (Chart as Chart).RENDER_LOCK = false;
 
@@ -2767,7 +3152,7 @@ namespace Visifire.Charts
                 return;
 
             if (ValidatePartialUpdate(RenderAs, property))
-            {   
+            {
                 if (NonPartialUpdateChartTypes(RenderAs) && property != VcProperties.ScrollBarScale)
                 {
                     if (property == VcProperties.Color)
@@ -2851,7 +3236,7 @@ namespace Visifire.Charts
                         RenderHelper.UpdateVisualObject(RenderAs, dp, property, newValue, renderAxis);
                 }
                 else if (property == VcProperties.BorderColor || property == VcProperties.BorderThickness || property == VcProperties.BorderStyle)
-                {   
+                {
                     if (RenderAs == RenderAs.Area)
                         RenderHelper.UpdateVisualObject(RenderAs, this, property, newValue, renderAxis);
 
@@ -2869,7 +3254,7 @@ namespace Visifire.Charts
 
                     if ((chart.ZoomingEnabled && property == VcProperties.ScrollBarScale)
                         || (property == VcProperties.AxisMinimum || property == VcProperties.AxisMaximum))
-                    {   
+                    {
                         renderAxis = true;
                         _isZooming = true;
                         property = VcProperties.DataPoints;
@@ -2895,7 +3280,7 @@ namespace Visifire.Charts
                         // System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
 
                         if (PlotGroup.AxisY.ViewportRangeEnabled)
-                        {   
+                        {
                             renderAxis = true;
                             axisRepresentation = AxisRepresentations.AxisY;
                         }
@@ -2910,7 +3295,7 @@ namespace Visifire.Charts
                         }
                         // New value will be null if one or more number of DataPoints removed
                         else if (property == VcProperties.DataPoints && newValue == null)
-                        {   
+                        {
                             renderAxis = true;
                             axisRepresentation = AxisRepresentations.AxisX;
                         }
@@ -2940,12 +3325,12 @@ namespace Visifire.Charts
                             RenderHelper.UpdateVisualObject(this.RenderAs, this, property, newValue, renderAxis);
                     }
                     else if (renderAxis)
-                    {   
+                    {
                         // Need to Rerender all charts if axis changes
                         RenderHelper.UpdateVisualObject(chart, property, newValue, false);
                     }
                     else
-                    {   
+                    {
                         RenderHelper.UpdateVisualObject(this.RenderAs, this, property, newValue, renderAxis);
                     }
                 }
@@ -3102,7 +3487,7 @@ namespace Visifire.Charts
         /// must be divided between indivisual datapoints of different series with same InternalXValue
         /// </summary>
         internal Int32 SeriesCountOfSameRenderAs
-        {   
+        {
             get;
             set;
         }
@@ -3246,7 +3631,7 @@ namespace Visifire.Charts
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnIncludePercentageInLegendPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
+        {
             DataSeries dataSeries = d as DataSeries;
             dataSeries.FirePropertyChanged(VcProperties.IncludePercentageInLegend);
         }
@@ -3284,12 +3669,12 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             //dataSeries.UpdateVisual(VcProperties.Exploded, e.NewValue);
-            
-            if(dataSeries.Chart != null && (dataSeries.RenderAs == RenderAs.Pie || dataSeries.RenderAs == RenderAs.Doughnut) )
+
+            if (dataSeries.Chart != null && (dataSeries.RenderAs == RenderAs.Pie || dataSeries.RenderAs == RenderAs.Doughnut))
                 foreach (DataPoint dp in dataSeries.InternalDataPoints)
                 {
-                     if (dp.GetValue(DataPoint.ExplodedProperty) == null)
-                        dp.ExplodeOrUnexplodeAnimation();    
+                    if (dp.GetValue(DataPoint.ExplodedProperty) == null)
+                        dp.ExplodeOrUnexplodeAnimation();
                 }
             else
                 dataSeries.FirePropertyChanged(VcProperties.Exploded);
@@ -3334,7 +3719,7 @@ namespace Visifire.Charts
                 if (e.OldValue != null && ((RenderAs)e.OldValue == RenderAs.Bar ||
                     (RenderAs)e.OldValue == RenderAs.StackedBar || (RenderAs)e.OldValue == RenderAs.StackedBar100))
                 {
-                    if(e.NewValue != null && ((RenderAs)e.NewValue != RenderAs.Bar &&
+                    if (e.NewValue != null && ((RenderAs)e.NewValue != RenderAs.Bar &&
                     (RenderAs)e.NewValue != RenderAs.StackedBar && (RenderAs)e.NewValue != RenderAs.StackedBar100))
                         (dataSeries.Chart as Chart)._clearAndResetZoomState = true;
                 }
@@ -3935,16 +4320,16 @@ namespace Visifire.Charts
                 }
             }
             else
-            {   
+            {
                 if (dataSeries.InternalDataPoints != null)
                 {
                     foreach (DataPoint dataPoint in dataSeries.InternalDataPoints)
                         dataPoint.DetachEventForSelection();
                 }
             }
-            
+
             if (!dataSeries.SelectionEnabled)
-            {   
+            {
                 foreach (DataPoint dp in dataSeries.InternalDataPoints)
                 {
                     dp.DeSelect(dp, false, true);
@@ -3991,7 +4376,7 @@ namespace Visifire.Charts
                         //{
                         //    dataPoint.InternalXValue = this.DataPoints.Count;
                         //}
-                        
+
                         if (String.IsNullOrEmpty((String)dataPoint.GetValue(DataPoint.NameProperty)))
                         {
                             dataPoint.Name = "DataPoint" + (this.DataPoints.Count - 1).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_');
@@ -4090,7 +4475,7 @@ namespace Visifire.Charts
             {
                 foreach (FrameworkElement fe in dataPoint.Faces.VisualComponents)
                 {
-                    if(fe != null)
+                    if (fe != null)
                         ObservableObject.RemoveElementFromElementTree(fe);
                 }
             }
@@ -4169,7 +4554,7 @@ namespace Visifire.Charts
                     dp.OnToolTipTextPropertyChanged(dp.ToolTipText);
             }
         }
-        
+
         /// <summary>
         /// Attach events to each and every visual face in Faces
         /// </summary>
@@ -4195,7 +4580,7 @@ namespace Visifire.Charts
         internal void AttachEvent2AreaVisualFaces(ObservableObject Object)
         {
             if (Faces != null)
-            {   
+            {
                 foreach (FrameworkElement face in Faces.VisualComponents)
                     AttachEvents2AreaVisual(Object, this, face);
             }
@@ -4379,11 +4764,11 @@ namespace Visifire.Charts
 
         // All x value not set
         internal Boolean IsXValueNull4AllDataPoints()
-        {   
+        {
             if (InternalDataPoints != null)
-            {   
+            {
                 foreach (DataPoint dp in InternalDataPoints)
-                {   
+                {
                     if (dp.XValue != null)
                         return false;
                 }
@@ -4409,7 +4794,7 @@ namespace Visifire.Charts
         /// WeakEventListener used to handle INotifyCollectionChanged events.
         /// </summary>
         internal WeakEventListener<DataSeries, object, NotifyCollectionChangedEventArgs> _weakEventListener;
-        
+
         /// <summary>
         /// Whether event attached for DataPoint selection
         /// </summary>

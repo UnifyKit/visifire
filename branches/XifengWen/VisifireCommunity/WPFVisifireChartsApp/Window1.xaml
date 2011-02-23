@@ -3,42 +3,142 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
     Title="PerfMon" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignWidth="537" SizeToContent="WidthAndHeight">
-    
-    <Grid Name="XX">
-        <vc:Chart  xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
-    Width="490" Height="290" Theme="Theme1" ShadowEnabled="True" CornerRadius="7,7,0,0" BorderThickness="0.5" BorderBrush="Gray" AnimatedUpdate="true" >
-
-            <vc:Chart.Titles>
-                <vc:Title Text="Athens 2004 Olympics" FontFamily="Arial" FontSize="14"/>
-            </vc:Chart.Titles>
-
-            <vc:Chart.PlotArea>
-                <vc:PlotArea CornerRadius="0,14,0,0" BorderThickness="0,1,1,0" BorderColor="LightGray" />
-            </vc:Chart.PlotArea>
-
-            <vc:Chart.AxesX>
-                <vc:Axis Title="Country">
-                    <vc:Axis.AxisLabels>
-                        <vc:AxisLabels Interval="1"/>
-                    </vc:Axis.AxisLabels>
-                </vc:Axis>
-            </vc:Chart.AxesX>
-
-            <vc:Chart.AxesY>
-                <vc:Axis AxisMinimum="0" AxisMaximum="60" Title="Gold Medals Won"/>
-            </vc:Chart.AxesY>
-
+    <Grid ShowGridLines="False">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <TextBlock >Hover your cursor on HeatMap. You can even pin indicator by clicking left button of mouse</TextBlock>
+            <TextBlock Name="selectedXYTB"></TextBlock>
+        </StackPanel>
+        <vc:Chart Grid.Row="0" Grid.Column="0" x:Name="heatMapChart1"
+                  IndicatorEnabled="True" YIndicatorEnabled="True" IndicatorLockable="True"
+                  ZoomingEnabled="False"   ScrollingEnabled="False"  SelectedXYValues="{Binding Path=SL,Mode=OneWayToSource}"
+                  BorderThickness="0" >
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column" LabelEnabled="True">
+                <vc:DataSeries RenderAs="HeatMap" HeatMapSurface="{Binding Path=TS}" HeatMapPalette="Ahsb">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="USA" YValue="50"/>
-                        <vc:DataPoint AxisXLabel="China" YValue="35"/>
-                        <vc:DataPoint AxisXLabel="Russia" YValue="27"/>
-                        <vc:DataPoint AxisXLabel="Australia" YValue="17"/>
-                        <vc:DataPoint AxisXLabel="Japan" YValue="16"/>
+                        <vc:DataPoint ></vc:DataPoint>
+                        <vc:DataPoint></vc:DataPoint>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
+            <vc:Chart.AxesX>
+                <vc:Axis Title="Time"  AxisMaximum="{Binding Path=TS.XRange.Max}" AxisMinimum="{Binding Path=TS.XRange.Min}" Interval="6" IntervalType="Hours">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid Enabled="False">
+                        </vc:ChartGrid>
+                    </vc:Axis.Grids>
+                    <vc:Axis.AxisLabels >
+                        <vc:AxisLabels Angle="0"></vc:AxisLabels>
+                    </vc:Axis.AxisLabels>
+                </vc:Axis>
+            </vc:Chart.AxesX>
+            <vc:Chart.AxesY>
+                <vc:Axis Title="Distance(m)" AxisType="Primary"  AxisMaximum="{Binding Path=TS.YRange.Max}" AxisMinimum="{Binding Path=TS.YRange.Min}">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid Enabled="False">
+                        </vc:ChartGrid>
+                    </vc:Axis.Grids>
+                </vc:Axis>
+            </vc:Chart.AxesY>
+            <vc:Chart.Legends>
+                <vc:Legend  BorderThickness="0" ShadowEnabled="False" HorizontalAlignment="Right" VerticalAlignment="Top">
+
+                </vc:Legend>
+            </vc:Chart.Legends>
+        </vc:Chart>
+
+
+        <vc:Chart Grid.Row="1" Grid.Column="0" x:Name="heatMapRadarChart1"
+                  ZoomingEnabled="False"   ScrollingEnabled="False"
+                  BorderThickness="0" >
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="RadarHeatMap" RadarHeatmapTickInside="False" RadarHeatMapOrientation="CounterClockwise"
+                               InnerRadius="0.5"
+                               CHeatMapYAxisPlacement="Right"
+                               HeatMapSurface="{Binding Path=TS}"
+                               HeatMapPalette="Ahsb"
+                               >
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint ></vc:DataPoint>
+                        <vc:DataPoint></vc:DataPoint>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+            <vc:Chart.AxesX>
+                <vc:Axis Title="Time"  AxisMaximum="{Binding Path=TS.XRange.Max}" AxisMinimum="{Binding Path=TS.XRange.Min}" Interval="6" IntervalType="Hours">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid Enabled="False">
+                        </vc:ChartGrid>
+                    </vc:Axis.Grids>
+                    <vc:Axis.AxisLabels >
+                        <vc:AxisLabels Angle="0"></vc:AxisLabels>
+                    </vc:Axis.AxisLabels>
+                </vc:Axis>
+            </vc:Chart.AxesX>
+            <vc:Chart.AxesY>
+                <vc:Axis Title="Distance(m)" AxisType="Primary" AxisMaximum="{Binding Path=TS.YRange.Max}" AxisMinimum="{Binding Path=TS.YRange.Min}">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid Enabled="False">
+                        </vc:ChartGrid>
+                    </vc:Axis.Grids>
+                </vc:Axis>
+            </vc:Chart.AxesY>
+            <vc:Chart.Legends>
+                <vc:Legend  BorderThickness="0" ShadowEnabled="False" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+
+                </vc:Legend>
+            </vc:Chart.Legends>
+        </vc:Chart>
+
+        <vc:Chart Grid.Row="1" Grid.Column="1" x:Name="heatMapRadarChart2"
+                  ZoomingEnabled="False"   ScrollingEnabled="False"
+                  BorderThickness="0" >
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="RadarHeatMap" RadarHeatmapTickInside="False" RadarHeatMapOrientation="Clockwise"
+                               CHeatMapYAxisPlacement="Top"
+                               HeatMapSurface="{Binding Path=TS}"
+                               HeatMapPalette="Ahsb"
+                               StartAngle="90"
+                               EndAngle="180"
+                               ZValueUpBoundary="3"
+                               >
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint ></vc:DataPoint>
+                        <vc:DataPoint></vc:DataPoint>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+            <vc:Chart.AxesX>
+                <vc:Axis Title="Time"  AxisMaximum="{Binding Path=TS.XRange.Max}" AxisMinimum="{Binding Path=TS.XRange.Min}" Interval="6" IntervalType="Hours">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid Enabled="False">
+                        </vc:ChartGrid>
+                    </vc:Axis.Grids>
+                    <vc:Axis.AxisLabels >
+                        <vc:AxisLabels Angle="0"></vc:AxisLabels>
+                    </vc:Axis.AxisLabels>
+                </vc:Axis>
+            </vc:Chart.AxesX>
+            <vc:Chart.AxesY>
+                <vc:Axis Title="Distance(m)" AxisType="Primary" AxisMaximum="{Binding Path=TS.YRange.Max}" AxisMinimum="{Binding Path=TS.YRange.Min}">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid Enabled="False">
+                        </vc:ChartGrid>
+                    </vc:Axis.Grids>
+                </vc:Axis>
+            </vc:Chart.AxesY>
+            <vc:Chart.Legends>
+                <vc:Legend  BorderThickness="0" ShadowEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    
+                </vc:Legend>
+            </vc:Chart.Legends>
         </vc:Chart>
     </Grid>
 </Window>
