@@ -36,7 +36,7 @@ namespace Visifire.Charts
     /// One or more than one DataSeries are grouped into a PlotGroup
     /// </summary>
     internal class PlotGroup
-    {   
+    {
         #region Public Methods
         /// <summary>
         /// Initializes a new instance of the Visifire.Charts.PlotGroup class.
@@ -47,7 +47,7 @@ namespace Visifire.Charts
         public PlotGroup(RenderAs renderAs, Axis axisX, Axis axisY)
         {
             DataSeriesList = new List<DataSeries>();
-            
+
             XWiseStackedDataList = new Dictionary<Double, XWiseStackedData>();
 
             RenderAs = renderAs;
@@ -84,7 +84,7 @@ namespace Visifire.Charts
         #region Protected Methods
 
         #endregion
-        
+
         #region Internal Properties
 
         /// <summary>
@@ -96,13 +96,13 @@ namespace Visifire.Charts
             {
                 foreach (DataSeries ds in DataSeriesList)
                 {
-                    if ((Boolean)ds.Enabled) return true; 
+                    if ((Boolean)ds.Enabled) return true;
                 }
 
                 return false;
             }
         }
-        
+
         /// <summary>
         /// Reference to the X-Axis for this group
         /// </summary>
@@ -221,7 +221,7 @@ namespace Visifire.Charts
         }
 
 
-        
+
         internal Double DrawingIndex;
 
         #endregion
@@ -241,7 +241,7 @@ namespace Visifire.Charts
 #else
         private
 #endif
-        void AddXWiseStackedDataEntry(ref XWiseStackedData xWiseData, DataPoint dataPoint)
+ void AddXWiseStackedDataEntry(ref XWiseStackedData xWiseData, DataPoint dataPoint)
         {
 
             if (dataPoint.YValue >= 0)
@@ -272,7 +272,7 @@ namespace Visifire.Charts
             // get unique values and then sort it
             Array.Sort(distinctValues);
 
-            if (distinctValues.Length <= 1 )
+            if (distinctValues.Length <= 1)
             {
                 return Double.PositiveInfinity;
             }
@@ -306,14 +306,14 @@ namespace Visifire.Charts
                 // Check whether the DataPoint is under the list of RenderAs
                 if (!chartTypes.Any(w => w == dataPoint.Parent.RenderAs))
                     continue;
-                
+
                 if (XWiseStackedDataList.ContainsKey(dataPoint.InternalXValue))
-                {   
+                {
                     // gets the existing  node
                     xWiseData = XWiseStackedDataList[dataPoint.InternalXValue];
                 }
                 else
-                {   
+                {
                     // Creates a new node
                     xWiseData = new XWiseStackedData();
                     XWiseStackedDataList.Add(dataPoint.InternalXValue, xWiseData);
@@ -322,8 +322,8 @@ namespace Visifire.Charts
                 // add the datapoint to a node
                 AddXWiseStackedDataEntry(ref xWiseData, dataPoint);
             }
-        } 
-        
+        }
+
         /// <summary>
         /// This function will find the dependent variable types from the current PlotGroup.
         /// </summary>
@@ -374,7 +374,7 @@ namespace Visifire.Charts
         public void CalculateMinYValueWithInAXValueRange(Double minXValue, Double maxXValue, out Double minimumY)
         {
             switch (RenderAs)
-            {   
+            {
                 case RenderAs.StackedArea:
                 case RenderAs.StackedBar:
                 case RenderAs.StackedColumn:
@@ -429,8 +429,8 @@ namespace Visifire.Charts
                     break;
                 default:
 
-                    List<DataPoint> dataPointsInViewPort1 = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true, RenderAs == RenderAs.Spline? 3 : 1);
-                    
+                    List<DataPoint> dataPointsInViewPort1 = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true, RenderAs == RenderAs.Spline ? 3 : 1);
+
                     Double chartSpecificMinY = Double.NaN; // Min YValue specific to chart type. 
 
                     if (RenderAs == RenderAs.Spline)
@@ -463,15 +463,15 @@ namespace Visifire.Charts
                         minimumY = Double.IsNaN(chartSpecificMinY) ? yValues.Min() : Math.Min(chartSpecificMinY, yValues.Min());
                     else
                         minimumY = Double.NaN;
-                    
+
                     break;
             };
         }
 
         public void CalculateMaxYValueWithInAXValueRange(Double minXValue, Double maxXValue, out Double maximumY)
-        {   
+        {
             switch (RenderAs)
-            {   
+            {
                 case RenderAs.StackedArea:
                 case RenderAs.StackedBar:
                 case RenderAs.StackedColumn:
@@ -499,7 +499,7 @@ namespace Visifire.Charts
 
                         var secectedValues = (from xWiseData in XWiseStackedDataList where xValuesInViewPort.Contains(xWiseData.Key) select xWiseData.Value);
                         var positiveYValue = from xwisedata in secectedValues select xwisedata.PositiveYValueSum;
-                       
+
                         maximumY = (positiveYValue.Count() > 0) ? (positiveYValue).Max() : 0;
 
                         // Since for stacked chart the Maximum can't be greater than 100 or less then 0
@@ -528,8 +528,8 @@ namespace Visifire.Charts
                     break;
                 default:
 
-                    List<DataPoint> dataPointsInViewPort1 = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true, (RenderAs == RenderAs.Spline? 3: 1));
-                    
+                    List<DataPoint> dataPointsInViewPort1 = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true, (RenderAs == RenderAs.Spline ? 3 : 1));
+
                     Double chartSpecificMaxY = Double.NaN; // Min YValue specific to chart type. 
 
                     if (RenderAs == RenderAs.Spline)
@@ -553,13 +553,13 @@ namespace Visifire.Charts
                         CalculateMinMaxOfABubbleChart(this, dataPoints, ref minX, ref maxX, ref minY, ref maxY);
 
                         chartSpecificMaxY = Double.IsNaN(chartSpecificMaxY) ? maxY : Math.Min(chartSpecificMaxY, maxY);
- 
+
                     }
 
                     var yValues = (from dp in dataPointsInViewPort1 where !Double.IsNaN(dp.YValue) select dp.YValue);
 
                     if (yValues.Count() > 0)
-                        maximumY = Double.IsNaN(chartSpecificMaxY) ? yValues.Max() : Math.Max(chartSpecificMaxY,  yValues.Max());
+                        maximumY = Double.IsNaN(chartSpecificMaxY) ? yValues.Max() : Math.Max(chartSpecificMaxY, yValues.Max());
                     else
                         maximumY = Double.NaN;
 
@@ -568,9 +568,9 @@ namespace Visifire.Charts
         }
 
         private static void CalculateMinMaxOfASplineCurve(RenderAs renderAs, List<DataPoint> dataPoints, ref Double chartSpecificMinX, ref Double chartSpecificMaxX, ref Double chartSpecificMinY, ref Double chartSpecificMaxY)
-        {   
+        {
             if (renderAs == RenderAs.Spline)
-            {   
+            {
                 List<Point> knotPoints = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalXValue) && !Double.IsNaN(dataPoint.YValue) select new Point(dataPoint.InternalXValue, dataPoint.YValue)).ToList();
 
                 if (knotPoints.Count() > 0)
@@ -583,7 +583,7 @@ namespace Visifire.Charts
                     {
                         // Calculate Max and min value among control points of Bezier segment.
                         if (controlPoints1.Count() > 0)
-                        {   
+                        {
                             chartSpecificMinX = Math.Min(Double.IsNaN(chartSpecificMinX) ? Double.MaxValue : chartSpecificMinX, (from point in controlPoints1 select point.X).Min());
                             chartSpecificMinY = Math.Min(Double.IsNaN(chartSpecificMinY) ? Double.MaxValue : chartSpecificMinY, (from point in controlPoints1 select point.Y).Min());
 
@@ -618,12 +618,12 @@ namespace Visifire.Charts
                 List<DataPoint> knotPoints = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalXValue) && !Double.IsNaN(dataPoint.YValue) && !Double.IsNaN(dataPoint.ZValue) select dataPoint).ToList();
 
                 if (knotPoints.Count() > 0)
-                {   
+                {
                     // Get Bubble Control Points.
                     Point[] controlPoints = BubbleChart.CalculateControlPointsOfADataSeries(chart, plotGroup, knotPoints);
 
                     if (controlPoints != null)
-                    {   
+                    {
                         // Calculate Max and min value among control points of Bezier segment.
                         if (controlPoints.Count() > 0)
                         {
@@ -648,11 +648,11 @@ namespace Visifire.Charts
         private static void CalculateMinMaxOfABubbleChart(PlotGroup plotGroup, List<DataPoint> dataPoints, ref Double chartSpecificMinX, ref Double chartSpecificMaxX, ref Double chartSpecificMinY, ref Double chartSpecificMaxY)
         {
             if (plotGroup.RenderAs == RenderAs.Bubble && plotGroup.AxisX != null && plotGroup.AxisY != null && plotGroup.AxisY.Visual != null && plotGroup.AxisX.Visual != null)
-            {   
+            {
                 CalculateMinMaxOfABubbleCurve(plotGroup.RenderAs, dataPoints, (Chart)plotGroup.AxisX.Chart, plotGroup, ref chartSpecificMinX, ref chartSpecificMaxX, ref chartSpecificMinY, ref chartSpecificMaxY);
             }
             else
-            {   
+            {
                 chartSpecificMinX = Double.NaN; // Min XValue specific to chart type. 
                 chartSpecificMaxX = Double.NaN; // Min XValue specific to chart type. 
                 chartSpecificMinY = Double.NaN; // Min YValue specific to chart type. 
@@ -664,7 +664,7 @@ namespace Visifire.Charts
         /// Updates all properties of this class by calculating each property.
         /// </summary>
         public void Update(VcProperties property, object oldValue, object newValue)
-        {   
+        {
             Double chartSpecificMinX = Double.NaN; // Min XValue specific to chart type. 
             Double chartSpecificMaxX = Double.NaN; // Min XValue specific to chart type. 
             Double chartSpecificMinY = Double.NaN; // Min YValue specific to chart type. 
@@ -673,10 +673,10 @@ namespace Visifire.Charts
             // List to store a concatinated set of InternalDataPoints from all DataSeries in this group
             // Populates the list with InternalDataPoints with all availabel InternalDataPoints from all DataSeries
             // Also set the plotGroup reference to the current plot group
-            
+
             // List<DataPoint> _dataPointsInCurrentPlotGroup = new List<DataPoint>();
             if (property == VcProperties.None || property == VcProperties.DataPoints)
-            {   
+            {
                 _dataPointsInCurrentPlotGroup = new List<DataPoint>();
 
                 if (RenderAs == RenderAs.Bubble)
@@ -699,11 +699,11 @@ namespace Visifire.Charts
                     _dataPointsInCurrentPlotGroup.InsertRange(_dataPointsInCurrentPlotGroup.Count, dataPoints);
                 }
                 else
-                {   
+                {
                     foreach (DataSeries dataSeries in DataSeriesList)
                     {
                         CalculateMinMaxOfASplineCurve(RenderAs, dataSeries.InternalDataPoints, ref chartSpecificMinX, ref chartSpecificMaxX, ref chartSpecificMinY, ref chartSpecificMaxY);
-                        
+
                         System.Diagnostics.Debug.WriteLine("MinY=" + chartSpecificMinY.ToString() + " ,MaxY=" + chartSpecificMaxY.ToString());
 
                         // Concatinate the lists of InternalDataPoints
@@ -734,7 +734,7 @@ namespace Visifire.Charts
                 MinimumX = (_xValues.Count() > 0) ? (_xValues).Min() : 0;
 
                 if (RenderAs == RenderAs.Polar)
-                {   
+                {
                     if (_xValues.Count > 0 && MaximumX < 360)
                         MaximumX = 360;
 
@@ -757,7 +757,7 @@ namespace Visifire.Charts
                 }
                 else //if (listOfDataPointsFromAllSeries.Count > 0 && listOfDataPointsFromAllSeries[0].Parent.RenderAs == RenderAs.Bubble)
                 {
-                    if(GetDependentVariableTypes().Count == 2)
+                    if (GetDependentVariableTypes().Count == 2)
                         _zValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.ZValue) select dataPoint.ZValue).Distinct().ToArray();
 
                     MaximumZ = (_zValues != null && _zValues.Count() > 0) ? (_zValues).Max() : 0;
@@ -769,7 +769,7 @@ namespace Visifire.Charts
             {
                 Double maxY = Double.NaN, minY = Double.NaN;
 
-                if ( RenderAs == RenderAs.Spline || property == VcProperties.None || property == VcProperties.DataPoints)
+                if (RenderAs == RenderAs.Spline || property == VcProperties.None || property == VcProperties.DataPoints)
                 {
                     List<Type> dependentVariableTypes = GetDependentVariableTypes();
 
@@ -803,7 +803,7 @@ namespace Visifire.Charts
                 {
                     _yValues.Remove((Double)oldValue);
 
-                    if(!Double.IsNaN((Double)newValue))
+                    if (!Double.IsNaN((Double)newValue))
                         _yValues.Add((Double)newValue);
                 }
                 else if (property == VcProperties.YValues)
@@ -813,13 +813,13 @@ namespace Visifire.Charts
                         _yValues.Remove(((Double[])oldValue).Max());
                         _yValues.Remove(((Double[])oldValue).Min());
                     }
-                    if(newValue != null)
+                    if (newValue != null)
                     {
                         _yValues.Add(maxY = ((Double[])newValue).Max());
                         _yValues.Add(minY = ((Double[])newValue).Min());
                     }
                 }
-                
+
 
                 // variables to store the yValuee sum in case of stacked type charts
                 // var positiveYValue;
@@ -827,7 +827,7 @@ namespace Visifire.Charts
 
                 // Calculating Max and Min YValue based on chart type
                 switch (RenderAs)
-                {   
+                {
                     case RenderAs.Area:
                     case RenderAs.Bar:
                     case RenderAs.Bubble:
@@ -846,6 +846,10 @@ namespace Visifire.Charts
                     case RenderAs.Pyramid:
                     case RenderAs.Radar:
                     case RenderAs.Polar:
+                    #region Nortek
+                    case RenderAs.HeatMap:
+                    case RenderAs.RadarHeatMap:
+                    #endregion
 
                         if (property == VcProperties.YValue)
                         {
@@ -866,7 +870,7 @@ namespace Visifire.Charts
                                     MaximumY = _yValues.Max();
                             }
                             else
-                            {   
+                            {
                                 if (_yValues.Count() > 0)
                                 {
                                     MaximumY = _yValues.Max();
@@ -897,7 +901,7 @@ namespace Visifire.Charts
                                     MinimumY = _yValues.Min();
                                 }
                                 else
-                                {   
+                                {
                                     MaximumY = 0;
                                     MinimumY = 0;
                                 }
@@ -924,7 +928,7 @@ namespace Visifire.Charts
                             //    MinimumY = value < MinimumY ? value : MinimumY;
                             //}
                             //else
-                            {   
+                            {
                                 var positiveYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.PositiveYValueSum;
                                 var negativeYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.NegativeYValueSum;
 
@@ -939,7 +943,7 @@ namespace Visifire.Charts
                     case RenderAs.StackedColumn100:
                         {
                             CreateXWiseStackedDataEntry(ref _dataPointsInCurrentPlotGroup, RenderAs.StackedColumn100, RenderAs.StackedBar100, RenderAs.StackedArea100);
-                            
+
                             //if (property == VcProperties.YValue)
                             //{   
                             //    Double value = (Double)newValue;
@@ -1000,7 +1004,7 @@ namespace Visifire.Charts
         /// Note: Currently used for Bubble Chart in AutoFitToPlotArea calculation
         /// </summary>
         internal Double _intialAxisXWidth;
-        
+
         /// <summary>
         /// Initial AxisY Width
         /// Note: Currently used for Bubble Chart in AutoFitToPlotArea calculation

@@ -25,6 +25,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
+using System.Collections.Generic;
 
 namespace Visifire.Charts
 {
@@ -185,7 +186,21 @@ namespace Visifire.Charts
                 if (IsInDesignMode)
                     InvokeRender();
                 else
+                {
                     Render();
+                    #region Nortek added
+                    if (IndicatorEnabled)
+                    {
+                        foreach (var ds in Series)
+                        {
+                            if (!internalSelectedXYValues.Equals(Non_Selection))
+                            {
+                                ChartArea.PositionIndicator(internalSelectedXYValues.Key, internalSelectedXYValues.Value);
+                            }
+                        }
+                    }
+                    #endregion
+                }
             }
         }
 
@@ -247,6 +262,140 @@ namespace Visifire.Charts
         /// </summary>
         private Visibility _currentVisibility;
 
+        #endregion
+
+        #region Nortek added
+        public bool IndicatorLocked
+        {
+            get
+            {
+                return indicatorLocked;
+            }
+        }
+
+        public void ReleaseIndicator()
+        {
+            if (IndicatorEnabled)
+            {
+                indicatorLocked = false;
+            }
+        }
+
+        public void LockIndicator()
+        {
+            if (IndicatorEnabled)
+            {
+                indicatorLocked = true;
+            }
+        }
+
+        internal bool indicatorLocked = false;
+
+        public static KeyValuePair<object, double> Non_Selection = new KeyValuePair<object, double>();
+
+        public void BeginShowIndicator(Object xValue, Double yValue)
+        {
+            var selection = new KeyValuePair<object, double>(xValue, yValue);
+            BeginShowIndicator(selection);
+        }
+
+        public void BeginShowIndicator(KeyValuePair<object, double> selection)
+        {
+            if (ChartArea != null && ChartArea.AxisX != null && IndicatorEnabled)
+            {
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke((Action)delegate() { ChartArea.PositionIndicator(selection.Key, selection.Value); internalSelectedXYValues = selection; }, null);
+                
+            }
+        }
+
+        public void HideIndicatorImidiately()
+        {
+            if (ChartArea != null)
+            {
+                ChartArea.HideIndicator();
+                internalSelectedXYValues = Non_Selection;
+            }
+        }
+
+        public Boolean YIndicatorEnabled
+        {
+            get { return (Boolean)GetValue(YIndicatorEnabledProperty); }
+            set { SetValue(YIndicatorEnabledProperty, value); }
+        }
+
+        public static readonly DependencyProperty YIndicatorEnabledProperty =
+           DependencyProperty.Register("YIndicatorEnabled",
+           typeof(Boolean),
+           typeof(Chart),
+           new PropertyMetadata(OnYIndicatorEnabledPropertyChanged));
+        private static void OnYIndicatorEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            //Chart c = d as Chart;
+            //c.InvokeRender();
+        }
+
+        public Boolean IndicatorLockable
+        {
+            get { return (Boolean)GetValue(IndicatorLockableProperty); }
+            set { SetValue(IndicatorLockableProperty, value); }
+        }
+
+        public static readonly DependencyProperty IndicatorLockableProperty =
+           DependencyProperty.Register("IndicatorLockable",
+           typeof(Boolean),
+           typeof(Chart),
+           new PropertyMetadata(OnIndicatorLockablePropertyChanged));
+
+        private static void OnIndicatorLockablePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            //Chart c = d as Chart;
+            //if (c != null)
+            //{
+            //    c.InvokeRender();
+            //}
+        }
+
+        private EventHandler _rendering;
+        public event EventHandler Rendering
+        {
+            remove
+            {
+                _rendering -= value;
+            }
+            add
+            {
+                _rendering += value;
+            }
+        }
+        internal void FireRenderingEvent()
+        {
+            if (_rendering != null)
+                _rendering(this, null);
+        }
+
+        public KeyValuePair<object, double> SelectedXYValues
+        {
+            get
+            {
+                return (KeyValuePair<object, double>)GetValue(SelectedXYValuesProperty);
+            }
+            set
+            {
+                SetValue(SelectedXYValuesProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty SelectedXYValuesProperty = DependencyProperty.Register
+            ("SelectedXYValues",
+            typeof(KeyValuePair<object, double>),
+            typeof(Chart), new PropertyMetadata(Visifire.Charts.Chart.Non_Selection, OnSelectedXYValuesPropertyChanged));
+
+        internal KeyValuePair<object, double> internalSelectedXYValues = Visifire.Charts.Chart.Non_Selection;
+        private static void OnSelectedXYValuesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var chart = d as Chart;
+            chart.internalSelectedXYValues = (KeyValuePair<object, double>)e.NewValue;
+        }
         #endregion
     }
 }

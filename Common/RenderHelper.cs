@@ -18,7 +18,7 @@ namespace Visifire.Charts
     public static class RenderHelper
     {
 
-        internal static void ResetMarkersForSeries(List<DataSeries > dataSeriesList4Rendering)
+        internal static void ResetMarkersForSeries(List<DataSeries> dataSeriesList4Rendering)
         {
             foreach (DataSeries ds in dataSeriesList4Rendering)
             {
@@ -73,7 +73,7 @@ namespace Visifire.Charts
 
                 case RenderAs.StackedColumn100:
                     renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(chartType, preExistingPanel, width, height, plotDetails, chart, plankDepth, animationEnabled);
-                  
+
                     //renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
@@ -135,6 +135,15 @@ namespace Visifire.Charts
                 case RenderAs.StepLine:
                     renderedCanvas = StepLineChart.GetVisualObjectForLineChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
+                #region Custom Chart Nortek Added
+                case RenderAs.HeatMap:
+                    renderedCanvas = HeatMap.GetVisualObjectForHeatChart(preExistingPanel, width, height, dataSeriesList4Rendering[0], chart);
+                    break;
+
+                case RenderAs.RadarHeatMap:
+                    renderedCanvas = HeatMap.GetVisualObjectForRadarHeatMap(preExistingPanel, width, height, dataSeriesList4Rendering[0], chart);
+                    break;
+                #endregion
 
             }
 
@@ -142,32 +151,32 @@ namespace Visifire.Charts
         }
 
         internal static void RepareCanvas4Drawing(Canvas preExistingPanel, out Canvas visual, out Canvas labelCanvas, out Canvas drawingCanvas, Double width, Double height)
-        {   
+        {
             if (preExistingPanel != null)
-            {   
+            {
                 visual = preExistingPanel as Canvas;
                 labelCanvas = preExistingPanel.Children[0] as Canvas;
                 labelCanvas.Children.Clear();
             }
             else
-            {   
+            {
                 visual = new Canvas();
                 labelCanvas = new Canvas();
             }
 
-            labelCanvas.Width = width; 
+            labelCanvas.Width = width;
             labelCanvas.Height = height;
 
-            visual.Width = width; 
+            visual.Width = width;
             visual.Height = height;
 
-            drawingCanvas =  new Canvas() { Width = width, Height = height };
+            drawingCanvas = new Canvas() { Width = width, Height = height };
         }
 
         internal static void RepareCanvas4Drawing(Canvas preExistingPanel, out Canvas visual, out Canvas drawingCanvas, Double width, Double height)
-        {   
+        {
             if (preExistingPanel != null)
-            {   
+            {
                 visual = preExistingPanel as Canvas;
                 visual.Children.Clear();
             }
@@ -182,20 +191,20 @@ namespace Visifire.Charts
             drawingCanvas = new Canvas() { Width = width, Height = height };
             visual.Children.Add(drawingCanvas);
         }
-        
+
         internal static void UpdateVisualObject(Chart chart, VcProperties property, object newValue, Boolean partialUpdate)
-        {   
+        {
             if (!chart._internalPartialUpdateEnabled || Double.IsNaN(chart.ActualWidth) || Double.IsNaN(chart.ActualHeight) || chart.ActualWidth == 0 || chart.ActualHeight == 0)
                 return;
 
             if (partialUpdate && chart._datapoint2UpdatePartially.Count <= 500)
-            {   
+            {
                 chart.PARTIAL_DP_RENDER_LOCK = false;
                 Boolean isNeed2UpdateAllSeries = false;
 
                 List<DataSeries> _dataSeries2UpdateAtSeriesWise = (from value in chart._datapoint2UpdatePartially
                                                                    where value.Key.Parent.RenderAs == RenderAs.Spline || value.Key.Parent.RenderAs == RenderAs.QuickLine
-                                                      select value.Key.Parent).Distinct().ToList();
+                                                                   select value.Key.Parent).Distinct().ToList();
 
                 foreach (DataSeries splineDs in _dataSeries2UpdateAtSeriesWise)
                     splineDs.UpdateVisual(VcProperties.DataPointUpdate, null);
@@ -207,7 +216,7 @@ namespace Visifire.Charts
                     return;
 
                 foreach (KeyValuePair<DataPoint, VcProperties> dpInfo in remainingDpInfo)
-                {   
+                {
                     DataPoint dp = dpInfo.Key;
 
                     if (dp.Parent.RenderAs == RenderAs.Spline || dp.Parent.RenderAs == RenderAs.QuickLine)
@@ -217,7 +226,7 @@ namespace Visifire.Charts
                     }
 
                     if (dpInfo.Value == VcProperties.XValue)
-                    {   
+                    {
                         isNeed2UpdateAllSeries = true;
                         break;
                     }
@@ -282,8 +291,8 @@ namespace Visifire.Charts
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
                         break;
 
-                  case RenderAs.Spline:
-                  case RenderAs.QuickLine:
+                    case RenderAs.Spline:
+                    case RenderAs.QuickLine:
                         if (property == VcProperties.Enabled)
                             ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
                         else
@@ -292,15 +301,15 @@ namespace Visifire.Charts
 
                         break;
 
-                  case RenderAs.Line:
+                    case RenderAs.Line:
                         if (property == VcProperties.Enabled)
                             ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
                         else
-                            foreach(DataSeries ds in selectedDataSeries4Rendering)
+                            foreach (DataSeries ds in selectedDataSeries4Rendering)
                                 LineChart.Update(ds, property, newValue, false);
                         break;
 
-                  case RenderAs.StepLine:
+                    case RenderAs.StepLine:
 
                         if (property == VcProperties.Enabled)
                             ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
@@ -399,7 +408,7 @@ namespace Visifire.Charts
             DataPoint dataPoint = sender as DataPoint;
             Chart chart = (sender as ObservableObject).Chart as Chart;
             switch (chartType)
-            {   
+            {
                 case RenderAs.Column:
                 case RenderAs.Bar:
                     ColumnChart.Update(sender, property, newValue, isAXisChanged);
@@ -408,7 +417,7 @@ namespace Visifire.Charts
                 case RenderAs.Line:
                 case RenderAs.Spline:
                     LineChart.Update(sender, property, newValue, isAXisChanged);
-                    
+
                     break;
                 case RenderAs.QuickLine:
                     QuickLineChart.Update(sender, property, newValue, isAXisChanged);
@@ -474,10 +483,10 @@ namespace Visifire.Charts
                     chart.ChartArea.AttachEventsToolTipHref2DataSeries();
                     break;
 
-                case RenderAs.SectionFunnel: 
+                case RenderAs.SectionFunnel:
                 case RenderAs.StreamLineFunnel:
                 case RenderAs.Pyramid:
-                   //renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled, true);
+                    //renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled, true);
                     break;
 
                 case RenderAs.Stock:
@@ -495,7 +504,7 @@ namespace Visifire.Charts
         internal static List<DataPoint> GetDataPointsUnderViewPort(List<DataPoint> dataPoints, Boolean isUsedForAxisRange, Int32 leftRightPointPadding)
         {
             if (dataPoints.Count > 0)
-            {   
+            {
                 DataSeries dataSeries = dataPoints[0].Parent;
                 if (dataSeries.PlotGroup.AxisY.ViewportRangeEnabled)
                 {
@@ -520,7 +529,7 @@ namespace Visifire.Charts
                         if (rightDataPoints.Count() > 0)
                             maxXValueRangeOfViewPort = rightDataPoints.Min();
                     }
-                    
+
                     viewPortDataPoints = dataPoints
                                .Where(d => d.InternalXValue >= minXValueRangeOfViewPort
                                    && d.InternalXValue <= maxXValueRangeOfViewPort).ToList();
@@ -532,7 +541,7 @@ namespace Visifire.Charts
                     {
                         var leftDataPoints = (from dp in dataPoints where (dp.InternalXValue < minXValueRangeOfViewPort) orderby dp.InternalXValue select dp);
                         List<DataPoint> rightDataPoints = (from dp in dataPoints where (dp.InternalXValue > maxXValueRangeOfViewPort) orderby dp.InternalXValue select dp).ToList();
-                        
+
                         if (leftDataPoints.Count() > 0)
                             viewPortDataPoints.Insert(0, leftDataPoints.Last());
 
@@ -570,7 +579,7 @@ namespace Visifire.Charts
                 //maxXValueRangeOfViewPort += offset;
 
                 if (!isUsedForAxisRange)
-                {   
+                {
                     var leftDataPoints = (from dp in dataSeries.InternalDataPoints where (dp.InternalXValue < minXValueRangeOfViewPort) select dp.InternalXValue);
                     var rightDataPoints = (from dp in dataSeries.InternalDataPoints where (dp.InternalXValue > maxXValueRangeOfViewPort) select dp.InternalXValue);
 
@@ -590,7 +599,7 @@ namespace Visifire.Charts
                     List<DataPoint> rightDataPoints = (from dp in dataSeries.InternalDataPoints where (dp.InternalXValue > maxXValueRangeOfViewPort) orderby dp.InternalXValue select dp).ToList();
 
                     if (leftDataPoints.Count() > 0)
-                        viewPortDataPoints.Insert(0,leftDataPoints.Last());
+                        viewPortDataPoints.Insert(0, leftDataPoints.Last());
 
                     if (rightDataPoints.Count > 0)
                         viewPortDataPoints.Add(rightDataPoints[0]);
@@ -609,9 +618,9 @@ namespace Visifire.Charts
         }
 
         internal static Double[] GetXValuesUnderViewPort(List<Double> xValues, Axis axisX, Axis axisY, Boolean isUsedForAxisRange)
-        {   
+        {
             if (axisY.ViewportRangeEnabled)
-            {   
+            {
                 List<Double> viewPortXValues;
 
                 Double minXValueRangeOfViewPort = axisX._numericViewMinimum;
@@ -659,6 +668,24 @@ namespace Visifire.Charts
         }
 
         #region Helper function for Pixel to Value and Value to Pixel conversion purpose
+        #region Nortek Add
+
+        internal static double CalculatePixelPosFromInternalXValue(Chart chart, Axis xAxis, double xValue)
+        {
+            AxisOrientation axisOrientation = xAxis.AxisOrientation;
+            Double lengthInPixel = ((axisOrientation == AxisOrientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
+            return xAxis.XValueToPixelPosition(lengthInPixel, (axisOrientation == AxisOrientation.Horizontal) ? xValue : xAxis.InternalAxisMaximum - xValue);
+        }
+
+        internal static double CalculatePixelPosFromInternalYValue(Chart chart, Axis yAxis, double yValue)
+        {
+            AxisOrientation axisOrientation = yAxis.AxisOrientation;
+            Double lengthInPixel = ((axisOrientation == AxisOrientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+
+            return yAxis.YValueToPixelPosition(lengthInPixel, (axisOrientation == AxisOrientation.Vertical) ? yValue : yAxis.InternalAxisMaximum - yValue);
+        }
+
+        #endregion
 
         /// <summary>
         /// Calculate internalYValue from mouse pointer position
@@ -764,9 +791,9 @@ namespace Visifire.Charts
                                                 || !(!RenderHelper.IsFinancialCType(dp.Parent) && Double.IsNaN(dp.YValue))
                                                 orderby Math.Abs(dp.InternalXValue - xValueAtMousePos)
                                                 select dp).ToList();
-            
+
             if (dataPointsAlongX.Count > 0)
-            {   
+            {
                 // Get the internalXValue of the first DataPoint of the ordered list
                 Double xValue = dataPointsAlongX[0].InternalXValue;
 
@@ -784,14 +811,14 @@ namespace Visifire.Charts
                     // Sort according to YValue or YValues
                     if (RenderHelper.IsFinancialCType(dataSeries))
                         dataPointsAlongYAxisHavingSameXValue = (from dp in dataPointsAlongYAxisHavingSameXValue
-                                                            where (dp.InternalYValues != null)
-                                                            orderby Math.Abs(dp.InternalYValues.Max() - yValueAtMousePos)
-                                                            select dp).ToList();
+                                                                where (dp.InternalYValues != null)
+                                                                orderby Math.Abs(dp.InternalYValues.Max() - yValueAtMousePos)
+                                                                select dp).ToList();
                     else
                         dataPointsAlongYAxisHavingSameXValue = (from dp in dataPointsAlongYAxisHavingSameXValue
-                                                            where !Double.IsNaN(dp.InternalYValue)
-                                                            orderby Math.Abs(dp.InternalYValue - yValueAtMousePos)
-                                                            select dp).ToList();
+                                                                where !Double.IsNaN(dp.InternalYValue)
+                                                                orderby Math.Abs(dp.InternalYValue - yValueAtMousePos)
+                                                                select dp).ToList();
                 }
 
                 if (dataPointsAlongYAxisHavingSameXValue.Count > 0)
@@ -832,7 +859,7 @@ namespace Visifire.Charts
         /// <returns></returns>
         public static Boolean IsLineCType(DataSeries dataSeries)
         {
-            return (dataSeries.RenderAs == RenderAs.Line 
+            return (dataSeries.RenderAs == RenderAs.Line
                 || dataSeries.RenderAs == RenderAs.Spline
                 || dataSeries.RenderAs == RenderAs.QuickLine
                 || dataSeries.RenderAs == RenderAs.StepLine);
@@ -869,9 +896,9 @@ namespace Visifire.Charts
                 || dataSeries.RenderAs == RenderAs.Bubble
                 || dataSeries.RenderAs == RenderAs.Column
                 || dataSeries.RenderAs == RenderAs.Spline
-                || dataSeries.RenderAs == RenderAs.StepLine 
+                || dataSeries.RenderAs == RenderAs.StepLine
                 || dataSeries.RenderAs == RenderAs.Line
-                || dataSeries.RenderAs == RenderAs.Point 
+                || dataSeries.RenderAs == RenderAs.Point
                 || dataSeries.RenderAs == RenderAs.CandleStick
                 || dataSeries.RenderAs == RenderAs.Stock
                 );
@@ -887,13 +914,13 @@ namespace Visifire.Charts
         /// <param name="dataSeries"></param>
         /// <returns></returns>
         public static Boolean IsAxisIndependentCType(DataSeries dataSeries)
-        {   
-            return (dataSeries.RenderAs == RenderAs.Pie 
+        {
+            return (dataSeries.RenderAs == RenderAs.Pie
                 || dataSeries.RenderAs == RenderAs.Doughnut
-                || dataSeries.RenderAs == RenderAs.SectionFunnel 
+                || dataSeries.RenderAs == RenderAs.SectionFunnel
                 || dataSeries.RenderAs == RenderAs.StreamLineFunnel
                 || dataSeries.RenderAs == RenderAs.Pyramid);
         }
 
-   }
+    }
 }
