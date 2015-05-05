@@ -1,2 +1,1 @@
-# visifire
-The project is Automatically exported from code.google.com/p/visifire, just for study
+A chart control developed with Wpf, Silverlight, Windows Phone and Windows 8 
